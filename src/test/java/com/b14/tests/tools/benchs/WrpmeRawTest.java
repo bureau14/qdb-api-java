@@ -65,7 +65,7 @@ public class QuasardbRawTest {
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
     private static final ByteBuffer buffer = ByteBuffer.allocateDirect(4096);
-    private static final String WRPME_NAME = "compareAPI";
+    private static final String QDB_NAME = "compareAPI";
     private static final Map<String,String> config = new HashMap<String,String>();
     
     private static SWIGTYPE_p_qdb_session session;
@@ -98,8 +98,8 @@ public class QuasardbRawTest {
             System.exit(0);
         }
         
-        // **** INIT WRPME API ****
-        config.put("name", WRPME_NAME);
+        // **** INIT QDB API ****
+        config.put("name", QDB_NAME);
         config.put("host", QuasardbTest.HOST);
         config.put("port", QuasardbTest.PORT);
     }
@@ -244,14 +244,14 @@ public class QuasardbRawTest {
 //          qdb.delete(session, alias);
 //          alias = "alias_";
 //          
-//          System.out.println("WRPME -> " + (System.currentTimeMillis() - current) );
+//          System.out.println("QDB -> " + (System.currentTimeMillis() - current) );
 //            current = System.currentTimeMillis();
 //            
 //            System.gc();
 //        }   
         
         Map<String,String> config = new HashMap<String,String>();
-        config.put("name", "TEST_WRPME");
+        config.put("name", "TEST_QDB");
         config.put("host", QuasardbTest.HOST);
         config.put("port", QuasardbTest.PORT);
         Quasardb qdbDB = new Quasardb(config);
@@ -263,26 +263,26 @@ public class QuasardbRawTest {
             try {
                 // Insert the provided value at provided key
                 qdbDB.put(key, alias);
-                System.out.println("WRPME PUT " + i + " -> " + (System.currentTimeMillis() - current));
+                System.out.println("QDB PUT " + i + " -> " + (System.currentTimeMillis() - current));
                 current = System.currentTimeMillis();
                 
                 // Check if a value has been stored at key
                 assertTrue(qdbDB.get(key).equals(alias));
-                System.out.println("WRPME GET " + i + " -> " + (System.currentTimeMillis() - current));
+                System.out.println("QDB GET " + i + " -> " + (System.currentTimeMillis() - current));
                 current = System.currentTimeMillis();
                 
                 // Update value
                 qdbDB.update(key, alias + "_UPDATED");
-                System.out.println("WRPME UPDATE " + i + " -> " + (System.currentTimeMillis() - current));
+                System.out.println("QDB UPDATE " + i + " -> " + (System.currentTimeMillis() - current));
                 current = System.currentTimeMillis();
                 
                 // Check if a value has been updated at key
                 assertFalse(qdbDB.get(key).equals(alias));
-                System.out.println("WRPME GET " + i + " -> " + (System.currentTimeMillis() - current));
+                System.out.println("QDB GET " + i + " -> " + (System.currentTimeMillis() - current));
                 current = System.currentTimeMillis();
                 
                 assertTrue(qdbDB.get(key).equals(alias + "_UPDATED"));
-                System.out.println("WRPME GET " + i + " -> " + (System.currentTimeMillis() - current));
+                System.out.println("QDB GET " + i + " -> " + (System.currentTimeMillis() - current));
                 current = System.currentTimeMillis();
             } catch (QuasardbException e) {
                 fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
@@ -293,17 +293,17 @@ public class QuasardbRawTest {
                 // Clean up stored value
                 try {
                     qdbDB.remove(key);
-                    System.out.println("WRPME DELETE " + i + " -> " + (System.currentTimeMillis() - current));
+                    System.out.println("QDB DELETE " + i + " -> " + (System.currentTimeMillis() - current));
                     current = System.currentTimeMillis();
                 } catch (QuasardbException e) {
                     e.printStackTrace();
                 }
             } 
         }
-        System.out.println("WRPME 2 -> " + (System.currentTimeMillis() - current) );
+        System.out.println("QDB 2 -> " + (System.currentTimeMillis() - current) );
         
         // Try to close qdb session
 //        qdbError = qdb.close(session);
-//        QuasardbManager.getInstance().getCache("TEST_WRPME").close();
+//        QuasardbManager.getInstance().getCache("TEST_QDB").close();
     }
 }

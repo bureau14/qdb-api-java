@@ -52,7 +52,7 @@ import com.b14.tests.tools.CustomContiperfFileExecutionLogger;
 
 @RunWith(Feeder.class)
 public class QuasardbParallelTest {
-    private static final String WRPME_NAME = "testParallel";
+    private static final String QDB_NAME = "testParallel";
     private static final int NB_LOOPS = 2;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
@@ -68,7 +68,7 @@ public class QuasardbParallelTest {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        config.put("name", WRPME_NAME);
+        config.put("name", QDB_NAME);
         config.put("host", QuasardbTest.HOST);
         config.put("port", QuasardbTest.PORT);
         try {

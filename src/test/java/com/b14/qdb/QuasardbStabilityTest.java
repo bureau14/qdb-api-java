@@ -55,7 +55,7 @@ import com.b14.tests.tools.CustomContiperfFileExecutionLogger;
 
 @RunWith(Feeder.class)
 public class QuasardbStabilityTest {
-    private static final String WRPME_NAME = "testStability";
+    private static final String QDB_NAME = "testStability";
     private static final int NB_LOOPS = 1;
     private static final int NB_THREADS = 1;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
@@ -71,7 +71,7 @@ public class QuasardbStabilityTest {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        config.put("name", WRPME_NAME);
+        config.put("name", QDB_NAME);
         config.put("host", QuasardbTest.HOST);
         config.put("port", QuasardbTest.PORT);
         try {
