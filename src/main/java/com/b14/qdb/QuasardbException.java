@@ -3,15 +3,15 @@ package com.b14.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 
 /**
- * This class handles all qdb exceptions.<br>
+ * This class handles all Quasar DB exceptions.<br>
  * 
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
- * @version qdb 0.7.0
- * @since qdb 0.5.2
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  */
 public class QuasardbException extends Exception {
 
-    // id for serialization
+    // Id for serialization
     private static final long serialVersionUID = 2196126450147576611L;
 
     // The exception message
@@ -25,7 +25,7 @@ public class QuasardbException extends Exception {
     }
 
     /**
-     * Provide a way to custom Quasardb message exception
+     * Provide a way to customize Quasar DB messages exception
      * @param message the specific message related to the exception
      */
     protected QuasardbException(final String message) {
@@ -42,7 +42,7 @@ public class QuasardbException extends Exception {
     }
 
     /**
-     * Build a QuasardbException with an already throwed exception and a custom message
+     * Build a QuasardbException with an already throwed exception and a customized message
      * @param message the custom message of exception
      * @param cause the exception to handle
      */
@@ -52,7 +52,7 @@ public class QuasardbException extends Exception {
     }
     
     /**
-     * Handle all JNI errors by providing custom QuasardbException
+     * Handle all JNI errors by providing a custom QuasardbException
      * @param jniError the JNI error to handle
      * @param params <i>(optional)</i> additionnal params to custom exception
      */

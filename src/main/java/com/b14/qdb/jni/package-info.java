@@ -29,7 +29,9 @@
 /**
  * This package contains native classes generated with <a href="http://www.swig.org/">SWIG</a>
  *
- * @author &copy; <a href="http://www.bureau14.fr/">Bureau14</a> - 2011
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  * @see <a href="http://www.swig.org/">SWIG</a>
  */
 package com.b14.qdb.jni;

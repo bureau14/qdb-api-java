@@ -27,9 +27,11 @@
  */
 
 /**
- * This package contains entry point for use with Quasardb.
- * This allows you to have Quasardb instances though QuasardbManager
+ * This package contains entry point for use with Quasar DB.
+ * This allows you to have Quasar DB instance and interact with it.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  */
 package com.b14.qdb;

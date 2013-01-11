@@ -37,8 +37,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * 
  * @deprecated
  * @param <K> the type of the object to be locked
- * @version qdb 0.6.0
- * @since qdb 0.6.0
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.6.0
  */
 public class LockManager<K> {
     private final ConcurrentHashMap<K, ReentrantLock> locks = new ConcurrentHashMap<K, ReentrantLock>();

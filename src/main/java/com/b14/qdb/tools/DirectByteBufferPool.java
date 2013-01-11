@@ -37,7 +37,7 @@ import java.nio.ByteOrder;
  * 
  * @deprecated
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
- * @version qdb 0.6.0
+ * @version qdb 0.7.2
  * @since qdb 0.5.2
  */
 public final class DirectByteBufferPool {

@@ -52,6 +52,13 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
 
+/**
+ * Utility class : load Quasar DB natives libraries
+ * 
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
+ */
 public class LibraryHelper {
     private static final boolean DEBUG = false;
     private static final String TMP_SUB_DIRECTORY = "qdb_native_libs";
@@ -74,6 +81,9 @@ public class LibraryHelper {
     private static File dirTemp = null;
     private static List<JarFileInfo> lstJarFile;
     
+    /**
+     * Load native librairies from API jar
+     */
     public static void loadLibrairiesFromJar() {
         // Keep a list of temp files
         lstJarFile = new ArrayList<JarFileInfo>();
@@ -134,6 +144,14 @@ public class LibraryHelper {
         });
     }
     
+    /**
+     * Extract native librairies from jar
+     * 
+     * @param simpleName jar name
+     * @param file jar file
+     * @param jarFileInfoParent parent Jar file
+     * @throws IOException Error on loading inner JAR
+     */
     private static void loadJar(String simpleName, File file, JarFileInfo jarFileInfoParent) throws IOException {
         JarFileInfo jarFileInfo = new JarFileInfo(simpleName, file, jarFileInfoParent); 
         lstJarFile.add(jarFileInfo);
@@ -196,6 +214,13 @@ public class LibraryHelper {
         }
     }
 
+    /**
+     * Create temp directories for natives librairies
+     * 
+     * @param inf library
+     * @return library
+     * @throws LibraryHelperException cannot create temp directory
+     */
     private static File createTempFile(JarEntryInfo inf) throws LibraryHelperException {
         if (dirTemp == null) {
             File dir = new File(System.getProperty("java.io.tmpdir"), TMP_SUB_DIRECTORY);
@@ -243,6 +268,9 @@ public class LibraryHelper {
         }
     }
     
+    /**
+     * Remove all temporary files
+     */
     private static void shutdown() {
         for (JarFileInfo jarFileInfo : lstJarFile) {
             try {

@@ -40,48 +40,56 @@ import de.javakaffee.kryoserializers.StringBuilderSerializer;
 import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
 
 /**
- * This class provides a way to interact with the current wprme instance.<br>
+ * This class provides a way to interact with a Quasar DB instance.<br>
  * The following operations are allowed:
  * <ul>
- *     <li><u>get :</u> get an object from the qdb instance.</li>
- *     <li><u>put :</u> store an object into the qdb instance.</li>
- *     <li><u>update :</u> change the value of an object stored into the qdb instance.</li>
- *     <li><u>remove :</u> delete an object from the qdb instance.</li>
- *     <li><u>removeall :</u> delete all objects stored from the qdb instance.</li>
- *     <li><u>close :</u> close the connection with the qdb instance.</li>
+ *     <li><u>get :</u> get an object from the Quasar DB instance.</li>
+ *     <li><u>put :</u> store an object into the Quasar DB instance.</li>
+ *     <li><u>update :</u> change the value of a stored object into the Quasar DB instance.</li>
+ *     <li><u>remove :</u> delete an object into the Quasar DB instance.</li>
+ *     <li><u>removeall :</u> delete all objects stored into the Quasar DB instance.</li>
+ *     <li><u>close :</u> close the connection with the Quasar DB instance.</li>
+ *     <li><u>informations :</u> retrieve basic informations from the Quasar DB instance : build and version numbers.</li>
  * </ul>
- *
- * Notice that this class is thread-safe.<br>
+ * 
+ * <br>
+ * <i>Notice that this class is thread-safe.</i><br>
  * <br>
  * 
  * <p>
- * <u>Example :</u>
+ * <u>Usage example :</u>
  * <p>
  * <pre>
- *       // First : create a map config.   
+ *       // First : create a map object with Quasar DB connection parameters :   
  *       Map<String,String> config = new HashMap<String,String>();
- *       config.put("name", "qdb name");
- *       config.put("host", "qdb host");
- *       config.put("port", "qdb port");
+ *       config.put("name", "Quasar DB name");
+ *       config.put("host", "Quasar DB host");
+ *       config.put("port", "Quasar DB port");
  *         
- *       // Second : create the related qdb instance.
+ *       // Second : create the related Quasar DB instance.
  *       Quasardb qdb = new Quasardb(config);
- *       // Or you can provid configuration later :
- *       //   Quasardb qdb = new Quasardb();
- *       //   qdb.setConfig(config);
+ *       
+ *       // Or you can provide configuration later :
+ *       Quasardb qdb = new Quasardb();
+ *       qdb.setConfig(config);
  *        
- *       // Third : connect to qdb instance.
+ *       // Third : connect to Quasar DB instance. This step is 
  *       qdb.connect();
  *       
- *       // Fourth : use the qdb instance :
+ *       // Fourth : use the Quasar DB instance as you want :
+ *       System.out.println("Using Quasar DB (" + qdb.getVersion() + "-" + qdb.getBuild() + ") :");
  *       qdb.put("foo", new String("bar"));
- *       System.out.println(qdb.get("foo"));
+ *       System.out.println("  => key 'foo' contains : " + qdb.get("foo"));
+ *       
+ *       // Fifth : disconnect the current Quasar DB instance after using
+ *       // Notice that this step is optional
+ *       qdb.close();
  * </pre>
  * </p>
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
- * @version qdb 0.7.0
- * @since qdb 0.5.2
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  */
 @SuppressWarnings("restriction")
 public final class Quasardb {
@@ -101,9 +109,9 @@ public final class Quasardb {
     private static final String WRONG_CONFIG_PROVIDED = "Wrong config provided. Please check it.";
     private static final String NOT_YET_IMPLEMENTED = "No yet implemented";
     private static final String SESSION_CLOSED = "Session was closed by peer.";
-    private static final String NULL_VALUE = "Value is null.";
-    private static final String BAD_SIZE = "Wrong size.";
-    private static final String WRONG_ALIAS = "Wrong alias.";
+    private static final String NULL_VALUE = "Value is null. This is not allowed.";
+    private static final String BAD_SIZE = "Object size is invalid.";
+    private static final String WRONG_ALIAS = "Alias name is invalid.";
     private static final String BAD_SERIALIZATION = "Bad serialization.";
     private static final int BUFFER_SIZE = 4096;
     private static final int PUT = 1;
@@ -124,12 +132,12 @@ public final class Quasardb {
     }
     
     /**
-     * Make a qdb instance with the given config.<br>
-     * The config must provide the following parameters :
+     * Make a Quasar DB instance with a given config.<br>
+     * A config has the following parameters :
      * <ul>
-     *     <li><i>name :</i> the name under qdb instance will be referenced/registered.</li>
-     *     <li><i>host :</i> the host of qdb instance you want to connect - can be a IP address or a hostname.</li>
-     *     <li><i>port : </i> the port of qdb instance you want to connect.</li>
+     *     <li><i>name :</i> the name under Quasar DB instance will be referenced/registered.</li>
+     *     <li><i>host :</i> the server name hosting the Quasar DB instance you want to contact - can be a IP address or a hostname.</li>
+     *     <li><i>port : </i> the port of Quasar DB instance you want to contact.</li>
      * </ul>
      * <br>
      * 
@@ -138,16 +146,16 @@ public final class Quasardb {
      * <pre>
      *         // First : create a map config.
      *         Map<String,String> config = new HashMap<String,String>();
-     *      config.put("name", "qdb name");
-     *      config.put("host", "qdb host");
-     *      config.put("port", "qdb port");
+     *      config.put("name", "Quasar DB name");
+     *      config.put("host", "Quasar DB host");
+     *      config.put("port", "Quasar DB port");
      *      
-     *      // Second : create the related qdb instance.
+     *      // Second : create the related Quasar DB instance.
      *      Quasardb myQuasardbInstance = new Quasardb(config);
      *     </pre>
      * </p>
      * 
-     * @param config the config map in order to initialize connexion with the qdb instance
+     * @param config the config map in order to initialize connexion with the Quasar DB instance
      * @throws QuasardbException if initialization step fail
      */
     public Quasardb(final Map<String,String> config) {
@@ -155,9 +163,9 @@ public final class Quasardb {
     }
 
     /**
-     * Initialize connection to the qdb instance and setup serialization framework. 
+     * Initialize connection to the Quasar DB instance and setup serialization framework. 
      * 
-     * @throws QuasardbException if connection to the qdb instance fail
+     * @throws QuasardbException if connection to the Quasar DB instance fail
      */
     public void connect() throws QuasardbException {
         // Check params
@@ -218,9 +226,9 @@ public final class Quasardb {
     }
     
     /**
-     * Retrieve the version of the current qdb instance.
+     * Retrieve the version of current Quasar DB instance.
      *  
-     * @return version of the current qdb instance.
+     * @return version of the current Quasar DB instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
     public String getVersion() throws QuasardbException {
@@ -229,9 +237,9 @@ public final class Quasardb {
     }
     
     /**
-     * Retrieve the build version of the current qdb instance.
+     * Retrieve the build version of current Quasar DB instance.
      *  
-     * @return build version of the current qdb instance.
+     * @return build version of the current Quasar DB instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
     public String getBuild() throws QuasardbException {
@@ -240,11 +248,11 @@ public final class Quasardb {
     }
     
     /**
-     * Get the object related to the provided key (<i>alias</i>) from the current qdb instance.
+     * Get the object related to the provided key (<i>alias</i>) from the current Quasar DB instance.
      *  
      * @param alias the key you want to get the object.
      * @return the object related to the alias
-     * @throws QuasardbException if the connection with the qdb instance fail or if the alias provided is wrong
+     * @throws QuasardbException if the connection with the qdb instance has fail or if the alias provided is wrong
      */
     @SuppressWarnings("unchecked")
     public <V> V get(final String alias) throws QuasardbException {
@@ -273,45 +281,25 @@ public final class Quasardb {
     }
     
     /**
-     * Put an object (<i>value</i>) to the current qdb instance under the <i>alias</i> key.<br>
+     * Put an object (<i>value</i>) to the current Quasar DB instance under the <i>alias</i> key.<br>
      * 
      * @param alias key name to map with the <i>value</i> object.
-     * @param value object to put into the qdb instance.
-     * @throws QuasardbException if the value cannot be store into the current qdb instance.
+     * @param value object to put into the Quasar DB instance.
+     * @throws QuasardbException if the value cannot be store into the current Quasar DB instance.
      */
     public <V> void put(final String alias, final V value) throws QuasardbException {
         this.writeOperation(alias, value, PUT);
     }
     
     /**
-     * Update the <i>alias</i> key with the provided object (<i>value</i>) to the current qdb instance.<br>
+     * Update the <i>alias</i> key with the provided object (<i>value</i>) to the current Quasar DB instance.<br>
      * 
      * @param alias key name to map with the <i>value</i> object.
-     * @param value object to put into the qdb instance.
-     * @throws QuasardbException if the value cannot be store into the current qdb instance.
+     * @param value object to put into the Quasar DB instance.
+     * @throws QuasardbException if the value cannot be store into the current Quasar DB instance.
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
         this.writeOperation(alias, value, UPDATE);
-    }
-    
-    /**
-     * This function is not yet implemented
-     * 
-     * @since 0.7.0
-     * @deprecated
-     */
-    public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
-        return this.writeOperation(alias, value, GETANDUPDATE);
-    }
-    
-    /**
-     * This function is not yet implemented
-     * 
-     * @since 0.7.0
-     * @deprecated
-     */
-    public <V> V compareAndSwap(final String alias, final V value) throws QuasardbException {
-        return this.writeOperation(alias, value, CAS);
     }
     
     /**
@@ -334,7 +322,7 @@ public final class Quasardb {
     }
     
     /**
-     * Delete all the stored objects in the current qdb instance
+     * Delete all the stored objects in the current Quasar DB instance
      *  
      * @throws QuasardbException if the connection with the current instance fail.
      */
@@ -351,7 +339,7 @@ public final class Quasardb {
     }
     
     /**
-     * Close the connection to the qdb instance and free some memory.
+     * Close the connection to the Quasar DB instance and free some memory.
      * 
      * @throws QuasardbException if the connection to the qdb instance cannot be closed
      */
@@ -376,7 +364,7 @@ public final class Quasardb {
     /*********************/
     
     /**
-     * Check if the current qdb session is valid
+     * Check if the current Quasar DB session is valid
      * 
      * @throws QuasardbException if the connection to the qdb instance cannot be closed
      */
@@ -389,7 +377,7 @@ public final class Quasardb {
     /**
      * Check if the provided alias is valid
      * @param alias to store object
-     * @throws QuasardbException if the connection to the qdb instance cannot be closed
+     * @throws QuasardbException if the connection to the Quasar DB instance cannot be closed
      */
     private final void checkAlias(final String alias) throws QuasardbException {
          // Testing parameters
@@ -400,14 +388,14 @@ public final class Quasardb {
     }
     
     /**
-     * Utility method to apply write operations in the current qdb instance.<br>
-     * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a qdb instance.
+     * Utility method to apply "write operations" in the current Quasar DB instance.<br>
+     * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a Quasar DB instance.
      * 
      * @param alias alias under the object <i>value</i> will be stored.
      * @param value object to serialize and store into the qdb instance.
      * @param operation to apply on the two first parameters.
      * @return the buffer containing the serialized form of the <i>value</i> object.
-     * @throws QuasardbException if parameters are wrong or if the provided value cannot be serialized.
+     * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized.
      */
     private final <V> V writeOperation(final String alias, final V value, final int operation) throws QuasardbException {
         this.checkSession();
@@ -486,25 +474,29 @@ public final class Quasardb {
     /***********************/
     
     /**
-     * Get the current qdb instance configuration.
+     * Get the current Quasar DB instance configuration.
      * 
-     * @return current qdb configuration
-     * @throws QuasardbException if the connection to the qdb instance cannot be closed
+     * @return Current Quasar DB configuration
+     * @throws QuasardbException if the connection to the Quasar DB instance cannot be closed
      */
     public final Map<String, String> getConfig() {
         return config;
     }
 
     /**
-     * Provided configuration properties in the qdb instance
+     * Provided configuration properties in the Quasar DB instance
      * 
-     * @param configuration properties
-     * @throws QuasardbException if the connection to the qdb instance cannot be closed
+     * @param Configuration properties
+     * @throws QuasardbException if the connection to the Quasar DB instance cannot be closed
      */
     public void setConfig(final Map<String, String> config) {
         this.config = config;
     }
     
+    
+    /**************/
+    /** override **/
+    /**************/
     
     @Override
     public String toString() {

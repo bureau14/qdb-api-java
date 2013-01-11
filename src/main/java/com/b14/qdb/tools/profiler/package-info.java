@@ -27,8 +27,10 @@
  */
 
 /**
- * This package help to profil java objects in order to evaluate their size in octets.
+ * This package help to profiling java objects.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  */
 package com.b14.qdb.tools.profiler;

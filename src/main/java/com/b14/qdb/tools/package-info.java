@@ -27,8 +27,10 @@
  */
 
 /**
- * This package contains utility classes like helpers and pools.
+ * This package contains utility classes like memory helper and locks manager.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
+ * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
+ * @version Quasar DB 0.7.2
+ * @since Quasar DB 0.5.2
  */
 package com.b14.qdb.tools;
