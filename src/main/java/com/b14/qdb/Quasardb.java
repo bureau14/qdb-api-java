@@ -53,9 +53,6 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  *     <li><u>close :</u> close the connection.</li>
  * </ul>
  *
- * This class is <strong>not thread-safe</strong>.<br>
- * <br>
- *
  * <p>
  * <u>Usage example :</u>
  * <p>
