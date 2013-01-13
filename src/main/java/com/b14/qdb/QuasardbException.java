@@ -3,7 +3,7 @@ package com.b14.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 
 /**
- * This class handles all qdb exceptions.<br>
+ * quasardb exceptions.<br>
  * 
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
  * @version qdb 0.7.0
@@ -25,7 +25,7 @@ public class QuasardbException extends Exception {
     }
 
     /**
-     * Provide a way to custom Quasardb message exception
+     * Custom Quasardb message exception
      * @param message the specific message related to the exception
      */
     protected QuasardbException(final String message) {
@@ -34,7 +34,7 @@ public class QuasardbException extends Exception {
     }
 
     /**
-     * Build a QuasardbException using an already throwed exception
+     * Build a QuasardbException using a thrown exception
      * @param cause the exception to handle
      */
     protected QuasardbException(final Throwable cause) {
@@ -42,7 +42,7 @@ public class QuasardbException extends Exception {
     }
 
     /**
-     * Build a QuasardbException with an already throwed exception and a custom message
+     * Build a QuasardbException from a thrown exception and a custom message
      * @param message the custom message of exception
      * @param cause the exception to handle
      */
