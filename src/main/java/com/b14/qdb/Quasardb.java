@@ -60,26 +60,26 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * <u>Usage example :</u>
  * <p>
  * <pre>
- *       // First : create a map config.
+ *       // First : create a configuration map.
  *       Map<String,String> config = new HashMap<String,String>();
- *       config.put("name", "qdb name");
- *       config.put("host", "qdb host");
- *       config.put("port", "qdb port");
+ *       config.put("name", "quasardb name");
+ *       config.put("host", "quasardb host");
+ *       config.put("port", "quasardb port");
  *
- *       // Second : create the related qdb instance.
+ *       // Second : create a related quasardb instance.
  *       Quasardb qdb = new Quasardb(config);
  *       // Or you can supply the configuration later :
  *       //   Quasardb qdb = new Quasardb();
  *       //   qdb.setConfig(config);
  *
- *       // Third : connect to qdb instance.
+ *       // Third : connect to quasardb cluster.
  *       qdb.connect();
  *
- *       // Fourth : use the qdb instance :
+ *       // Fourth : use the quasardb instance :
  *       qdb.put("foo", new String("bar"));
  *       System.out.println("  => key 'foo' contains : " + qdb.get("foo"));
  *       
- *       // Fifth : disconnect the current Quasar DB instance after using
+ *       // Fifth : disconnect from the quasardb cluster
  *       // Notice that this step is optional
  *       qdb.close();
  * </pre>
@@ -142,13 +142,13 @@ public final class Quasardb {
      * <u>Example :</u>
      * <p>
      * <pre>
-     *         // First : create a map config.
+     *         // First : create a configuration map.
      *         Map<String,String> config = new HashMap<String,String>();
      *      config.put("name", "quasardb name");
      *      config.put("host", "quasardb host");
      *      config.put("port", "quasardb port");
      *
-     *      // Second : create the related quasardb instance.
+     *      // Second : create a related quasardb instance.
      *      Quasardb myQuasardbInstance = new Quasardb(config);
      *     </pre>
      * </p>
@@ -492,7 +492,7 @@ public final class Quasardb {
     /***********************/
 
     /**
-     * Get the current quasardb instance configuration.
+     * Get the current instance configuration.
      *
      * @return current quasardb configuration
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
@@ -502,7 +502,7 @@ public final class Quasardb {
     }
 
     /**
-     * Provided configuration properties in the quasardb instance
+     * Updates the configuration properties
      *
      * @param configuration properties
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
