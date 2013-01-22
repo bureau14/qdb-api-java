@@ -287,11 +287,11 @@ public final class Quasardb {
     }
 
     /**
-     * Update an existing entry.<br>
+     * Update an existing entry or create a new one.<br>
      *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
-     * @throws QuasardbException if an error occurs or the entry does not exist.
+     * @throws QuasardbException if an error occurs.
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
         this.writeOperation(alias, value, UPDATE);
