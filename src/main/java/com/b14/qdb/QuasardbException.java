@@ -1,12 +1,16 @@
 package com.b14.qdb;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 
 /**
  * quasardb exceptions.<br>
  * 
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version Quasar DB 0.7.2
+ * @version Quasar DB 0.7.3
  * @since Quasar DB 0.5.2
  */
 public class QuasardbException extends Exception {
@@ -56,74 +60,12 @@ public class QuasardbException extends Exception {
      * @param jniError the JNI error to handle
      * @param params <i>(optional)</i> additionnal params to custom exception
      */
-    protected QuasardbException(final qdb_error_t jniError, final Object... params) {
+    protected QuasardbException(final qdb_error_t jniError) {
         super();
-
-        this.message = "Unknown error";
-
-        if (jniError == qdb_error_t.error_alias_already_exists) {
-            this.message = "The alias is already mapped.";
-        }
-        if (jniError == qdb_error_t.error_alias_not_found) {
-            this.message = "The provided alias does not exist.";
-        }
-        if (jniError == qdb_error_t.error_alias_too_long) {
-            this.message = "The provided alias is too long.";
-        }
-        if (jniError == qdb_error_t.error_buffer_too_small) {
-            this.message = "The buffer is too small to handle value data. Size must be more than " + ((int[]) params[0])[0];
-        }
-        if (jniError == qdb_error_t.error_host_not_found) {
-            this.message = "Host not found.";
-        }
-        if (jniError == qdb_error_t.error_internal) {
-            this.message = "Quasardb internal error.";
-        }
-        if (jniError == qdb_error_t.error_invalid_command) {
-            this.message = "Invalid command.";
-        }
-        if (jniError == qdb_error_t.error_invalid_input) {
-            this.message = "Invalid input.";
-        }
-        if (jniError == qdb_error_t.error_invalid_protocol) {
-            this.message = "Invalid protocol.";
-        }
-        if (jniError == qdb_error_t.error_no_memory) {
-            this.message = "Out of memory.";
-        }
-        if (jniError == qdb_error_t.error_system) {
-            this.message = "Quasardb system error.";
-        }
-        if (jniError == qdb_error_t.error_timeout) {
-            this.message = "The operation timed out.";
-        }
-        if (jniError == qdb_error_t.error_connection_refused) {
-            this.message = "Connection refused.";
-        }
-        if (jniError == qdb_error_t.error_connection_reset) {
-            this.message = "Connection reset by peer.";
-        }
-        if (jniError == qdb_error_t.error_unexpected_reply) {
-            this.message = "Unexpected reply.";
-        }
-        if (jniError == qdb_error_t.error_not_implemented) {
-            this.message = "Not implemented.";
-        }
-        if (jniError == qdb_error_t.error_unstable_hive) {
-            this.message = "Unstable hive.";
-        }
-        if (jniError == qdb_error_t.error_protocol_error) {
-            this.message = "Protocol error.";
-        }
-        if (jniError == qdb_error_t.error_outdated_topology) {
-            this.message = "Outdated topology.";
-        }
-        if (jniError == qdb_error_t.error_wrong_peer) {
-            this.message = "Wrong peer";
-        }
-        if (jniError == qdb_error_t.error_invalid_version) {
-            this.message = "Invalid version";
-        }
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1024).order(ByteOrder.nativeOrder());
+        qdb.error_jni(jniError, buffer);
+        buffer.rewind();
+        this.message = new String(buffer.array());
     }
 
     @Override

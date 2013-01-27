@@ -13,6 +13,7 @@ import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
+import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.tools.LibraryHelper;
@@ -83,7 +84,7 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * </p>
  *
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version Quasar DB 0.7.2
+ * @version Quasar DB 0.7.3
  * @since Quasar DB 0.5.2
  */
 @SuppressWarnings("restriction")
@@ -102,7 +103,6 @@ public final class Quasardb {
     // Quasardb CONSTANTS
     private static final String NO_CONFIG_PROVIDED = "No config provided. Please call setConfig().";
     private static final String WRONG_CONFIG_PROVIDED = "Wrong config provided. Please check it.";
-    private static final String NOT_YET_IMPLEMENTED = "No yet implemented";
     private static final String SESSION_CLOSED = "Session was closed by peer.";
     private static final String NULL_VALUE = "Value is null. This is not allowed.";
     private static final String BAD_SIZE = "Object size is invalid.";
@@ -255,12 +255,13 @@ public final class Quasardb {
         this.checkAlias(alias);
 
         V result = null;
-
-        ByteBuffer buffer = qdb.get_buffer(session, alias);
+        error_carrier error = new error_carrier();
+        
+        ByteBuffer buffer = qdb.get_buffer(session, alias, error);
         if (buffer != null) {
             buffer.rewind();
         } else {
-            throw new QuasardbException(WRONG_CONFIG_PROVIDED);
+            throw new QuasardbException(error.getError());
         }
 
         try {
@@ -283,7 +284,7 @@ public final class Quasardb {
      * @throws QuasardbException if an error occurs or the entry already exists.
      */
     public <V> void put(final String alias, final V value) throws QuasardbException {
-        this.writeOperation(alias, value, PUT);
+        this.writeOperation(alias, value, null, PUT);
     }
 
     /**
@@ -294,27 +295,32 @@ public final class Quasardb {
      * @throws QuasardbException if an error occurs.
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
-        this.writeOperation(alias, value, UPDATE);
+        this.writeOperation(alias, value, null, UPDATE);
     }
 
     /**
-     * This function is not yet implemented
+     * Update an existing alias with data and return its previous value
      *
-     * @since 0.7.0
-     * @deprecated
+     * @param alias a key to uniquely identify the entry within the cluster
+     * @param value the new object to associate to the key
+     * @return the previous value associated to the key
+     * @since 0.7.3
      */
     public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
-        return this.writeOperation(alias, value, GETANDUPDATE);
+        return this.writeOperation(alias, value, null, GETANDUPDATE);
     }
 
     /**
-     * This function is not yet implemented
+     * Compares an existing alias with comparand, updates it to new if they match and return the original value
      *
-     * @since 0.7.0
-     * @deprecated
+     * @param alias a key to uniquely identify the entry within the cluster
+     * @param value the new object to associate to the key
+     * @param comparand the object to compare with original value associated to the key
+     * @return the original value associated to the key
+     * @since 0.7.3
      */
-    public <V> V compareAndSwap(final String alias, final V value) throws QuasardbException {
-        return this.writeOperation(alias, value, CAS);
+    public <V> V compareAndSwap(final String alias, final V value, final V comparand) throws QuasardbException {
+        return this.writeOperation(alias, value, null, CAS);
     }
 
     /**
@@ -412,10 +418,13 @@ public final class Quasardb {
      * @return the buffer containing the serialized form of the <i>value</i> object.
      * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized.
      */
-    private final <V> V writeOperation(final String alias, final V value, final int operation) throws QuasardbException {
+    @SuppressWarnings("unchecked")
+	private final <V> V writeOperation(final String alias, final V value, final V other, final int operation) throws QuasardbException {
         this.checkSession();
         this.checkAlias(alias);
 
+        V result = null;
+        
         // Testing parameters :
         //  -> A null value is forbidden
         if (value == null) {
@@ -441,12 +450,13 @@ public final class Quasardb {
 
         try {
             Output output = new Output(bufferSize);
-            //this.getSerializer().writeClassAndObject(output, value);
             serializer.writeClassAndObject(output, value);
             buffer.put(output.getBuffer());
 
             // Put or update value into QuasarDB
             qdb_error_t qdbError = null;
+            ByteBuffer bufferResult = null;
+            error_carrier error = new error_carrier();
             switch (operation) {
                 case PUT :
                     qdbError = qdb.put(session, alias, buffer, buffer.limit());
@@ -455,9 +465,19 @@ public final class Quasardb {
                     qdbError = qdb.update(session, alias, buffer, buffer.limit());
                     break;
                 case CAS :
-                    throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+                	if (other == null) {
+                		throw new QuasardbException(NULL_VALUE);
+                	}
+                	if (!(value instanceof String) || !(other instanceof String)) {
+                		throw new QuasardbException("Compare and Swap are only on String objects");
+                	}
+                	bufferResult = qdb.compare_and_swap(session, alias, (String) value, ((String) value).length(), (String) other, ((String) other).length(), error);
+                	qdbError = error.getError();
+                	break;
                 case GETANDUPDATE :
-                    throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+                	bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), error);
+                	qdbError = error.getError();
+                	break;
                 default :
                     break;
             }
@@ -467,7 +487,20 @@ public final class Quasardb {
                 throw new QuasardbException(qdbError);
             }
 
-            return null;
+            // Handle eventually results
+            if (bufferResult != null) {
+        		bufferResult.rewind();
+        		try {
+                    result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(bufferResult)));
+                } catch (SerializationException e) {
+                    throw new QuasardbException(e.getMessage(), e);
+                } finally {
+                    qdb.free_buffer(session, bufferResult);
+                    bufferResult = null;
+                }
+            }
+            
+            return result;
         } catch (SerializationException e) {
             throw new QuasardbException(BAD_SERIALIZATION, e);
         } finally {
