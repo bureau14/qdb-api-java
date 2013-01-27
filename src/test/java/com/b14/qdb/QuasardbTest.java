@@ -302,7 +302,7 @@ public class QuasardbTest {
      */
     @Test
     public void testRemoveAll() throws QuasardbException {
-    	// Test : nominal case - add 4 objects and remove them all
+        // Test : nominal case - add 4 objects and remove them all
         String test = "Voici un super test";
         qdbInstance.put("test_del_1", test);
         qdbInstance.put("test_del_2", test);

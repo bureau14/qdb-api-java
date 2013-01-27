@@ -419,7 +419,7 @@ public final class Quasardb {
      * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized.
      */
     @SuppressWarnings("unchecked")
-	private final <V> V writeOperation(final String alias, final V value, final V other, final int operation) throws QuasardbException {
+    private final <V> V writeOperation(final String alias, final V value, final V other, final int operation) throws QuasardbException {
         this.checkSession();
         this.checkAlias(alias);
 
@@ -465,19 +465,19 @@ public final class Quasardb {
                     qdbError = qdb.update(session, alias, buffer, buffer.limit());
                     break;
                 case CAS :
-                	if (other == null) {
-                		throw new QuasardbException(NULL_VALUE);
-                	}
-                	if (!(value instanceof String) || !(other instanceof String)) {
-                		throw new QuasardbException("Compare and Swap are only on String objects");
-                	}
-                	bufferResult = qdb.compare_and_swap(session, alias, (String) value, ((String) value).length(), (String) other, ((String) other).length(), error);
-                	qdbError = error.getError();
-                	break;
+                    if (other == null) {
+                        throw new QuasardbException(NULL_VALUE);
+                    }
+                    if (!(value instanceof String) || !(other instanceof String)) {
+                        throw new QuasardbException("Compare and Swap are only on String objects");
+                    }
+                    bufferResult = qdb.compare_and_swap(session, alias, (String) value, ((String) value).length(), (String) other, ((String) other).length(), error);
+                    qdbError = error.getError();
+                    break;
                 case GETANDUPDATE :
-                	bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), error);
-                	qdbError = error.getError();
-                	break;
+                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), error);
+                    qdbError = error.getError();
+                    break;
                 default :
                     break;
             }
@@ -489,8 +489,8 @@ public final class Quasardb {
 
             // Handle eventually results
             if (bufferResult != null) {
-        		bufferResult.rewind();
-        		try {
+                bufferResult.rewind();
+                try {
                     result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(bufferResult)));
                 } catch (SerializationException e) {
                     throw new QuasardbException(e.getMessage(), e);
