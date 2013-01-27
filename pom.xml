@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>0.7.2</version>
+	<version>0.7.3</version>
 	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
@@ -68,7 +68,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<powermock.version>1.4.12</powermock.version>
 		<cglib.version>2.2.2</cglib.version>
-		<kryo.version>2.19</kryo.version>
+		<kryo.version>2.20</kryo.version>
 		<kryo.serializers.version>0.10</kryo.serializers.version>
 		<junit.version>4.8.2</junit.version>
 		<contiperf.version>1.07</contiperf.version>

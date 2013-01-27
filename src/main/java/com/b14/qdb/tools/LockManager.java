@@ -38,7 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @deprecated
  * @param <K> the type of the object to be locked
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version Quasar DB 0.7.2
+ * @version Quasar DB 0.7.3
  * @since Quasar DB 0.6.0
  */
 public class LockManager<K> {
