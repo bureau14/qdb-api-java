@@ -28,6 +28,7 @@
 
 package com.b14.qdb;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -235,7 +236,9 @@ public class QuasardbTest {
         
         // Test 2 : nominal case
         Pojo pojo = new Pojo();
+        pojo.setText("test1");
         Pojo pojo2 = new Pojo();
+        pojo2.setText("test2");
         qdbInstance.put("test_nominal", pojo);
         Pojo pojoresult = qdbInstance.getAndReplace("test_nominal", pojo2);
         assertTrue(pojo.getText().equals(pojoresult.getText()));
@@ -245,6 +248,80 @@ public class QuasardbTest {
         // Test 3 : wrong alias
         try {
             qdbInstance.getAndReplace("alias_doesnt_exist", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Cleanup
+        qdbInstance.remove("test_nominal");
+    }
+    
+    /**
+     * Test of get method, of class Quasardb.
+     * @throws QuasardbException 
+     */
+    @Test
+    public void testCompareAndSwap() throws QuasardbException {
+        // Test 1.1 : test wrong parameter
+        try {
+            qdbInstance.compareAndSwap(null, "test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.2 : test wrong parameter
+        try {
+            qdbInstance.compareAndSwap("test1", null, "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.3 : test wrong parameter
+        try {
+            qdbInstance.compareAndSwap("test", "test", null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.4 : test wrong parameter
+        try {
+            qdbInstance.compareAndSwap("", "test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2.1 : nominal case -> swap case
+        Pojo pojo = new Pojo();
+        pojo.setText("test1");
+        Pojo pojo2 = new Pojo();
+        pojo2.setText("test2");
+        qdbInstance.put("test_nominal", pojo);
+        Pojo pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo);
+        assertTrue(pojo.getText().equals(pojoresult.getText()));
+        Pojo pojoGet = qdbInstance.get("test_nominal");
+        assertTrue(pojo2.getText().equals(pojoGet.getText()));
+        assertFalse(pojo.getText().equals(pojoGet.getText()));
+        qdbInstance.remove("test_nominal");
+        pojoresult = null;
+        pojoGet = null;
+        
+        // Test 2.2 : nominal case -> no swap case
+        qdbInstance.put("test_nominal", pojo);
+        Pojo pojo3 = new Pojo();
+        pojo3.setText("test3");
+        pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo3);
+        assertFalse(pojo.getText().equals(pojoresult.getText()));
+        pojoGet = qdbInstance.get("test_nominal");
+        assertTrue(pojo.getText().equals(pojoGet.getText()));
+        
+        // Test 3 : wrong alias
+        try {
+            qdbInstance.compareAndSwap("alias_doesnt_exist", "test","test");
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);

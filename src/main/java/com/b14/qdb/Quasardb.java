@@ -251,26 +251,37 @@ public final class Quasardb {
      */
     @SuppressWarnings("unchecked")
     public <V> V get(final String alias) throws QuasardbException {
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
+        // Init
         V result = null;
         error_carrier error = new error_carrier();
         
+        // Get value associated with alias
         ByteBuffer buffer = qdb.get_buffer(session, alias, error);
+        
+        // Prepare ByteBuffer
         if (buffer != null) {
             buffer.rewind();
-        } else {
+        }
+        
+        // Handle errors
+        if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
         }
 
+        // De-serialize
         try {
             result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
         } catch (SerializationException e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
+            // Free ressources
             qdb.free_buffer(session, buffer);
             buffer = null;
+            error = null;
         }
 
         return result;
@@ -330,6 +341,7 @@ public final class Quasardb {
      * @throws QuasardbException if the connection with the current instance fail.
      */
     public void remove(final String alias) throws QuasardbException {
+        // Check params
         this.checkSession();
         this.checkAlias(alias);
 
@@ -348,6 +360,7 @@ public final class Quasardb {
      * @throws QuasardbException if the connection with the current instance fail.
      */
     public void removeAll() throws QuasardbException {
+        // Checks params
         this.checkSession();
 
          // Delete the entry on Quasardb instance
@@ -365,6 +378,7 @@ public final class Quasardb {
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      */
     public void close() throws QuasardbException {
+        // Check params
         this.checkSession();
 
         // Try to close qdb session
@@ -420,9 +434,11 @@ public final class Quasardb {
      */
     @SuppressWarnings("unchecked")
     private final <V> V writeOperation(final String alias, final V value, final V other, final int operation) throws QuasardbException {
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
+        // Init
         V result = null;
         
         // Testing parameters :
@@ -467,12 +483,23 @@ public final class Quasardb {
                 case CAS :
                     if (other == null) {
                         throw new QuasardbException(NULL_VALUE);
+                    } else {
+                        int otherSize = BUFFER_SIZE;
+                        try {
+                            otherSize = ObjectProfiler.sizeof(other);
+                            if (otherSize == 0) {
+                                otherSize = BUFFER_SIZE;
+                            }
+                        } catch (Exception e) {
+                            throw new QuasardbException(BAD_SIZE, e);
+                        }
+                        ByteBuffer otherBuffer = ByteBuffer.allocateDirect(otherSize).order(ByteOrder.nativeOrder());
+                        Output otherOutput = new Output(otherSize);
+                        serializer.writeClassAndObject(otherOutput, other);
+                        otherBuffer.put(otherOutput.getBuffer());
+                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), error);
+                        qdbError = error.getError();
                     }
-                    if (!(value instanceof String) || !(other instanceof String)) {
-                        throw new QuasardbException("Compare and Swap are only on String objects");
-                    }
-                    bufferResult = qdb.compare_and_swap(session, alias, (String) value, ((String) value).length(), (String) other, ((String) other).length(), error);
-                    qdbError = error.getError();
                     break;
                 case GETANDUPDATE :
                     bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), error);
