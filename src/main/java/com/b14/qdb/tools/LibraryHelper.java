@@ -108,32 +108,34 @@ public class LibraryHelper {
         
         // Sort libraries loading order
         String[] files = dir.list();
-        Arrays.sort(files, new Comparator<String>() {
-            public int compare(String obj1, String obj2) {
-                int i = 0, iObj1 = 0, iObj2 = 0;
-                for (String lib : LIBS) {
-                    i++;
-                    if (obj1.contains(lib)) {
-                        iObj1 = i;
-                        continue;
+        if (files != null) {
+            Arrays.sort(files, new Comparator<String>() {
+                public int compare(String obj1, String obj2) {
+                    int i = 0, iObj1 = 0, iObj2 = 0;
+                    for (String lib : LIBS) {
+                        i++;
+                        if (obj1.contains(lib)) {
+                            iObj1 = i;
+                            continue;
+                        }
+                        if (obj2.contains(lib)) {
+                            iObj2 = i;
+                            continue;
+                        }
                     }
-                    if (obj2.contains(lib)) {
-                        iObj2 = i;
-                        continue;
-                    }
+                    if (iObj1 > iObj2) return +1;
+                    if (iObj1 < iObj2) return -1;
+                    return 0;
                 }
-                if (iObj1 > iObj2) return +1;
-                if (iObj1 < iObj2) return -1;
-                return 0;
+            });       
+            
+            // Load library and check if not already loaded -> cause a jvm crash with sun jvm
+            for (String file : files) {
+                if (LOADED_LIBS.get(file) == null) {
+                    LOADED_LIBS.put(file, Boolean.TRUE);
+                    loadLib(file);
+                }   
             }
-        });
-        
-        // Load library and check if not already loaded -> cause a jvm crash with sun jvm
-        for (String file : files) {
-            if (LOADED_LIBS.get(file) == null) {
-                LOADED_LIBS.put(file, Boolean.TRUE);
-                loadLib(file);
-            }   
         }
         
         // Cleanup temp files on exit
