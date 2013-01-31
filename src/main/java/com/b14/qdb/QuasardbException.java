@@ -5,6 +5,9 @@ import java.nio.ByteOrder;
 
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.ByteBufferInputStream;
+import com.esotericsoftware.kryo.io.Input;
 
 /**
  * quasardb exceptions.<br>
@@ -20,6 +23,9 @@ public class QuasardbException extends Exception {
 
     // The exception message
     private transient String message;
+    
+    // Deserializer for
+    private final Kryo serializer = new Kryo();
 
     /**
      * Default constructor
@@ -61,11 +67,13 @@ public class QuasardbException extends Exception {
      * @param params <i>(optional)</i> additionnal params to custom exception
      */
     protected QuasardbException(final qdb_error_t jniError) {
-        super();
+        super();        
         ByteBuffer buffer = ByteBuffer.allocateDirect(1024).order(ByteOrder.nativeOrder());
         qdb.error_jni(jniError, buffer);
-        buffer.rewind();
-        this.message = new String(buffer.array());
+        if (buffer != null) {
+            buffer.rewind();
+        }
+        this.message = serializer.readObject(new Input(new ByteBufferInputStream(buffer)), String.class);
     }
 
     @Override

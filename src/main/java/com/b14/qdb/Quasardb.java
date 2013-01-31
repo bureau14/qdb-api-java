@@ -331,7 +331,7 @@ public final class Quasardb {
      * @since 0.7.3
      */
     public <V> V compareAndSwap(final String alias, final V value, final V comparand) throws QuasardbException {
-        return this.writeOperation(alias, value, null, CAS);
+        return this.writeOperation(alias, value, comparand, CAS);
     }
 
     /**

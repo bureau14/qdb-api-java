@@ -315,7 +315,7 @@ public class QuasardbTest {
         Pojo pojo3 = new Pojo();
         pojo3.setText("test3");
         pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo3);
-        assertFalse(pojo.getText().equals(pojoresult.getText()));
+        assertFalse(pojo3.getText().equals(pojoresult.getText()));
         pojoGet = qdbInstance.get("test_nominal");
         assertTrue(pojo.getText().equals(pojoGet.getText()));
         
