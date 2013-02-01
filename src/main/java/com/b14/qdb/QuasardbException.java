@@ -1,13 +1,7 @@
 package com.b14.qdb;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.ByteBufferInputStream;
-import com.esotericsoftware.kryo.io.Input;
 
 /**
  * quasardb exceptions.<br>
@@ -23,9 +17,6 @@ public class QuasardbException extends Exception {
 
     // The exception message
     private transient String message;
-    
-    // Deserializer for
-    private final Kryo serializer = new Kryo();
 
     /**
      * Default constructor
@@ -64,16 +55,10 @@ public class QuasardbException extends Exception {
     /**
      * Handle all JNI errors by providing a custom QuasardbException
      * @param jniError the JNI error to handle
-     * @param params <i>(optional)</i> additionnal params to custom exception
      */
     protected QuasardbException(final qdb_error_t jniError) {
-        super();        
-        ByteBuffer buffer = ByteBuffer.allocateDirect(1024).order(ByteOrder.nativeOrder());
-        qdb.error_jni(jniError, buffer);
-        if (buffer != null) {
-            buffer.rewind();
-        }
-        this.message = serializer.readObject(new Input(new ByteBufferInputStream(buffer)), String.class);
+        super();
+        this.message = qdb.make_error_string(jniError);;
     }
 
     @Override
