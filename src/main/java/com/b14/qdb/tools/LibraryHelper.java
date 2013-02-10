@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2009-2011, Bureau 14 SARL
+ * Copyright (c) 2009-2013, Bureau 14 SARL
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,9 +10,9 @@
  *    * Redistributions in binary form must reproduce the above copyright
  *      notice, this list of conditions and the following disclaimer in the
  *      documentation and/or other materials provided with the distribution.
- *    * Neither the name of the University of California, Berkeley nor the
- *      names of its contributors may be used to endorse or promote products
- *      derived from this software without specific prior written permission.
+ *    * Neither the name of Bureau 14 nor the names of its contributors may
+ *      be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY BUREAU 14 AND CONTRIBUTORS ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -53,11 +53,11 @@ import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
 
 /**
- * Utility class : load Quasar DB natives libraries
+ * Utility class : load quasardb natives libraries
  * 
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version Quasar DB 0.7.3
- * @since Quasar DB 0.5.2
+ * @version quasardb 0.7.3
+ * @since quasardb 0.5.2
  */
 public class LibraryHelper {
     private static final boolean DEBUG = false;

@@ -1,3 +1,32 @@
+
+/**
+ * Copyright (c) 2009-2013, Bureau 14 SARL
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *    * Redistributions in binary form must reproduce the above copyright
+ *      notice, this list of conditions and the following disclaimer in the
+ *      documentation and/or other materials provided with the distribution.
+ *    * Neither the name of Bureau 14 nor the names of its contributors may
+ *      be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY BUREAU 14 AND CONTRIBUTORS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.b14.qdb;
 
 import java.lang.reflect.InvocationHandler;
@@ -46,12 +75,14 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * The following operations are offered:
  *
  * <ul>
- *     <li><u>get :</u> get an entry.</li>
- *     <li><u>put :</u> create an entry.</li>
- *     <li><u>update :</u> update the value of an existing entry.</li>
- *     <li><u>remove :</u> delete an entry.</li>
- *     <li><u>removeall :</u> delete all entries. Use with caution.</li>
- *     <li><u>close :</u> close the connection.</li>
+ *     <li><u>get:</u> get an entry.</li>
+ *     <li><u>put:</u> create an entry.</li>
+ *     <li><u>update:</u> update the value of an existing entry.</li>
+ *     <li><u>getAndReplace:</u> atomically update the value of an existing entry and return the old value.</li>
+ *     <li><u>compareAndSwap:</u> atomically compare a value with comparand and update if it matches. Always return the old value.</li>
+ *     <li><u>remove:</u> delete an entry.</li>
+ *     <li><u>removeall:</u> delete all entries. Use with caution.</li>
+ *     <li><u>close:</u> close the connection.</li>
  * </ul>
  *
  * <p>
@@ -84,8 +115,8 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * </p>
  *
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version Quasar DB 0.7.3
- * @since Quasar DB 0.5.2
+ * @version quasardb 0.7.3
+ * @since quasardb 0.5.2
  */
 @SuppressWarnings("restriction")
 public final class Quasardb {
@@ -322,7 +353,7 @@ public final class Quasardb {
     }
 
     /**
-     * Compares an existing alias with comparand, updates it to new if they match and return the original value
+     * Compare an existing alias with comparand, updates it to new if they match and return the original value
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
@@ -412,7 +443,7 @@ public final class Quasardb {
     /**
      * Check if the provided alias is valid
      * @param alias to store object
-     * @throws QuasardbException if the connection to the Quasar DB instance cannot be closed
+     * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      */
     private final void checkAlias(final String alias) throws QuasardbException {
          // Testing parameters
