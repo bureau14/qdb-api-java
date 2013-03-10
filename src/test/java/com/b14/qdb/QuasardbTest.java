@@ -43,6 +43,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.b14.qdb.data.Pojo;
+import com.b14.qdb.entities.NodeConfig;
+import com.b14.qdb.entities.NodeStatus;
+import com.b14.qdb.entities.NodeTopology;
 
 public class QuasardbTest {
     public static final String HOST = "127.0.0.1";
@@ -487,4 +490,40 @@ public class QuasardbTest {
         QuasardbException exception = new QuasardbException();
         assertNull("Exception must be null", exception.getMessage());
     }  
+    
+    @Test
+    public void testGetNodeConfig() throws QuasardbException {
+        try {
+            NodeConfig test = null;
+            test = qdbInstance.getNodeConfig();
+            assertFalse(test == null);
+            assertTrue(test.getLocal().getNetwork().getListen_on().equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
+    
+    @Test
+    public void testGetNodeStatus() throws QuasardbException {
+        try {
+            NodeStatus test = null;
+            test = qdbInstance.getNodeStatus();
+            assertFalse(test == null);
+            assertTrue(test.getListening_addresses()[0].equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
+    
+    @Test
+    public void testGetNodeTopology() throws QuasardbException {
+        try {
+            NodeTopology test = null;
+            test = qdbInstance.getNodeTopology();
+            assertFalse(test == null);
+            assertTrue(test.getCenter().getEndpoint().equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
 }

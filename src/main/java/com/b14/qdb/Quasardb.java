@@ -32,6 +32,9 @@ package com.b14.qdb;
 import java.lang.reflect.InvocationHandler;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
@@ -41,18 +44,25 @@ import java.util.Map;
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
+import com.b14.qdb.entities.NodeConfig;
+import com.b14.qdb.entities.NodeStatus;
+import com.b14.qdb.entities.NodeTopology;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
+import com.b14.qdb.jni.qdb_remote_node_t;
 import com.b14.qdb.tools.LibraryHelper;
 import com.b14.qdb.tools.profiler.ObjectProfiler;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.SerializationException;
 import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
+
+import com.owlike.genson.Genson;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 import de.javakaffee.kryoserializers.ClassSerializer;
@@ -115,7 +125,7 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * </p>
  *
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 0.7.3
+ * @version quasardb 0.7.4
  * @since quasardb 0.5.2
  */
 @SuppressWarnings("restriction")
@@ -144,9 +154,16 @@ public final class Quasardb {
     private static final int UPDATE = 2;
     private static final int CAS = 3;
     private static final int GETANDUPDATE = 4;
+    
+    // ByteBuffer to String
+    private static final Charset charset = Charset.forName("UTF-8");
+    private static final CharsetDecoder decoder = charset.newDecoder();
 
     // Serializer initialisation
     private final Kryo serializer = new Kryo();
+    
+    // JSON Deserializer
+    private final Genson genson = new Genson();
 
     // Keep qdb session reference
     private transient SWIGTYPE_p_qdb_session session;
@@ -273,6 +290,108 @@ public final class Quasardb {
         return qdb.build();
     }
 
+    /**
+     * Retrieve the status of the current quasardb instance.
+     *
+     * @since 0.7.4
+     * @return status of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeStatus getNodeStatus() throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo("status"), NodeStatus.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Retrieve the configuration of the current quasardb instance.
+     *
+     * @since 0.7.4
+     * @return configuration of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeConfig getNodeConfig() throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo("config"), NodeConfig.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Retrieve the topology of the current quasardb instance.
+     *
+     * @since 0.7.4
+     * @return topology of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeTopology getNodeTopology() throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo("topology"), NodeTopology.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Stop a specific node with a given reason.
+     * 
+     * @since 0.7.4
+     * @param the host of the quasardb node you want to stop - can be a IP address or a hostname.
+     * @param the port of the quasardb node you want to stop.
+     * @param the reason to stop the selected node.
+     */
+    public void stopNode(final String node, final int port, final String reason) throws QuasardbException {
+        qdb_error_t qdbError = null;
+        final qdb_remote_node_t remote_node = new qdb_remote_node_t();
+        remote_node.setAddress(node);
+        remote_node.setPort(port);
+        qdbError = qdb.stop_node(session, remote_node, reason);
+        
+        // Handle errors
+        if (qdbError != qdb_error_t.error_ok) {
+            throw new QuasardbException(qdbError);
+        }
+    }
+    
+    /**
+     * Utility method to retrieve information operations on the current qdb instance.<br>
+     *
+     * @param information operation to apply on the current node.
+     * @return the information related to the information operation.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    private String getNodeInfo(final String operation) throws QuasardbException {
+        this.checkSession();
+        String result = "";
+        final qdb_remote_node_t remote_node = new qdb_remote_node_t();
+        remote_node.setAddress(config.get("host"));
+        remote_node.setPort(Integer.parseInt(config.get("port")));
+        qdb.multi_connect(session,remote_node,1);
+        final error_carrier error = new error_carrier();
+        ByteBuffer buffer;
+        if (operation.equalsIgnoreCase("config")) {
+            buffer = qdb.node_config(session, remote_node, error);
+        } else if (operation.equalsIgnoreCase("topology")) {
+            buffer = qdb.node_topology(session, remote_node, error);
+        } else {
+            buffer = qdb.node_status(session, remote_node, error);
+        }
+        try {
+            if (buffer != null) { 
+                result = decoder.decode(buffer).toString();
+            } 
+        } catch (CharacterCodingException e) {
+            throw new QuasardbException(e.getMessage(), e);
+        } finally {
+            qdb.free_buffer(session, buffer);
+            buffer = null;
+        }
+        return result;
+    }
+    
     /**
      * Get the entry associated with the supplied unique key (<i>alias</i>).
      *

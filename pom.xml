@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>0.7.3</version>
+	<version>0.7.4</version>
 	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
@@ -89,6 +89,11 @@
 			<name>repository.sonatype.org Repository</name>
 			<url>https://repository.sonatype.org/</url>
 		</repository>
+		<repository>
+            <id>cloudbees-snapshots</id>
+            <name>cloudbees-snapshots</name>
+            <url>https://repository-jsr107.forge.cloudbees.com/snapshot</url>
+        </repository>
 	</repositories>
 
 	<dependencies>
@@ -121,7 +126,25 @@
 			<artifactId>kryo-serializers</artifactId>
 			<version>${kryo.serializers.version}</version>
 		</dependency>
+		
+		<!-- Add dependency to jsr107 - jcache -->
+		<!-- <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>1.0-SP4</version>
+        </dependency> -->
 
+		<dependency>
+		  <groupId>com.owlike</groupId>
+		  <artifactId>genson</artifactId>
+		  <version>0.94</version>
+		</dependency>
+		
 		<!-- Add dependency to the junit framework - Unit Testing tools -->
 		<dependency>
 			<groupId>junit</groupId>
