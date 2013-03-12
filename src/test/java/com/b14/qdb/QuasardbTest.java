@@ -492,10 +492,46 @@ public class QuasardbTest {
     }  
     
     @Test
+    public void testGetCurrentNodeConfig() throws QuasardbException {
+        try {
+            NodeConfig test = null;
+            test = qdbInstance.getCurrentNodeConfig();
+            assertFalse(test == null);
+            assertTrue(test.getLocal().getNetwork().getListen_on().equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
+    
+    @Test
+    public void testGetCurrentNodeStatus() throws QuasardbException {
+        try {
+            NodeStatus test = null;
+            test = qdbInstance.getCurrentNodeStatus();
+            assertFalse(test == null);
+            assertTrue(test.getListening_addresses()[0].equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
+    
+    @Test
+    public void testGetCurrentNodeTopology() throws QuasardbException {
+        try {
+            NodeTopology test = null;
+            test = qdbInstance.getCurrentNodeTopology();
+            assertFalse(test == null);
+            assertTrue(test.getCenter().getEndpoint().equalsIgnoreCase("127.0.0.1:2836"));
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    } 
+    
+    @Test
     public void testGetNodeConfig() throws QuasardbException {
         try {
             NodeConfig test = null;
-            test = qdbInstance.getNodeConfig();
+            test = qdbInstance.getNodeConfig("127.0.0.1", 2836);
             assertFalse(test == null);
             assertTrue(test.getLocal().getNetwork().getListen_on().equalsIgnoreCase("127.0.0.1:2836"));
         } catch (Exception e) {
@@ -507,7 +543,7 @@ public class QuasardbTest {
     public void testGetNodeStatus() throws QuasardbException {
         try {
             NodeStatus test = null;
-            test = qdbInstance.getNodeStatus();
+            test = qdbInstance.getNodeStatus("127.0.0.1", 2836);
             assertFalse(test == null);
             assertTrue(test.getListening_addresses()[0].equalsIgnoreCase("127.0.0.1:2836"));
         } catch (Exception e) {
@@ -519,7 +555,7 @@ public class QuasardbTest {
     public void testGetNodeTopology() throws QuasardbException {
         try {
             NodeTopology test = null;
-            test = qdbInstance.getNodeTopology();
+            test = qdbInstance.getNodeTopology("127.0.0.1", 2836);
             assertFalse(test == null);
             assertTrue(test.getCenter().getEndpoint().equalsIgnoreCase("127.0.0.1:2836"));
         } catch (Exception e) {

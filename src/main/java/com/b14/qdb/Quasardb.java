@@ -297,9 +297,26 @@ public final class Quasardb {
      * @return status of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeStatus getNodeStatus() throws QuasardbException {
+    public NodeStatus getCurrentNodeStatus() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo("status"), NodeStatus.class);
+            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "status"), NodeStatus.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Retrieve the status of the current quasardb instance.
+     *
+     * @since 0.7.4
+     * @param the host of the quasardb node you want to retrieve status
+     * @param th port of the quasardb node you want to retrieve status
+     * @return status of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeStatus getNodeStatus(final String node, final int port) throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo(node, port, "status"), NodeStatus.class);
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -312,9 +329,26 @@ public final class Quasardb {
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeConfig getNodeConfig() throws QuasardbException {
+    public NodeConfig getCurrentNodeConfig() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo("config"), NodeConfig.class);
+            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "config"), NodeConfig.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Retrieve the configuration of the specific quasardb instance.
+     *
+     * @since 0.7.4
+     * @param the host of the quasardb node you want to retrieve configuration
+     * @param the port of the quasardb node you want to retrieve configuration
+     * @return configuration of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeConfig getNodeConfig(final String node, final int port) throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo(node, port, "config"), NodeConfig.class);
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -327,11 +361,47 @@ public final class Quasardb {
      * @return topology of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeTopology getNodeTopology() throws QuasardbException {
+    public NodeTopology getCurrentNodeTopology() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo("topology"), NodeTopology.class);
+            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "topology"), NodeTopology.class);
         } catch (Exception e) {
             throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Retrieve the topology of the current quasardb instance.
+     *
+     * @since 0.7.4
+     * @param the host of the quasardb node you want to retrieve topology
+     * @param the port of the quasardb node you want to retrieve topology
+     * @return topology of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public NodeTopology getNodeTopology(final String node, final int port) throws QuasardbException {
+        try {
+            return genson.deserialize(this.getNodeInfo(node, port, "topology"), NodeTopology.class);
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    }
+    
+    /**
+     * Stop the current node with a given reason.
+     * 
+     * @since 0.7.4
+     * @param the reason to stop the selected node.
+     */
+    public void stopCurrentNode(final String reason) throws QuasardbException {
+        qdb_error_t qdbError = null;
+        final qdb_remote_node_t remote_node = new qdb_remote_node_t();
+        remote_node.setAddress(config.get("host"));
+        remote_node.setPort(Integer.parseInt(config.get("port")));
+        qdbError = qdb.stop_node(session, remote_node, reason);
+        
+        // Handle errors
+        if (qdbError != qdb_error_t.error_ok) {
+            throw new QuasardbException(qdbError);
         }
     }
     
@@ -359,17 +429,18 @@ public final class Quasardb {
     /**
      * Utility method to retrieve information operations on the current qdb instance.<br>
      *
+     * @since 0.7.4
      * @param information operation to apply on the current node.
      * @return the information related to the information operation.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    private String getNodeInfo(final String operation) throws QuasardbException {
+    private String getNodeInfo(final String node, final int port, final String operation) throws QuasardbException {
         this.checkSession();
         String result = "";
         final qdb_remote_node_t remote_node = new qdb_remote_node_t();
         remote_node.setAddress(config.get("host"));
         remote_node.setPort(Integer.parseInt(config.get("port")));
-        qdb.multi_connect(session,remote_node,1);
+        qdb.multi_connect(session, remote_node, 1);
         final error_carrier error = new error_carrier();
         ByteBuffer buffer;
         if (operation.equalsIgnoreCase("config")) {
