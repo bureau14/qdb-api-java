@@ -592,6 +592,66 @@ public final class Quasardb {
             throw new QuasardbException(qdbError);
         }
     }
+    
+    /**
+     * Delete the object associated whith the <i>alias</i> key if the object is equal to comparand
+     * 
+     * @param alias the alias you want to delete
+     * @param comparand the object you want to compare with
+     * @throws QuasardbException if the connecion with the current instance fail
+     */
+    public <V> void removeIf(final String alias, final V comparand) throws QuasardbException {
+        // Check params
+        this.checkSession();
+        this.checkAlias(alias);
+        
+        if (comparand == null) {
+            throw new QuasardbException(NULL_VALUE);
+        }
+        
+        // Allocate buffer :
+        //  -> intialize with default value
+        int bufferSize = BUFFER_SIZE;
+
+        //  -> try to evaluate the size of the object at runtime using sizeOf
+        try {
+            bufferSize = ObjectProfiler.sizeof(comparand);
+            if (bufferSize == 0) {
+                bufferSize = BUFFER_SIZE;
+            }
+        } catch (Exception e) {
+            throw new QuasardbException(BAD_SIZE, e);
+        }
+
+        // Get a direct byte buffer from pool with the specified size
+        ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
+        try {
+            Output output = new Output(bufferSize);
+            serializer.writeClassAndObject(output, comparand);
+            buffer.put(output.getBuffer());
+
+            // Apply remove if
+            final qdb_error_t qdbError = qdb.remove_if(session, alias, buffer, buffer.limit());
+    
+            // Handle errors
+            if (qdbError != qdb_error_t.error_ok) {
+                throw new QuasardbException(qdbError);
+            }
+        } catch (SerializationException e) {
+            throw new QuasardbException(BAD_SERIALIZATION, e);
+        } finally {
+            // Cleanup
+            try {
+                if (buffer != null) {
+                    Cleaner cleaner = ((DirectBuffer) buffer).cleaner();
+                    if (cleaner != null) cleaner.clean();
+                }
+            } catch (Exception e) {
+                throw new QuasardbException(SESSION_CLOSED, e);
+            }
+            buffer = null;
+        }
+    }
 
     /**
      * Close the connection to the quasardb instance and frees resources.

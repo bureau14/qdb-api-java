@@ -414,6 +414,78 @@ public class QuasardbTest {
             assertTrue(e instanceof QuasardbException);
         }
     }
+    
+    /**
+     * Test of removeIf method, of class Quasardb.
+     * @throws QuasardbException 
+     */
+    @Test
+    public void testRemoveIf() throws QuasardbException {
+        // Test 1.1 : test wrong parameter
+        try {
+            qdbInstance.removeIf(null, "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.2 : test wrong parameter
+        try {
+            qdbInstance.removeIf("test1", null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.3 : test wrong parameter
+        try {
+            qdbInstance.removeIf(null, null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2.1 : nominal case -> remove case
+        Pojo pojo = new Pojo();
+        pojo.setText("test1");
+        Pojo pojo2 = new Pojo();
+        pojo2.setText("test1");
+        qdbInstance.put("test_nominal", pojo);
+        qdbInstance.removeIf("test_nominal", pojo2);
+        try {
+            qdbInstance.get("test_nominal");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2.2 : nominal case -> do not remove case
+        pojo = null;
+        pojo2 = null;
+        pojo = new Pojo();
+        pojo.setText("test1");
+        pojo2 = new Pojo();
+        pojo2.setText("test2");
+        qdbInstance.put("test_nominal", pojo);
+        try {
+            qdbInstance.removeIf("test_nominal", pojo2);
+            fail("No exception here.");
+        } catch (Exception e) {
+            Pojo pojoResult = qdbInstance.get("test_nominal");
+            assertTrue(pojoResult.getText().equals(pojo.getText()));
+        }
+        
+        // Test 3 : wrong alias
+        try {
+            qdbInstance.removeIf("alias_doesnt_exist", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Cleanup
+        qdbInstance.remove("test_nominal");
+    }
 
     /**
      * Test of update method, of class Quasardb.
