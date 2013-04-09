@@ -507,6 +507,51 @@ public final class Quasardb {
 
         return result;
     }
+    
+    /**
+     * Atomically get the entry associated with the supplied unique key (<i>alias</i>) and remove it.
+     *
+     * @param alias the object's unique key/alias.
+     * @return the object's related to the alias
+     * @throws QuasardbException if an error occurs or the entry does not exist
+     */
+    @SuppressWarnings("unchecked")
+    public <V> V getRemove(final String alias) throws QuasardbException {
+        // Checks params
+        this.checkSession();
+        this.checkAlias(alias);
+
+        // Init
+        V result = null;
+        error_carrier error = new error_carrier();
+        
+        // Get value associated with alias
+        ByteBuffer buffer = qdb.get_remove(session, alias, error);
+        
+        // Prepare ByteBuffer
+        if (buffer != null) {
+            buffer.rewind();
+        }
+        
+        // Handle errors
+        if (error.getError() != qdb_error_t.error_ok) {
+            throw new QuasardbException(error.getError());
+        }
+
+        // De-serialize
+        try {
+            result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+        } catch (SerializationException e) {
+            throw new QuasardbException(e.getMessage(), e);
+        } finally {
+            // Free ressources
+            qdb.free_buffer(session, buffer);
+            buffer = null;
+            error = null;
+        }
+        
+        return result;
+    }
 
     /**
      * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key. The entry must not already exist.<br>

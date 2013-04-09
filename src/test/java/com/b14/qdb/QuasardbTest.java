@@ -265,6 +265,49 @@ public class QuasardbTest {
      * @throws QuasardbException 
      */
     @Test
+    public void testGetRemove() throws QuasardbException {
+        // Test 1.1 : test wrong parameter
+        try {
+            qdbInstance.getRemove(null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.2 : test wrong parameter
+        try {
+            qdbInstance.getRemove("");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2 : nominal case
+        Pojo pojo = new Pojo();
+        qdbInstance.put("test_nominal", pojo);
+        Pojo pojoresult = qdbInstance.getRemove("test_nominal");
+        assertTrue(pojo.getText().equals(pojoresult.getText()));
+        try {
+            qdbInstance.get("test_nominal");
+            fail("Entry must not exist anymore");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 3 : wrong alias
+        try {
+            qdbInstance.getRemove("alias_doesnt_exist");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }  
+    }
+    
+    /**
+     * Test of get method, of class Quasardb.
+     * @throws QuasardbException 
+     */
+    @Test
     public void testCompareAndSwap() throws QuasardbException {
         // Test 1.1 : test wrong parameter
         try {
