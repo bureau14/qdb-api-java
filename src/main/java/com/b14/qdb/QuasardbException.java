@@ -36,7 +36,7 @@ import com.b14.qdb.jni.qdb_error_t;
  * quasardb exceptions.<br>
  * 
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 0.7.3
+ * @version quasardb 1.0.0
  * @since quasardb 0.5.2
  */
 public class QuasardbException extends Exception {

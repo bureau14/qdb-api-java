@@ -27,53 +27,36 @@
  */
 package com.b14.qdb.entities;
 
-import com.owlike.genson.annotation.JsonProperty;
-
 /**
- * Entity for supervision metrics.
+ * A quasardb entry is a <i><alias ; value></i> pair.
  *
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
  * @version quasardb 1.0.0
- * @since quasardb 0.7.5
+ * @since quasardb 1.0.0
  */
-public class Chord implements java.io.Serializable {
-    private static final long serialVersionUID = 3711325082489249311L;
+public class QuasardbEntry<V> {
+    String alias;
+    V value;
     
-    int[] bootstrapping_peers;
-    boolean no_stabilization;
-    String node_id;
-
-    public Chord(@JsonProperty("bootstrapping_peers") int[] bootstrapping_peers, 
-                 @JsonProperty("no_stabilization") boolean no_stabilization, 
-                 @JsonProperty("node_id") String node_id) {
-        super();
-        this.bootstrapping_peers=bootstrapping_peers;
-        this.no_stabilization=no_stabilization;
-        this.node_id=node_id;
+    public QuasardbEntry() {
     }
-
-    public int[] getBootstrapping_peers() {
-        return bootstrapping_peers;
+    
+    public QuasardbEntry(String alias, V value) {
+        this.alias = alias;
+        this.value = value;
     }
-
-    public void setBootstrapping_peers(int[] bootstrapping_peers) {
-        this.bootstrapping_peers = bootstrapping_peers;
+    
+    public String getAlias() {
+        return alias;
     }
-
-    public boolean isNo_stabilization() {
-        return no_stabilization;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
-
-    public void setNo_stabilization(boolean no_stabilization) {
-        this.no_stabilization = no_stabilization;
+    public V getValue() {
+        return value;
     }
-
-    public String getNode_id() {
-        return node_id;
+    public void setValue(V value) {
+        this.value = value;
     }
-
-    public void setNode_id(String node_id) {
-        this.node_id = node_id;
-    }
-
+    
 }

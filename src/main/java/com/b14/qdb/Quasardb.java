@@ -39,7 +39,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
@@ -47,9 +49,11 @@ import sun.nio.ch.DirectBuffer;
 import com.b14.qdb.entities.NodeConfig;
 import com.b14.qdb.entities.NodeStatus;
 import com.b14.qdb.entities.NodeTopology;
+import com.b14.qdb.entities.QuasardbEntry;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
+import com.b14.qdb.jni.qdb_const_iterator_t;
 import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
 import com.b14.qdb.tools.LibraryHelper;
@@ -86,13 +90,24 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  *
  * <ul>
  *     <li><u>get:</u> get an entry.</li>
+ *     <li><u>next:</u> get the next entry in the iteration</li>
+ *     <li><u>hasNext:</u> is there a next entry in the iteration ?</li>
  *     <li><u>put:</u> create an entry.</li>
  *     <li><u>update:</u> update the value of an existing entry.</li>
  *     <li><u>getAndReplace:</u> atomically update the value of an existing entry and return the old value.</li>
  *     <li><u>compareAndSwap:</u> atomically compare a value with comparand and update if it matches. Always return the old value.</li>
  *     <li><u>remove:</u> delete an entry.</li>
- *     <li><u>removeall:</u> delete all entries. Use with caution.</li>
+ *     <li><u>removeAll:</u> delete all entries. Use with caution.</li>
+ *     <li><u>removeIf:</u> delete the object associated whith a key if the object is equal to comparand.</li>
+ *     <li><u>getRemove:</u> atomically get the entry associated with the supplied key and remove it.</li>
  *     <li><u>close:</u> close the connection.</li>
+ *     <li><u>getVersion:</u> get API version.</li>
+ *     <li><u>getBuild:</u> get API build number.</li>
+ *     <li><u>getCurrentNodeConfig:</u> retrieve the configuration of the current quasardb instance.</li>
+ *     <li><u>getCurrentNodeStatus:</u> retrieve the status of the current quasardb instance.</li>
+ *     <li><u>getCurrentNodeTopology:</u> retrieve the topology of the current quasardb instance.</li>
+ *     <li><u>stopCurrentNode:</u> stop the current quasardb instance.</li>
+ *     <li><u>stopNode:</u> stop a provided quasardb instance.</li>
  * </ul>
  *
  * <p>
@@ -125,11 +140,11 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * </p>
  *
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 0.7.4
+ * @version quasardb 1.0.0
  * @since quasardb 0.5.2
  */
 @SuppressWarnings("restriction")
-public final class Quasardb {
+public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     static {
         // Try to load qdb library
         try {
@@ -737,6 +752,7 @@ public final class Quasardb {
 
     /**
      * Check if the provided alias is valid
+     * 
      * @param alias to store object
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      */
@@ -751,7 +767,7 @@ public final class Quasardb {
     /**
      * Utility method to apply write operations in the current qdb instance.<br>
      * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a qdb instance.
-     *
+     * 
      * @param alias alias under the object <i>value</i> will be stored.
      * @param value object to serialize and store into the qdb instance.
      * @param operation to apply on the two first parameters.
@@ -907,4 +923,157 @@ public final class Quasardb {
             return "Quasardb - " + e.getMessage();
         }
     }
+
+    
+    /****************/
+    /** implements **/
+    /****************/
+
+    /** 
+     * Quasardb implements {@link Iterable} for {@link Cache.Entry}, providing support for simplified iteration.
+     * However iteration should be used with caution. It is an O(n) operation.
+     * 
+     * @since 1.0.0
+     * @see java.lang.Iterable#iterator()
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Iterator<QuasardbEntry<?>> iterator() {
+        return new QuasardbIterator(session);
+    }
+    
+    
+    /*****************/
+    /** inner class **/
+    /*****************/
+    
+    private final class QuasardbIterator<V> implements Iterator<QuasardbEntry<V>> {
+        private QuasardbEntry<V> nextEntry = null;
+        private QuasardbEntry<V> lastEntry = null;
+        private transient qdb_const_iterator_t iterator = null;
+        private boolean iteratorStarted = false;
+        private transient SWIGTYPE_p_qdb_session session;
+        
+        private QuasardbIterator(final SWIGTYPE_p_qdb_session session) {
+            this.session = session;
+            nextEntry = null;
+            lastEntry = null;
+            iterator = null;
+            iteratorStarted = false;
+        }
+
+        private final void startIterator() throws QuasardbException {
+            // Checks params
+            checkSession();
+                
+            // Start iterator operation
+            this.iterator = new qdb_const_iterator_t();
+            final qdb_error_t qdbError = qdb.iterator_begin(session, this.iterator);
+            
+            // Handle errors
+            if (qdbError != qdb_error_t.error_ok) {
+                throw new QuasardbException(qdbError);
+            }
+            iteratorStarted = true;
+        }
+        
+        private final void closeIterator() throws QuasardbException {
+            // Checks params
+            checkSession();
+            
+            // End iterator operation
+            final qdb_error_t qdbError = qdb.iterator_close(this.iterator);
+            
+            // Handle errors
+            if (qdbError != qdb_error_t.error_ok) {
+                throw new QuasardbException(qdbError);
+            }
+            
+            // Reset variables
+            iteratorStarted = false;
+            nextEntry = null;
+            lastEntry = null;
+            iterator = null;
+        }
+        
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        private final void fetch() throws QuasardbException {
+            // Checks params
+            checkSession();
+            
+            // Get next qdb entry
+            final qdb_error_t qdbError = qdb.iterator_next(iterator);
+            
+            // Handle errors
+            if (qdbError == qdb_error_t.error_ok) {        
+                // Get alias value
+                ByteBuffer buffer = qdb.iterator_content(iterator);
+                
+                // Prepare ByteBuffer
+                if (buffer != null) {
+                    buffer.rewind();
+                }
+        
+                // De-serialize
+                V value = null;
+                try {
+                    value = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+                } catch (SerializationException e) {
+                    throw new QuasardbException(e.getMessage(), e);
+                } finally {
+                    // Free ressources
+                    qdb.free_buffer(session, buffer);
+                    buffer = null;
+                }
+                
+                // Prepare entry
+                nextEntry = new QuasardbEntry(iterator.getAlias(), value);
+            } else if (qdbError == qdb_error_t.error_alias_not_found) {
+                nextEntry = null;
+                this.closeIterator();
+            } else {
+                throw new QuasardbException(qdbError);
+            }
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public boolean hasNext() {
+            try {
+                if (!iteratorStarted) {
+                    this.startIterator();
+                }
+                if (nextEntry == null) {
+                    fetch();
+                }
+                return nextEntry != null;
+            } catch (QuasardbException e) {
+                return false;
+            }
+        }
+    
+        /**
+         * {@inheritDoc}
+         */
+        public QuasardbEntry<V> next() {
+            if (hasNext()) {
+                // Remember the lastEntry
+                lastEntry = nextEntry;
+    
+                // Reset nextEntry to force fetching the next available entry
+                nextEntry = null;
+                return lastEntry;
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+    
+        /**
+         * {@inheritDoc}
+         */
+        public void remove() {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+    }
+
 }
