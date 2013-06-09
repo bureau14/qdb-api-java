@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>0.7.4</version>
+	<version>1.0.0</version>
 	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
@@ -56,7 +56,7 @@
 
 	<ciManagement>
 		<system>Buildbot</system>
-		<url>http://buildmaster.bureau14.fr:8080</url>
+		<url>https://buildmaster.bureau14.fr:8080</url>
 	</ciManagement>
 
 	<organization>
