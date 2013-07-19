@@ -817,10 +817,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             error_carrier error = new error_carrier();
             switch (operation) {
                 case PUT :
-                    qdbError = qdb.put(session, alias, buffer, buffer.limit());
+                    qdbError = qdb.put(session, alias, buffer, buffer.limit(), 0);
                     break;
                 case UPDATE :
-                    qdbError = qdb.update(session, alias, buffer, buffer.limit());
+                    qdbError = qdb.update(session, alias, buffer, buffer.limit(), 0);
                     break;
                 case CAS :
                     if (other == null) {
@@ -839,12 +839,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         Output otherOutput = new Output(otherSize);
                         serializer.writeClassAndObject(otherOutput, other);
                         otherBuffer.put(otherOutput.getBuffer());
-                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), error);
+                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), 0, error);
                         qdbError = error.getError();
                     }
                     break;
                 case GETANDUPDATE :
-                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), error);
+                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), 0, error);
                     qdbError = error.getError();
                     break;
                 default :
