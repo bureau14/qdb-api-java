@@ -35,12 +35,14 @@ import java.nio.ByteOrder;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
@@ -53,6 +55,7 @@ import com.b14.qdb.entities.NodeStatus;
 import com.b14.qdb.entities.NodeTopology;
 import com.b14.qdb.entities.QuasardbEntry;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
+import com.b14.qdb.jni.StringVec;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_const_iterator_t;
@@ -108,6 +111,7 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  *     <li><u>getCurrentNodeTopology:</u> retrieve the topology of the current quasardb instance.</li>
  *     <li><u>stopCurrentNode:</u> stop the current quasardb instance.</li>
  *     <li><u>stopNode:</u> stop a provided quasardb instance.</li>
+ *     TODO
  * </ul>
  *
  * <p>
@@ -254,9 +258,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         }
         
         try {
-        	this.setDefaultExpiryTimeInSeconds(Long.parseLong(config.get("expiry")));
+            this.setDefaultExpiryTimeInSeconds(Long.parseLong(config.get("expiry")));
         } catch (NumberFormatException e) {
-        	this.setDefaultExpiryTimeInSeconds(0);
+            this.setDefaultExpiryTimeInSeconds(0);
         }
         
         // Initialize serializer
@@ -409,11 +413,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 1.1.0
      * 
      * @param alias the object's unique key/alias.
-     * @return the expiry time in second related to the provided alias.
+     * @return the expiry time in second related to the provided alias. 0 means eternal duration.
      * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
      */
     public long getExpiryTimeInSeconds(final String alias) throws QuasardbException {
-    	// Checks params
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
@@ -442,7 +446,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
      */
     public Date getExpiryTimeInDate(final String alias) throws QuasardbException {
-    	// Checks params
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
@@ -458,7 +462,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(error.getError());
         }
 
-        return new Date(time);
+        return new Date(time * 1000);
     }
     
     /**
@@ -471,19 +475,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
      */
     public void setExpiryTimeInSeconds(final String alias, final long expiryTime) throws QuasardbException {
-    	// Checks params
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
         // Get value associated with alias
         qdb_error_t qdbError = null;
         if (expiryTime > 0L) {
-        	qdbError = qdb.expires_from_now(session, alias, expiryTime);
+            qdbError = qdb.expires_from_now(session, alias, expiryTime);
         } else {
-//        	GregorianCalendar cal = new GregorianCalendar(4000,11,31);
-//         	cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-//        	qdbError = qdb.expires_at(session, alias, cal.getTimeInMillis()/1000);
-        	qdbError = qdb.expires_at(session, alias, 0);
+            qdbError = qdb.expires_at(session, alias, 0);
         }
      
         // Handle errors
@@ -493,7 +494,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Change the expiry time in seconds for a provided alias
+     * Change the expiry time for a provided alias at the provided date
      * 
      * @since 1.1.0
      * 
@@ -502,11 +503,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
      */
     public void setExpiryTimeAt(final String alias, final Date expiryDate) throws QuasardbException {
-    	// Checks params
+        // Checks params
         this.checkSession();
         this.checkAlias(alias);
         if (expiryDate == null) {
-        	throw new QuasardbException(WRONG_DATE);
+            throw new QuasardbException(WRONG_DATE);
         }
 
         // Set expiry date with alias
@@ -531,7 +532,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @return 0 if entries are eternal, a value in seconds instead.
      */
     public long getDefaultExpiryTimeInSeconds() {
-    	return defaultExpiryTime;
+        return defaultExpiryTime;
     }
     
     /**
@@ -542,7 +543,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param expiryTime expiry time in seconds to set up
      */
     public void setDefaultExpiryTimeInSeconds(long expiryTime) {
-    	this.defaultExpiryTime = (expiryTime < 0 ? 0 : expiryTime);
+        this.defaultExpiryTime = (expiryTime < 0 ? 0 : expiryTime);
     }
     
     /**
@@ -750,26 +751,27 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key. The entry must not already exist.<br>
      *
      * @since 1.1.0
+     * 
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @throws QuasardbException if an error occurs or the entry already exists.
      */
     public <V> void put(final String alias, final V value, final long expiryTime) throws QuasardbException {
-    	long expiryTemp = (expiryTime < 0) ? this.defaultExpiryTime : expiryTime;
-    	if (expiryTime < 0) {
-    		this.defaultExpiryTime = 0;
-    	}
-    		
-    	this.put(alias, value);
+        long expiryTemp = (expiryTime < 0) ? this.defaultExpiryTime : expiryTime;
+        if (expiryTime < 0) {
+            this.defaultExpiryTime = 0;
+        }
+            
+        this.put(alias, value);
 
-    	if (expiryTime < 0) {
-    		this.defaultExpiryTime = expiryTemp;
-    	} else {
-    		qdb_error_t qdbError = qdb.expires_from_now(session, alias, expiryTemp);
-    		if (qdbError != qdb_error_t.error_ok) {
-    			throw new QuasardbException(qdbError);
-    		}
+        if (expiryTime < 0) {
+            this.defaultExpiryTime = expiryTemp;
+        } else {
+            qdb_error_t qdbError = qdb.expires_from_now(session, alias, expiryTemp);
+            if (qdbError != qdb_error_t.error_ok) {
+                throw new QuasardbException(qdbError);
+            }
         }
     }
     
@@ -911,6 +913,41 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
+     * Prefix based search on all entries. 
+     * Search is on entries (i.e. aliases) but not on values.
+     * 
+     * @since 1.1.0
+     * 
+     * @param prefix 
+     * @return all matching entries, but not the associated content.
+     * @throws QuasardbException
+     */
+    public List<String> startsWith(final String prefix) throws QuasardbException {
+        // Check params
+        this.checkSession();
+        this.checkAlias(prefix);
+        
+        // Search aliases
+        error_carrier error = new error_carrier();
+        StringVec aliases = qdb.prefix_get(session, prefix, error);
+        
+        // Handle errors
+        if (error.getError() != qdb_error_t.error_ok) {
+            throw new QuasardbException(error.getError());
+        }
+        
+        // Build result
+        List<String> resultat = new ArrayList<String>(); 
+        if (aliases != null && !aliases.empty()) {
+            for (int i = 0; i < aliases.size(); i++) {
+                resultat.add(aliases.get(i));
+            }
+        }
+        
+        return resultat;
+    }
+    
+    /**
      * Close the connection to the quasardb instance and frees resources.
      *
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
@@ -935,7 +972,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /*********************/
     /** private methods **/
     /*********************/
-
     /**
      * Check if the current qdb session is valid
      *
@@ -1087,7 +1123,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /***********************/
     /** getter and setter **/
     /***********************/
-
     /**
      * Get the current instance configuration.
      *
@@ -1112,7 +1147,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**************/
     /** override **/
     /**************/
-    
     @Override
     public String toString() {
         try {
@@ -1126,7 +1160,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /****************/
     /** implements **/
     /****************/
-
     /** 
      * Quasardb implements {@link Iterable} for {@link QuasardbEntry}, providing support for simplified iteration.
      * However iteration should be used with caution. It is an O(n) operation.

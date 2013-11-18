@@ -54,6 +54,7 @@ import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbTest;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
+import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.tools.LibraryHelper;
@@ -143,20 +144,22 @@ public class QuasardbRawTest {
     public void rawPutGetUpdateDeleteTest(String key, Object value) {
         key += "_" + Thread.currentThread().getId();
         
+        error_carrier error = new error_carrier();
+        
         buffer.put((value.toString()).getBytes());
         buffer.flip();
         
         qdb.remove(session, key);
-        qdb.put(session, key, buffer, buffer.limit());
+        qdb.put(session, key, buffer, buffer.limit(), 0);
         
         buffer.clear();
         
-        ByteBuffer bufferGet = qdb.get_buffer(session, key);
+        ByteBuffer bufferGet = qdb.get_buffer(session, key, error);
         qdb.free_buffer(session, bufferGet);
         
         buffer.rewind();
         buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());
-        qdb.update(session, key, buffer, buffer.limit());
+        qdb.update(session, key, buffer, buffer.limit(), 0);
         buffer.clear();
         
         qdb.remove(session, key);
