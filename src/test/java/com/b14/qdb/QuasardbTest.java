@@ -33,8 +33,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -46,6 +50,7 @@ import com.b14.qdb.data.Pojo;
 import com.b14.qdb.entities.NodeConfig;
 import com.b14.qdb.entities.NodeStatus;
 import com.b14.qdb.entities.NodeTopology;
+import com.b14.qdb.entities.QuasardbEntry;
 
 public class QuasardbTest {
     public static final String HOST = "127.0.0.1";
@@ -161,7 +166,7 @@ public class QuasardbTest {
             assertTrue(e instanceof QuasardbException);
         }
         
-        // Cleanup Wprme
+        // Cleanup Qdb
         qdbInstance.remove("test_put_1");
         qdbInstance.remove("test_put_2");
         qdbInstance.remove(veryLongAlias);
@@ -577,7 +582,7 @@ public class QuasardbTest {
         String resultat = qdbInstance.get("test_update_3");
         assertTrue(resultat.equals("wrong key"));
         
-        // Cleanup Wprme
+        // Cleanup Qdb
         qdbInstance.remove("test_update_1");
         qdbInstance.remove("test_update_2");
         qdbInstance.remove("test_update_3");
@@ -676,5 +681,391 @@ public class QuasardbTest {
         } catch (Exception e) {
             fail("No exception allowed.");
         }
-    } 
+    }
+    
+    @Test
+    public void testIterator() throws QuasardbException {
+    	// Test 1 : iterate on 100 entries
+    	try {
+	    	for (int i = 0; i < 100; i++) {
+	    		Pojo p = new Pojo();
+	    		p.setText("test iterator " + i);
+	    		qdbInstance.put("test_iterator_" + i, p);
+	    	}
+	    	int i = 0;
+	    	for (QuasardbEntry<?> qdbe : qdbInstance) {
+	    		assertTrue(qdbInstance.get(qdbe.getAlias()).equals(qdbe.getValue()));
+	    		i++;
+	    	}
+	    	assertTrue(i == 1000);
+    	} catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    	
+    	// Test 2 : iterate with no entries
+    	qdbInstance.removeAll();
+    	assertFalse(qdbInstance.iterator().hasNext());
+    	
+    	// Test 2 : iterate on 1000 entries
+    	try {
+	    	for (int i = 0; i < 1000; i++) {
+	    		Pojo p = new Pojo();
+	    		p.setAbc(i);
+	    		p.setText("test iterator " + i);
+	    		qdbInstance.put("test_iterator_" + i, p);
+	    	}
+	    	int i = 0;
+	    	for (QuasardbEntry<?> qdbe : qdbInstance) {
+	    		assertTrue(qdbe.getAlias() != null);
+	    		assertTrue(qdbe.getValue() != null);
+	    		assertTrue(qdbe.getValue() instanceof Pojo);
+	    		i++;
+	    	}
+	    	assertTrue(i == 1000);
+    	} catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    	qdbInstance.removeAll();
+    }
+    
+    @Test
+    public void testGetDefaultExpiryTimeInSeconds() throws QuasardbException {
+    	assertTrue(qdbInstance.getDefaultExpiryTimeInSeconds() == 0L);
+    }
+    
+    @Test
+    public void testSetDefaultExpiryTimeInSeconds() throws QuasardbException {
+    	long expiryTime=20L;
+    	
+    	// Test 1 : set default expiry time to 20s
+    	qdbInstance.setDefaultExpiryTimeInSeconds(expiryTime);
+    	assertTrue(qdbInstance.getDefaultExpiryTimeInSeconds() == expiryTime);
+    	
+    	// Test 2 : set default expiry time to eternal
+    	qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+    	assertTrue(qdbInstance.getDefaultExpiryTimeInSeconds() == 0L);
+    	
+    	// Test 3 : set default expiry time to eternal
+    	qdbInstance.setDefaultExpiryTimeInSeconds(-1);
+    	assertTrue(qdbInstance.getDefaultExpiryTimeInSeconds() == 0L);
+    	
+    	// Test 4 : test default expiry time with config
+    	Map<String,String> config2 = new HashMap<String,String>();
+    	config2.put("name", "test");
+    	config2.put("host", HOST);
+    	config2.put("port", PORT);
+    	config2.put("expiry", "20");
+    	qdbInstance = new Quasardb(config2);
+        try {
+            qdbInstance.connect();
+        } catch (QuasardbException e) {
+            e.printStackTrace();
+        }
+        assertTrue(qdbInstance.getDefaultExpiryTimeInSeconds() == expiryTime);
+        
+        // Clean up
+        config2 = null;
+        qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+    }
+    
+    @Test
+    public void testPutWithExpiryTime() throws QuasardbException {
+    	long expiry = 1L;
+    	
+    	// Test 1 : nominal case
+        String test = "Voici un super test";
+        qdbInstance.put("test_put_expiry_1", test, expiry);
+        String result = qdbInstance.get("test_put_expiry_1");
+        assertTrue(test.equals(result));
+        try {
+			Thread.sleep(expiry * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        try {
+            qdbInstance.get("test_put_expiry_1");
+            fail("An exception must be thrown because alias expired.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2 : negative parameter
+        qdbInstance.put("test_put_expiry_1", test, -1);
+        try {
+			Thread.sleep(expiry * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        assertTrue(((String) qdbInstance.get("test_put_expiry_1")).equalsIgnoreCase(test));
+          
+        // Test 3 : expiry time = current time + 2 seconds
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.SECOND, 2);
+    	cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+    	long calculatedExpiry = cal.getTimeInMillis()/1000;
+        qdbInstance.put("test_put_expiry_2", test, 2L);
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_put_expiry_2") == calculatedExpiry);
+        try {
+			Thread.sleep(2L * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        try {
+            qdbInstance.get("test_put_expiry_2");
+            fail("An exception must be thrown because alias expired.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 4 : put entries with different expiry times
+        qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+        qdbInstance.put("test_put_expiry_2", test);
+        qdbInstance.put("test_put_expiry_3", test, expiry);
+        qdbInstance.put("test_put_expiry_4", test, expiry + expiry);
+        try {
+			Thread.sleep((expiry + (expiry / 2)) * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        assertTrue(((String) qdbInstance.get("test_put_expiry_1")).equalsIgnoreCase(test));
+        assertTrue(((String) qdbInstance.get("test_put_expiry_2")).equalsIgnoreCase(test));
+        try {
+            qdbInstance.get("test_put_expiry_3");
+            fail("An exception must be thrown because alias expired.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        assertTrue(((String) qdbInstance.get("test_put_expiry_4")).equalsIgnoreCase(test));
+        try {
+			Thread.sleep(expiry * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        try {
+            qdbInstance.get("test_put_expiry_4");
+            fail("An exception must be thrown because alias expired.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Cleanup Qdb
+        qdbInstance.remove("test_put_expiry_1");
+        qdbInstance.remove("test_put_expiry_2");
+    }
+    
+    @Test
+    public void testSetExpiryTimeInSeconds() throws QuasardbException {
+    	qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+    	qdbInstance.removeAll();
+    	
+    	// Test 1 : nominal case
+        String test = "Voici un super test";
+        qdbInstance.put("test_expiry_1", test);
+        try {
+			Thread.sleep(1L * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        assertTrue(((String) qdbInstance.get("test_expiry_1")).equalsIgnoreCase(test));
+        qdbInstance.setExpiryTimeInSeconds("test_expiry_1", 1L);
+        try {
+			Thread.sleep(1L * 1000 + 500);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        try {
+            qdbInstance.get("test_expiry_1");
+            fail("An exception must be thrown because alias expired.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2 : negative param
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.SECOND, 2);
+     	cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+     	long calculatedExpiry = cal.getTimeInMillis()/1000;    	
+        qdbInstance.put("test_expiry_1", test, 2L);
+        try {
+			Thread.sleep(1L * 1000);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        assertTrue(((String) qdbInstance.get("test_expiry_1")).equalsIgnoreCase(test));
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_expiry_1") == calculatedExpiry);
+        qdbInstance.setExpiryTimeInSeconds("test_expiry_1", -1);
+        try {
+			Thread.sleep(1L * 1000 + 500);
+		} catch (InterruptedException e1) {
+			fail("No exception allowed.");
+		}
+        assertTrue(((String) qdbInstance.get("test_expiry_1")).equalsIgnoreCase(test));
+        GregorianCalendar cal2 = new GregorianCalendar();
+        cal2.add(Calendar.YEAR, 10);
+        cal2.setTimeZone(TimeZone.getTimeZone("UTC"));
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_expiry_1") > (cal2.getTimeInMillis()/1000));
+        
+        // Test 3 : invalid alias
+        try {
+            qdbInstance.setExpiryTimeInSeconds("wrong_alias", 1L);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 4 : null alias
+        try {
+        	qdbInstance.setExpiryTimeInSeconds(null, 1L);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Cleanup Qdb
+        qdbInstance.remove("test_expiry_1");
+    }
+    
+    @Test
+    public void testGetExpiryTimeInSeconds() throws QuasardbException {
+    	qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+    	qdbInstance.removeAll();
+    	String test = "Voici un super test";
+    	
+    	// Test 1 : nominal case
+    	GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.SECOND, 2);
+     	cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+     	long calculatedExpiry = cal.getTimeInMillis()/1000;    	
+    	qdbInstance.put("test_expiry_1", test, 2L);
+        try {
+ 			Thread.sleep(1L * 1000);
+ 		} catch (InterruptedException e1) {
+ 			fail("No exception allowed.");
+ 		}        
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_expiry_1") == calculatedExpiry);
+        qdbInstance.setExpiryTimeInSeconds("test_expiry_1", -1);
+        try {
+ 			Thread.sleep(1L * 1000 + 500);
+ 		} catch (InterruptedException e1) {
+ 			fail("No exception allowed.");
+ 		}
+        GregorianCalendar cal2 = new GregorianCalendar();
+        cal2.add(Calendar.YEAR, 10);
+        cal2.setTimeZone(TimeZone.getTimeZone("UTC"));
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_expiry_1") > (cal2.getTimeInMillis()/1000));
+        
+        // Test 2 : invalid alias
+        try {
+            qdbInstance.getExpiryTimeInSeconds("wrong_alias");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 3 : null alias
+        try {
+        	qdbInstance.getExpiryTimeInSeconds(null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 4 : empty alias
+        try {
+        	qdbInstance.getExpiryTimeInSeconds("");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Cleanup Qdb
+        qdbInstance.remove("test_expiry_1");
+    }
+    
+    @Test
+    public void testSetExpiryTimeAt() throws QuasardbException {
+    	qdbInstance.setDefaultExpiryTimeInSeconds(0L);
+    	qdbInstance.removeAll();
+    	String test = "Voici un super test";
+    	qdbInstance.put("test_expiry_1", test);
+    	long time = System.currentTimeMillis() + (1000 * 60 * 60);
+    	Date expiryDate = new Date(time);
+    	    	
+    	// Test 1 : null param
+    	try {
+        	qdbInstance.setExpiryTimeAt(null, expiryDate);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 2 : null date
+    	try {
+        	qdbInstance.setExpiryTimeAt("test_expiry_1", expiryDate);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 3 : empty alias
+    	try {
+        	qdbInstance.setExpiryTimeAt("", expiryDate);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 4 : wrong alias
+    	try {
+        	qdbInstance.setExpiryTimeAt("wrong_alias", expiryDate);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 5 : nominal case
+    	qdbInstance.setExpiryTimeAt("test_expiry_1", expiryDate);
+    	assertTrue((qdbInstance.getExpiryTimeInSeconds("test_expiry_1") * 1000) == time);
+    	
+    	// Cleanup Qdb
+    	qdbInstance.removeAll();
+    }
+    
+    @Test
+    public void testGetExpiryTimeInDate() throws QuasardbException {
+    	qdbInstance.removeAll();
+    	
+    	// Test 1 : null param
+    	try {
+        	qdbInstance.getExpiryTimeInDate(null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 2 : empty alias
+    	try {
+        	qdbInstance.getExpiryTimeInDate("");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 2 : wrong alias
+    	try {
+        	qdbInstance.getExpiryTimeInDate("wrong_alias");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+    	
+    	// Test 4 : nominal case
+    	long time = System.currentTimeMillis() + (1000 * 60 * 60);
+    	Date expiryDate = new Date(time);
+    	qdbInstance.setExpiryTimeAt("test_expiry_1", expiryDate);
+    	assertTrue(qdbInstance.getExpiryTimeInDate("test_expiry_1").equals(expiryDate));
+    	
+    	// Cleanup Qdb
+    	qdbInstance.removeAll();
+    }
 }

@@ -190,7 +190,7 @@ public interface IObjectProfileNode {
     boolean traverse(INodeFilter filter, INodeVisitor visitor);
     
     /**
-     * Dumps this node into a flat-text format used by the {@link ObjectProfileVisitors#newDefaultNodePrinter()}
+     * Dumps this node into a flat-text format used by the {@link ObjectProfileVisitors}
      * default node visitor.
      * 
      * @return indented dump string [could be very large]
