@@ -28,11 +28,11 @@
 package com.b14.qdb.entities;
 
 /**
- * A quasardb entry is a <i><alias ; value></i> pair.
+ * A quasardb entry is a <i>&lt;alias ; value&gt;</i> pair.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.0.0
- * @since quasardb 1.0.0
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
+ * @since 1.0.0
  */
 public class QuasardbEntry<V> {
     String alias;
@@ -41,22 +41,50 @@ public class QuasardbEntry<V> {
     public QuasardbEntry() {
     }
     
+    /**
+     * Copy constructor.
+     * 
+     * @param alias the alias which represent the quasardb entry
+     * @param value the value associated to the alias
+     */
     public QuasardbEntry(String alias, V value) {
         this.alias = alias;
         this.value = value;
     }
     
+    /**
+     * Get alias for the Quasardb entry 
+     * 
+     * @return alias for the entry
+     */
     public String getAlias() {
         return alias;
     }
+    
+    /**
+     * Set alias for the Quasardb entry  
+     * 
+     * @param alias
+     */
     public void setAlias(String alias) {
         this.alias = alias;
     }
+    
+    /**
+     * Get value for the Quasardb entry 
+     * 
+     * @return value for the Quasardb entry
+     */
     public V getValue() {
         return value;
     }
+    
+    /**
+     * Set value for the Quasardb entry 
+     * 
+     * @param value value for the Quasardb entry
+     */
     public void setValue(V value) {
         this.value = value;
     }
-    
 }

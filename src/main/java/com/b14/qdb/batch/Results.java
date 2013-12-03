@@ -25,44 +25,59 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.b14.qdb.entities;
+package com.b14.qdb.batch;
 
-import com.owlike.genson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Entity for supervision metrics.
- *
+ * Quasardb run batch operations results.
+ * 
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
  * @version 1.1.0
- * @since 0.7.5
+ * @since 1.1.0
+ * 
  */
-public class Entry implements java.io.Serializable {
-    private static final long serialVersionUID = -2649767686268390331L;
+public class Results {
+    private boolean success;
+    private List<Result<?>> results = new ArrayList<Result<?>>();
     
-    long count;
-    long size;
-
-    public Entry(@JsonProperty("count") long count,
-                  @JsonProperty("size") long size) {
-        super();
-        this.count=count;
-        this.size=size;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
+    public Results() {
     }
     
+    /**
+     * Are all submitted batch operations in success ?
+     * 
+     * @return true if all submitted operations are successful. false in all other cases.  
+     */
+    public boolean isSuccess() {
+        return success;
+    }
+    
+    /**
+     * Set if all submitted batch operations are successful or not.
+     * 
+     * @param success true if all submitted operations are successful. false in all other cases.
+     */
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+    
+    /**
+     * Get all results of submitted operations.
+     * 
+     * @return all results for submitted batch operations.
+     */
+    public List<Result<?>> getResults() {
+        return results;
+    }
+    
+    /**
+     * Set all results of submitted operations.
+     * 
+     * @param results results for submitted batch operations.
+     */
+    public void setResults(List<Result<?>> results) {
+        this.results = results;
+    }
 }

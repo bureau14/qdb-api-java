@@ -25,44 +25,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.b14.qdb.entities;
-
-import com.owlike.genson.annotation.JsonProperty;
 
 /**
- * Entity for supervision metrics.
+ * Tools for batch operations
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
  * @version 1.1.0
- * @since 0.7.5
+ * @since 1.1.0
  */
-public class Entry implements java.io.Serializable {
-    private static final long serialVersionUID = -2649767686268390331L;
-    
-    long count;
-    long size;
-
-    public Entry(@JsonProperty("count") long count,
-                  @JsonProperty("size") long size) {
-        super();
-        this.count=count;
-        this.size=size;
-    }
-
-    public long getCount() {
-        return count;
-    }
-
-    public void setCount(long count) {
-        this.count = count;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
-    }
-    
-}
+package com.b14.qdb.batch;

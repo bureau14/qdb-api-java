@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2009-2013, Bureau 14 SARL
  * All rights reserved.
@@ -33,11 +32,11 @@ import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 
 /**
- * quasardb exceptions.<br>
+ * Quasardb exceptions.<br>
  * 
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.0.0
- * @since quasardb 0.5.2
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
+ * @since 0.5.2
  */
 public class QuasardbException extends Exception {
 

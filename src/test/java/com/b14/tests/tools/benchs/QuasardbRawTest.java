@@ -142,6 +142,7 @@ public class QuasardbRawTest {
     @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
     @Required(average = REQ_AVERAGE_EXECUTION_TIME)
     public void rawPutGetUpdateDeleteTest(String key, Object value) {
+        error_carrier error = new error_carrier();
         key += "_" + Thread.currentThread().getId();
         
         error_carrier error = new error_carrier();

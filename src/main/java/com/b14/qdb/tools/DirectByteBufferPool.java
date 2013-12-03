@@ -37,8 +37,8 @@ import java.nio.ByteOrder;
  * 
  * @deprecated
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
- * @version quasardb 0.7.3
- * @since quasardb 0.5.2
+ * @version 1.1.0
+ * @since 0.5.2
  */
 public final class DirectByteBufferPool {
     private static final int POOL_SIZE = 5;

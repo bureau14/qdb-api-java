@@ -29,9 +29,9 @@
 /**
  * Low-level Java API generated with <a href="http://www.swig.org/">SWIG</a>
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.0.0
- * @since quasardb 0.5.2
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
+ * @since 0.5.2
  * @see <a href="http://www.swig.org/">SWIG</a>
  */
 package com.b14.qdb.jni;

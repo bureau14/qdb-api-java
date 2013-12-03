@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2009-2013, Bureau 14 SARL
  * All rights reserved.
@@ -50,17 +49,25 @@ import java.util.TimeZone;
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
+import com.b14.qdb.batch.Operation;
+import com.b14.qdb.batch.Result;
+import com.b14.qdb.batch.Results;
+import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.entities.NodeConfig;
 import com.b14.qdb.entities.NodeStatus;
 import com.b14.qdb.entities.NodeTopology;
 import com.b14.qdb.entities.QuasardbEntry;
+import com.b14.qdb.jni.BatchOpsVec;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.StringVec;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_const_iterator_t;
 import com.b14.qdb.jni.qdb_error_t;
+import com.b14.qdb.jni.qdb_operation_t;
+import com.b14.qdb.jni.qdb_operation_type_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
+import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
 import com.b14.qdb.tools.profiler.ObjectProfiler;
 import com.esotericsoftware.kryo.Kryo;
@@ -109,6 +116,7 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  *     <li><u>getCurrentNodeConfig:</u> retrieve the configuration of the current quasardb instance.</li>
  *     <li><u>getCurrentNodeStatus:</u> retrieve the status of the current quasardb instance.</li>
  *     <li><u>getCurrentNodeTopology:</u> retrieve the topology of the current quasardb instance.</li>
+ *     <li><u>runBatch:</u> can increase performance when it is necessary to run many small operations.</li>
  *     <li><u>stopCurrentNode:</u> stop the current quasardb instance.</li>
  *     <li><u>stopNode:</u> stop a provided quasardb instance.</li>
  *     TODO
@@ -143,9 +151,9 @@ import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
  * </pre>
  * </p>
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.1.0
- * @since quasardb 0.5.2
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
+ * @since 0.5.2
  */
 @SuppressWarnings("restriction")
 public final class Quasardb implements Iterable<QuasardbEntry<?>> {
@@ -235,6 +243,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Initialize connection to the quasardb instance and setup serialization framework.
      *
+     * @since 0.5.2
+     *  
      * @throws QuasardbException if connection to the quasardb instance fail
      */
     public void connect() throws QuasardbException {
@@ -304,6 +314,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Retrieve the version of the current quasardb instance.
      *
+     * @since 0.7.4
+     *
      * @return version of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
@@ -314,6 +326,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Retrieve the build version of the current quasardb instance.
+     *
+     * @since 0.7.4
      *
      * @return build version of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
@@ -648,7 +662,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Get the entry associated with the supplied unique key (<i>alias</i>).
-     *
+     * 
+     * @since 0.5.2
+     *  
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
      * @throws QuasardbException if an error occurs or the entry does not exist
@@ -693,6 +709,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Atomically get the entry associated with the supplied unique key (<i>alias</i>) and remove it.
+     *
+     * @since 0.7.3
      *
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
@@ -739,6 +757,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key. The entry must not already exist.<br>
      *
+     * @since 0.5.2
+     *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @throws QuasardbException if an error occurs or the entry already exists.
@@ -779,6 +799,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Update an existing entry or create a new one.<br>
      *
+     * @since 0.5.2
+     *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
      * @throws QuasardbException if an error occurs.
@@ -817,6 +839,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Delete the object associated with the <i>alias</i> key.
      *
+     * @since 0.5.2
+     *
      * @param alias the alias you want to delete.
      * @throws QuasardbException if the connection with the current instance fail.
      */
@@ -837,6 +861,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Delete all the stored objects in the current quasardb instance. Use with caution.
      *
+     * @since 0.7.2
+     *
      * @throws QuasardbException if the connection with the current instance fail.
      */
     public void removeAll() throws QuasardbException {
@@ -854,6 +880,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Delete the object associated whith the <i>alias</i> key if the object is equal to comparand
+     * 
+     * @since 0.7.2
      * 
      * @param alias the alias you want to delete
      * @param comparand the object you want to compare with
@@ -911,6 +939,211 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             buffer = null;
         }
     }
+    
+    /**
+     * Submit a list of operation which can increase performance when it is necessary to run many small operations.
+     * Using properly the batch operations requires initializing, running list of operations and read results
+     * 
+     * @param operations List of operations to submit in batch mode to Quasardb. See {@link Operation}
+     * @return All results of submitted operations in batch mode.  See {@link Results}
+     * 
+     * @since 1.1.0
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public <V> Results runBatch(List<Operation<V>> operations) throws QuasardbException {
+        // Check params
+        this.checkSession();
+        if (operations == null) {
+            throw new QuasardbException(NULL_VALUE);
+        }
+        
+        BatchOpsVec requests = new BatchOpsVec();
+        Results results = null;
+        List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+        
+        // Prepare all batch requests
+        for (Operation<V> operation : operations) {
+            if (operation.getType() != null) {
+                qdb_operation_t req = new qdb_operation_t();
+                
+                // Set operation type
+                switch (operation.getType()) {
+                    case GET :
+                        req.setType(qdb_operation_type_t.optionp_get_alloc);
+                        break;
+                        
+                    case PUT :
+                        req.setType(qdb_operation_type_t.optionp_put);
+                        break;
+                        
+                    case UPDATE :
+                        req.setType(qdb_operation_type_t.optionp_update);
+                        break;
+                        
+                    case REMOVE :
+                        req.setType(qdb_operation_type_t.optionp_remove);
+                        break;
+                        
+                    case CAS :
+                        req.setType(qdb_operation_type_t.optionp_cas);
+                        break;
+                        
+                    case GET_UPDATE :
+                        req.setType(qdb_operation_type_t.optionp_get_update);
+                        break;
+                        
+                    case GET_REMOVE :
+                        req.setType(qdb_operation_type_t.optionp_get_remove);
+                        break;
+                        
+                    case REMOVE_IF:
+                        req.setType(qdb_operation_type_t.optionp_remove_if);
+                        break;
+                        
+                    default :
+                        req.setType(qdb_operation_type_t.optionp_uninitialized);
+                        break;
+                }
+                
+                // Set alias
+                if ((operation.getAlias() != null) && (!operation.getAlias().equals(""))) {
+                    req.setAlias(operation.getAlias());
+                }
+                
+                // Prepare content
+                if ((operation.getValue() != null) && (req.getType() != qdb_operation_type_t.optionp_remove_if)) {
+                    ByteBuffer buffer = null;
+                    try {
+                        int bufferSize = ObjectProfiler.sizeof(operation.getValue());
+                        if (bufferSize == 0) {
+                            bufferSize = BUFFER_SIZE;
+                        }
+                        buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
+                        Output output = new Output(bufferSize);
+                        serializer.writeClassAndObject(output, operation.getValue());
+                        buffer.put(output.getBuffer());
+                        req.setContent_size(bufferSize);
+                        req.setContent(buffer);
+                        
+                        buffers.add(buffer);
+                    } catch (SerializationException e) {
+                        req.setContent_size(0);
+                        req.setContent(null);
+                        req.setType(qdb_operation_type_t.optionp_uninitialized);
+                    } 
+                }
+                
+                // Prepare comparand content
+                if ((operation.getCompareValue() != null) || ((req.getType() == qdb_operation_type_t.optionp_remove_if) && (operation.getValue() != null))) {
+                    ByteBuffer buffer = null;
+                    V comparandValue = (req.getType() == qdb_operation_type_t.optionp_remove_if)?operation.getValue():operation.getCompareValue();
+                    try {
+                        int bufferSize = ObjectProfiler.sizeof(comparandValue);
+                        if (bufferSize == 0) {
+                            bufferSize = BUFFER_SIZE;
+                        }
+                        buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
+                        Output output = new Output(bufferSize);
+                        serializer.writeClassAndObject(output, comparandValue);
+                        buffer.put(output.getBuffer());
+                        req.setComparand_size(bufferSize);
+                        req.setComparand(buffer);
+                        
+                        buffers.add(buffer);
+                    } catch (SerializationException e) {
+                        req.setComparand_size(0);
+                        req.setComparand(null);
+                        req.setType(qdb_operation_type_t.optionp_uninitialized);
+                    }
+                }
+                
+                // Prepare requests
+                requests.push_back(req);
+            }
+        }
+        
+        // Run batch
+        run_batch_result qdbResults = qdb.run_batch(session, requests);
+        
+        // Build results
+        results = new Results();
+        results.setSuccess(qdbResults.getSuccesses() == operations.size());
+        for (int i = 0; i < operations.size(); i++) {
+            qdb_operation_t operation = qdbResults.getResults().get(i);
+            Result<V> result = new Result<V>();
+            
+            // Set alias
+            result.setAlias(operation.getAlias());
+            
+            // Set error
+            result.setSuccess(operation.getError() == qdb_error_t.error_ok);
+            if (!result.isSuccess()) {
+                result.setError(operation.getError().toString());
+            }
+            
+            // Set type
+            boolean hasValue = false;
+            if (operation.getType() == qdb_operation_type_t.optionp_get_alloc) { // GET operation
+                result.setTypeOperation(TypeOperation.GET);
+                hasValue = true && result.isSuccess();
+            } else if (operation.getType() == qdb_operation_type_t.optionp_put) { // PUT operation
+                result.setTypeOperation(TypeOperation.PUT);
+            } else if (operation.getType() == qdb_operation_type_t.optionp_update) { // UPDATE operation
+                result.setTypeOperation(TypeOperation.UPDATE);
+            } else if (operation.getType() == qdb_operation_type_t.optionp_remove) { // REMOVE operation
+                result.setTypeOperation(TypeOperation.REMOVE);
+            } else if (operation.getType() == qdb_operation_type_t.optionp_cas) { // COMPARE AND SWAP operation
+                result.setTypeOperation(TypeOperation.CAS);
+                hasValue = true && result.isSuccess();
+            } else if (operation.getType() == qdb_operation_type_t.optionp_get_update) { // GET AND UPDATE operation
+                result.setTypeOperation(TypeOperation.GET_UPDATE);
+                hasValue = true && result.isSuccess();
+            } else if (operation.getType() == qdb_operation_type_t.optionp_get_remove) { // GET AND REMOVE operation
+                result.setTypeOperation(TypeOperation.GET_REMOVE);
+                hasValue = true && result.isSuccess();
+            } else if (operation.getType() == qdb_operation_type_t.optionp_remove_if) { // REMOVE IF operation
+                result.setTypeOperation(TypeOperation.REMOVE_IF);
+            } else { // NO OPERATION
+                result.setTypeOperation(TypeOperation.NO_OP);
+            }
+            
+            // Set value
+            if (hasValue) {
+                ByteBuffer buffer = operation.getResult();
+                if (buffer != null) {
+                    buffer.rewind();
+                }
+                
+                try {
+                    result.setValue((V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer))));
+                } catch (SerializationException e) {
+                    result.setValue(null);
+                    result.setError(qdb_error_t.error_unmatched_content.toString());
+                    result.setSuccess(false);
+                }
+            }
+            
+            // Add result           
+            results.getResults().add(result);
+        }
+        
+        // Cleanup buffers
+        qdb.release_batch_result(session, qdbResults);
+        for (ByteBuffer buffer : buffers) {
+            try {
+                if (buffer != null) {
+                    Cleaner cleaner = ((DirectBuffer) buffer).cleaner();
+                    if (cleaner != null) cleaner.clean();
+                }
+            } catch (Exception e) {
+               e.printStackTrace();
+            }
+        }
+        buffers = null;
+ 
+        return results;
+    }
 
     /**
      * Prefix based search on all entries. 
@@ -949,7 +1182,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Close the connection to the quasardb instance and frees resources.
-     *
+     * 
+     * @since 0.5.2
+     * 
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      */
     public void close() throws QuasardbException {
@@ -969,12 +1204,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         this.session = null;
     }
 
+    
     /*********************/
     /** private methods **/
     /*********************/
     /**
      * Check if the current qdb session is valid
-     *
+     * 
+     * @since 0.5.2
+     * 
      * @throws QuasardbException if the connection to the qdb instance cannot be closed
      */
     private final void checkSession() throws QuasardbException {
@@ -985,6 +1223,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Check if the provided alias is valid
+     * 
+     * @since 0.5.2
      * 
      * @param alias to store object
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
@@ -1000,6 +1240,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Utility method to apply write operations in the current qdb instance.<br>
      * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a qdb instance.
+     * 
+     * @since 0.5.3
      * 
      * @param alias alias under the object <i>value</i> will be stored.
      * @param value object to serialize and store into the qdb instance.
@@ -1119,12 +1361,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             buffer = null;
         }
     }
+    
 
     /***********************/
     /** getter and setter **/
     /***********************/
     /**
      * Get the current instance configuration.
+     *
+     * @since 0.5.2
      *
      * @return current quasardb configuration
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
@@ -1135,6 +1380,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Updates the configuration properties
+     *
+     * @since 0.5.2
      *
      * @param config configuration properties
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed

@@ -32,9 +32,9 @@ import com.owlike.genson.annotation.JsonProperty;
 /**
  * Entity for supervision metrics.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.0.0
- * @since quasardb 0.7.5
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
+ * @since 0.7.5
  */
 public class FindUpdate implements java.io.Serializable {
     private static final long serialVersionUID = -582422130657648393L;

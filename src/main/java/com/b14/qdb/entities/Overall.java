@@ -32,8 +32,8 @@ import com.owlike.genson.annotation.JsonProperty;
 /**
  * Entity for supervision metrics.
  *
- * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2013
- * @version quasardb 1.0.0
+ * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @version 1.1.0
  * @since quasardb 0.7.5
  */
 public class Overall implements java.io.Serializable {

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -47,6 +48,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.b14.qdb.batch.Operation;
+import com.b14.qdb.batch.Result;
+import com.b14.qdb.batch.Results;
+import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.data.Pojo;
 import com.b14.qdb.entities.NodeConfig;
 import com.b14.qdb.entities.NodeStatus;
@@ -568,7 +573,7 @@ public class QuasardbTest {
         
         // Test 2.1 : nominal case - simple object
         String test = "Voici un super test";
-        qdbInstance.put("test_update_1", test);
+        qdbInstance.update("test_update_1", test);
         String result = qdbInstance.get("test_update_1");
         assertTrue(test.equals(result));
         
@@ -1125,5 +1130,503 @@ public class QuasardbTest {
         
         // Cleanup Qdb
         qdbInstance.removeAll();
+    }
+    
+    @Test
+    public void testRunBatch() throws QuasardbException {
+        qdbInstance.removeAll(); 
+        
+        // Test 1 : null param
+        try {
+            qdbInstance.runBatch(null);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 2 : nominal cases - valid batch operations
+        //  -> Test 2.1 : nominal case -> GET
+        Pojo testGet = new Pojo();        
+        testGet.setText("test_batch_get");
+        qdbInstance.put("test_batch_get", testGet);
+        List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
+        Operation<Pojo> operationGet = new Operation<Pojo>(TypeOperation.GET, "test_batch_get");
+        operations.add(operationGet);
+        Results results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET);
+            assertTrue(result.getError() == null);
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get"));
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.2 : nominal case -> PUT
+        Pojo testPut = new Pojo();
+        testPut.setText("test_batch_put");
+        Operation<Pojo> operationPut = new Operation<Pojo>(TypeOperation.PUT, "test_batch_put", testPut);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationPut);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_put"));
+            assertTrue(result.getTypeOperation() == TypeOperation.PUT);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() == null);
+            Pojo test = qdbInstance.get("test_batch_put");
+            assertTrue(test.getText().equals("test_batch_put"));
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.3 : nominal case -> UPDATE
+        qdbInstance.put("test_batch_update", "test");
+        assertTrue(((String) qdbInstance.get("test_batch_update")).equals("test"));
+        Pojo testUpdate = new Pojo();
+        testUpdate.setText("test_batch_update");
+        Operation<Pojo> operationUpdate = new Operation<Pojo>(TypeOperation.UPDATE, "test_batch_update", testUpdate);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationUpdate);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_update"));
+            assertTrue(result.getTypeOperation() == TypeOperation.UPDATE);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() == null);
+            Pojo test = qdbInstance.get("test_batch_update");
+            assertTrue(test.getText().equals("test_batch_update"));
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.4 : nominal case -> REMOVE
+        Pojo testRemove = new Pojo();
+        testRemove.setText("test_batch_remove");
+        qdbInstance.put("test_batch_remove", testRemove);
+        Operation<Pojo> operationRemove = new Operation<Pojo>(TypeOperation.REMOVE, "test_batch_remove");
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationRemove);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_remove"));
+            assertTrue(result.getTypeOperation() == TypeOperation.REMOVE);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() == null);
+            try {
+                qdbInstance.get("test_batch_remove");
+                fail("An exception must be thrown.");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.5 : nominal case -> CAS
+        Pojo testCas1 = new Pojo();
+        testCas1.setText("test_batch_cas");
+        qdbInstance.put("test_batch_cas", testCas1);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_cas")).getText().equals("test_batch_cas"));
+        Pojo testCas2 = new Pojo();
+        testCas2.setText("test_batch_cas_2");
+        
+        Operation<Pojo> operationCas = new Operation<Pojo>(TypeOperation.CAS, "test_batch_cas", testCas1, testCas2);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationCas);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_cas"));
+            assertTrue(result.getTypeOperation() == TypeOperation.CAS);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() != null);
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_cas")); // always return old value
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.6 : nominal case -> GET REMOVE
+        Pojo testGetRemove = new Pojo();
+        testGetRemove.setText("test_batch_get_remove");
+        qdbInstance.put("test_batch_get_remove", testGetRemove);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_get_remove")).getText().equals("test_batch_get_remove"));
+        
+        Operation<Pojo> operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_remove");
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationGetRemove);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get_remove"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET_REMOVE);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() != null);
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_remove"));
+        }
+        try {
+            qdbInstance.get("test_batch_get_remove");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.7 : nominal case -> GET UPDATE
+        Pojo testGetUpdate = new Pojo();
+        testGetUpdate.setText("test_batch_get_update");
+        qdbInstance.put("test_batch_get_update", testGetUpdate);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_get_update")).getText().equals("test_batch_get_update"));
+        Pojo testGetUpdate2 = new Pojo();
+        testGetUpdate2.setText("test_batch_get_update_2");
+        
+        Operation<Pojo> operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_update", testGetUpdate2);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationGetUpdate);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get_update"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET_UPDATE);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() != null);
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_update"));
+            assertTrue(((Pojo) qdbInstance.get("test_batch_get_update")).getText().equals("test_batch_get_update_2"));
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 2.8 : nominal case -> REMOVE IF
+        Pojo testRemoveIf = new Pojo();
+        testRemoveIf.setText("test_batch_remove_if");
+        qdbInstance.put("test_batch_remove_if", testRemoveIf);
+        Operation<Pojo> operationRemoveIf = new Operation<Pojo>(TypeOperation.REMOVE_IF, "test_batch_remove_if", testRemoveIf);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationRemoveIf);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_remove_if"));
+            assertTrue(result.getTypeOperation() == TypeOperation.REMOVE_IF);
+            assertTrue(result.getError() == null);
+            assertTrue(result.getValue() == null);
+            try {
+                qdbInstance.get("test_batch_remove_if");
+                fail("An exception must be thrown.");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        // Test 3 : Failed batch operations
+        //  -> Test 3.1 : Fail a GET       
+        operations = new ArrayList<Operation<Pojo>>();
+        operationGet = new Operation<Pojo>(TypeOperation.GET, "test_batch_get");
+        operations.add(operationGet);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.2 : Fail a PUT
+        operationPut = new Operation<Pojo>(TypeOperation.PUT, "test_batch_put", null);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationPut);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_put"));
+            assertTrue(result.getTypeOperation() == TypeOperation.PUT);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+            try {
+                qdbInstance.get("test_batch_put");
+                fail("An exception must be thrown.");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.3 : Fail a UPDATE
+        operationUpdate = new Operation<Pojo>(TypeOperation.UPDATE, "test_batch_update", null);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationUpdate);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_update"));
+            assertTrue(result.getTypeOperation() == TypeOperation.UPDATE);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+            try {
+                qdbInstance.get("test_batch_update");
+                fail("An exception must be thrown.");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.4 : Fail a REMOVE
+        operationRemove = new Operation<Pojo>(TypeOperation.REMOVE, "test_batch_remove");
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationRemove);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_remove"));
+            assertTrue(result.getTypeOperation() == TypeOperation.REMOVE);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.5 : Fail a CAS
+        qdbInstance.put("test_batch_cas", testCas1);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_cas")).getText().equals("test_batch_cas"));
+        operationCas = new Operation<Pojo>(TypeOperation.CAS, "test_batch_cas_fail", testCas1, testCas2);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationCas);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_cas_fail"));
+            assertTrue(result.getTypeOperation() == TypeOperation.CAS);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.6 : Fail a GET REMOVE
+        operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_remove");
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationGetRemove);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get_remove"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET_REMOVE);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.7 : Fail a GET UPDATE
+        operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_update", testGetUpdate2);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationGetUpdate);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_get_update"));
+            assertTrue(result.getTypeOperation() == TypeOperation.GET_UPDATE);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        //  -> Test 3.8 : Fail a REMOVE IF
+        operationRemoveIf = new Operation<Pojo>(TypeOperation.REMOVE_IF, "test_batch_remove_if", testRemoveIf);
+        operations = new ArrayList<Operation<Pojo>>();
+        operations.add(operationRemoveIf);
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_remove_if"));
+            assertTrue(result.getTypeOperation() == TypeOperation.REMOVE_IF);
+            assertTrue(result.getError() != null);
+            assertTrue(result.getValue() == null);
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        // Test 4 : simple successful put operations
+        testPut = new Pojo();
+        testPut.setText("test_batch_simple_put");
+        operations = new ArrayList<Operation<Pojo>>();
+        for (int i = 0; i < 300; i++) {
+            Operation<Pojo> operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_simple_" + i, testPut);
+            operations.add(operation);
+        }
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        int it = 0;
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().equals("test_batch_simple_" + it));
+            assertTrue(result.getError() == null);
+            assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_simple_put"));
+            it++;
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        // Test 5 : multiple successful operations
+        Pojo test = new Pojo();
+        test.setText("test_batch");
+        testPut = new Pojo();
+        testPut.setText("test_batch_put");
+        testGetUpdate = new Pojo();
+        testGetUpdate.setText("test_batch_get_update");
+        operations = new ArrayList<Operation<Pojo>>();
+        for (int i = 0; i < 300; i++) {
+            qdbInstance.put( "test_batch_" + i, test);
+            // PUT values
+            Operation<Pojo> operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_" + (300 + i), testPut);
+            operations.add(operation);
+            // GET values
+            if (i <= 100) {
+                operation = new Operation<Pojo>(TypeOperation.GET, "test_batch_" + i);
+                operations.add(operation);
+            }
+            // GET UPDATE values
+            if ((i > 100) && (i <= 200)) {
+                operation = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_" + i, testGetUpdate);
+                operations.add(operation);
+            }
+            // REMOVE
+            if (i > 200) {
+                operation = new Operation<Pojo>(TypeOperation.REMOVE, "test_batch_" + i);
+                operations.add(operation);
+            }
+        }
+        results = qdbInstance.runBatch(operations);
+        assertTrue(results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().startsWith("test_batch_"));
+            assertTrue(result.getError() == null);
+            if (result.getTypeOperation() == TypeOperation.PUT) {
+                assertTrue(result.getTypeOperation() == TypeOperation.PUT);
+                assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_put"));
+            } else if (result.getTypeOperation() == TypeOperation.GET) {
+                assertTrue(((Pojo) result.getValue()).getText().equals("test_batch"));
+            } else if (result.getTypeOperation() == TypeOperation.GET_UPDATE) {
+                assertTrue(((Pojo) result.getValue()).getText().equals("test_batch"));
+                assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_get_update"));
+            } else if (result.getTypeOperation() == TypeOperation.REMOVE) {
+                assertTrue(result.getValue() == null);
+                try {
+                    qdbInstance.get(result.getAlias());
+                    fail("An exception must be thrown.");
+                } catch (Exception e) {
+                    assertTrue(e instanceof QuasardbException);
+                }
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        // Test 6 : simple put operations with entry errors => all operations are in error.
+        testPut = new Pojo();
+        testPut.setText("test_batch_simple_put");
+        operations = new ArrayList<Operation<Pojo>>();
+        for (int i = 0; i < 300; i++) {
+            Operation<Pojo> operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_simple_" + i, testPut);
+            if (i % 2 != 0) {
+                operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_simple_error_" + i, null);
+            }
+            operations.add(operation);
+        }
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().startsWith("test_batch_simple_"));
+            assertTrue(result.getError() != null);
+            try {
+                qdbInstance.get(result.getAlias());
+                fail("An exception must be thrown.");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+        }
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
+        // Test 7 : simple put operations with legal errors
+        testPut = new Pojo();
+        testPut.setText("test_batch_simple_put");
+        operations = new ArrayList<Operation<Pojo>>();
+        for (int i = 0; i < 300; i++) {
+            Operation<Pojo> operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_simple_" + i, testPut);
+            if (i % 2 != 0) {
+                operation = new Operation<Pojo>(TypeOperation.PUT, "test_batch_simple_" + (i - 1), testPut);
+            }
+            operations.add(operation);
+        }
+        results = qdbInstance.runBatch(operations);
+        assertTrue(!results.isSuccess());
+        assertTrue(!results.getResults().isEmpty());
+        it = 0;
+        for (Result<?> result : results.getResults()) {
+            assertTrue(result.getAlias().startsWith("test_batch_simple_"));
+            if (result.getError() == null) {
+                it++;
+            } else {
+                assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_simple_put"));
+                it--;
+            }
+        }
+        assertTrue(it == 0);
+        operations = null;
+        results = null;
+        qdbInstance.removeAll();
+        
     }
 }
