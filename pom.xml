@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>master</version>
+	<version>${api-version}</version>
 	<name>Quasardb Java API</name>
 	<description>High level java client API</description>
 
