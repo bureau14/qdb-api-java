@@ -30,7 +30,7 @@
  * This package help to profiling java objects.
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.0
+ * @version master
  * @since 0.5.2
  */
 package com.b14.qdb.tools.profiler;

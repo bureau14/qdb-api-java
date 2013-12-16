@@ -35,6 +35,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Currency;
@@ -48,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -78,6 +80,7 @@ public class DataGenerator extends SimpleGenerator<Object[]> {
     private static final Date date = new Date();
     private static final byte[] bytes = new byte[] { (byte) 0xFF, (byte) 0xDA, (byte) 0xB6, (byte) 0x91, (byte) 0x6D, (byte) 0x48, (byte) 0x24, (byte) 0x00 };
     private static final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+    private static final BitSet bitSet = new BitSet(10);
     
     @SuppressWarnings("rawtypes")
     public static final Object[][] data = new Object[][] {
@@ -107,7 +110,7 @@ public class DataGenerator extends SimpleGenerator<Object[]> {
         { "test24", new PojoSerializable() },
         { "test25", new Double(12345) }, 
         { "test26", new Object[][] { { 1 }, { 2 }, { 3 }, { 4 } } }, 
-        { "test27", triple }, 
+        { "test27", UUID.randomUUID() }, 
         { "test28", new Float[] {2.0f, 4.0f} },
         { "test29", new Long[] {4l, 5l} }, 
         { "test30", new boolean[] {true, false} },
@@ -124,7 +127,7 @@ public class DataGenerator extends SimpleGenerator<Object[]> {
         { "test41", Collections.singleton("test-SingletonSet") },
         { "test42", Collections.singletonMap("test-SingletonMap", "test") },
         { "test43", EnumSet.allOf(Gender.class) },
-        { "test44", enummap },
+        { "test44", bitSet },
         { "test45", linkedhashmap },
         { "test46", Calendar.getInstance( Locale.ENGLISH ) },
         { "test47", new StringBuffer("<stringbuffer>with some content \n& some lines...</stringbuffer>") },
@@ -143,19 +146,17 @@ public class DataGenerator extends SimpleGenerator<Object[]> {
         { "test60", Arrays.asList() },
         { "test61", Arrays.asList(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }) },
         { "test62", Arrays.asList( "foo", "bar" ) },
-        { "test63", p1 },
-        { "test64", String.class },
-        { "test65", new AtomicLong(42) },
-        { "test66", "123456789".getBytes() },
-        { "test67", "123456789".toCharArray() },
-        { "test68", new Container() },
-        { "test69", new File("/tmp") },
-        { "test70", new MyContainer() },
-        { "test71", new EntityWithCollections() },
-        { "test72", new Byte("b".getBytes()[0]) },
-        { "test73", buffer },
-        { "test74", proxy1 },
-        { "test75", proxy2 }
+        { "test63", String.class },
+        { "test64", new AtomicLong(42) },
+        { "test65", "123456789".getBytes() },
+        { "test66", "123456789".toCharArray() },
+        { "test67", new Container() },
+        { "test68", new File("/tmp") },
+        { "test79", new MyContainer() },
+        { "test70", new EntityWithCollections() },
+        { "test71", new Byte("b".getBytes()[0]) },
+        { "test72", buffer },
+        { "test73", proxy1 }
     };
     
     static {

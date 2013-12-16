@@ -38,7 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @deprecated
  * @param <K> the type of the object to be locked
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.0
+ * @version master
  * @since 0.6.0
  */
 public class LockManager<K> {

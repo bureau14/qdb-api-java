@@ -57,7 +57,7 @@ package com.b14.qdb.batch;
  * <br>
  * 
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.0
+ * @version master
  * @since 1.1.0
  */
 public class Operation<V> {

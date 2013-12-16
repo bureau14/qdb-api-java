@@ -37,7 +37,6 @@ import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -69,9 +68,8 @@ import com.b14.qdb.jni.qdb_operation_type_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
 import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
-import com.b14.qdb.tools.profiler.ObjectProfiler;
+import com.b14.qdb.tools.profiler.RamUsageEstimator;
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.SerializationException;
 import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -79,19 +77,16 @@ import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrateg
 import com.owlike.genson.Genson;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
-import de.javakaffee.kryoserializers.ClassSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyMapSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptySetSerializer;
 import de.javakaffee.kryoserializers.CollectionsSingletonListSerializer;
 import de.javakaffee.kryoserializers.CollectionsSingletonMapSerializer;
 import de.javakaffee.kryoserializers.CollectionsSingletonSetSerializer;
-import de.javakaffee.kryoserializers.CurrencySerializer;
 import de.javakaffee.kryoserializers.GregorianCalendarSerializer;
 import de.javakaffee.kryoserializers.JdkProxySerializer;
-import de.javakaffee.kryoserializers.StringBufferSerializer;
-import de.javakaffee.kryoserializers.StringBuilderSerializer;
-import de.javakaffee.kryoserializers.cglib.CGLibProxySerializer;
+import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 
 /**
  * Quasardb main abstraction layer.<br>
@@ -277,27 +272,17 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         serializer.setRegistrationRequired(false);
         serializer.setReferences(false);
         serializer.setInstantiatorStrategy(new StdInstantiatorStrategy());
-
+        serializer.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
         serializer.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
         serializer.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
         serializer.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-        serializer.register(Collections.singletonList("").getClass(), new CollectionsSingletonListSerializer(serializer));
-        serializer.register(Collections.singleton("").getClass(), new CollectionsSingletonSetSerializer(serializer));
-        serializer.register(Collections.singletonMap("", "").getClass(), new CollectionsSingletonMapSerializer(serializer));
-
-        //  -> Handle empty arrays
-        serializer.register(Arrays.asList("").getClass(), new ArraysAsListSerializer(serializer));
-
-        //  -> Handle String tools
-        serializer.register(StringBuffer.class, new StringBufferSerializer(serializer));
-        serializer.register(StringBuilder.class, new StringBuilderSerializer(serializer));
-
-        //  -> Handle specific classes
-        serializer.register(Class.class, new ClassSerializer(serializer));
-        serializer.register(Currency.class, new CurrencySerializer(serializer));
+        serializer.register(Collections.singletonList("").getClass(), new CollectionsSingletonListSerializer());
+        serializer.register(Collections.singleton("").getClass(), new CollectionsSingletonSetSerializer());
+        serializer.register(Collections.singletonMap("", "").getClass(), new CollectionsSingletonMapSerializer());
         serializer.register(GregorianCalendar.class, new GregorianCalendarSerializer());
-        serializer.register(InvocationHandler.class, new JdkProxySerializer(serializer));
-        serializer.register(CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer(serializer));
+        serializer.register(InvocationHandler.class, new JdkProxySerializer());
+        UnmodifiableCollectionsSerializer.registerSerializers(serializer);
+        SynchronizedCollectionsSerializer.registerSerializers(serializer);
 
         // Try to open a qdb session
         session = qdb.open();
@@ -695,7 +680,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // De-serialize
         try {
             result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
-        } catch (SerializationException e) {
+        } catch (Exception e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
             // Free ressources
@@ -742,7 +727,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // De-serialize
         try {
             result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
-        } catch (SerializationException e) {
+        } catch (Exception e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
             // Free ressources
@@ -902,7 +887,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = ObjectProfiler.sizeof(comparand);
+            bufferSize = (int) RamUsageEstimator.sizeOf(comparand);
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -924,7 +909,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             if (qdbError != qdb_error_t.error_ok) {
                 throw new QuasardbException(qdbError);
             }
-        } catch (SerializationException e) {
+        } catch (Exception e) {
             throw new QuasardbException(BAD_SERIALIZATION, e);
         } finally {
             // Cleanup
@@ -1015,7 +1000,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 if ((operation.getValue() != null) && (req.getType() != qdb_operation_type_t.optionp_remove_if)) {
                     ByteBuffer buffer = null;
                     try {
-                        int bufferSize = ObjectProfiler.sizeof(operation.getValue());
+                        int bufferSize = (int) RamUsageEstimator.sizeOf(operation.getValue());
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
@@ -1027,7 +1012,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         req.setContent(buffer);
                         
                         buffers.add(buffer);
-                    } catch (SerializationException e) {
+                    } catch (Exception e) {
                         req.setContent_size(0);
                         req.setContent(null);
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
@@ -1039,7 +1024,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     ByteBuffer buffer = null;
                     V comparandValue = (req.getType() == qdb_operation_type_t.optionp_remove_if)?operation.getValue():operation.getCompareValue();
                     try {
-                        int bufferSize = ObjectProfiler.sizeof(comparandValue);
+                        int bufferSize = (int) RamUsageEstimator.sizeOf(comparandValue);
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
@@ -1051,7 +1036,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         req.setComparand(buffer);
                         
                         buffers.add(buffer);
-                    } catch (SerializationException e) {
+                    } catch (Exception e) {
                         req.setComparand_size(0);
                         req.setComparand(null);
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
@@ -1117,7 +1102,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 
                 try {
                     result.setValue((V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer))));
-                } catch (SerializationException e) {
+                } catch (Exception e) {
                     result.setValue(null);
                     result.setError(qdb_error_t.error_unmatched_content.toString());
                     result.setSuccess(false);
@@ -1271,7 +1256,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = ObjectProfiler.sizeof(value);
+            bufferSize = (int) RamUsageEstimator.sizeOf(value);
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -1304,7 +1289,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     } else {
                         int otherSize = BUFFER_SIZE;
                         try {
-                            otherSize = ObjectProfiler.sizeof(other);
+                            otherSize = (int) RamUsageEstimator.sizeOf(other);
                             if (otherSize == 0) {
                                 otherSize = BUFFER_SIZE;
                             }
@@ -1337,7 +1322,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 bufferResult.rewind();
                 try {
                     result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(bufferResult)));
-                } catch (SerializationException e) {
+                } catch (Exception e) {
                     throw new QuasardbException(e.getMessage(), e);
                 } finally {
                     qdb.free_buffer(session, bufferResult);
@@ -1346,7 +1331,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             }
             
             return result;
-        } catch (SerializationException e) {
+        } catch (Exception e) {
             throw new QuasardbException(BAD_SERIALIZATION, e);
         } finally {
             // Cleanup
@@ -1493,7 +1478,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 V value = null;
                 try {
                     value = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
-                } catch (SerializationException e) {
+                } catch (Exception e) {
                     throw new QuasardbException(e.getMessage(), e);
                 } finally {
                     // Free ressources

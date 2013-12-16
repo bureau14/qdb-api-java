@@ -33,7 +33,7 @@ import com.owlike.genson.annotation.JsonProperty;
  * Entity for supervision metrics.
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.0
+ * @version master
  * @since 0.7.5
  */
 public class Memories implements java.io.Serializable {

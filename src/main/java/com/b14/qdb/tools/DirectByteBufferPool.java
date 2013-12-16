@@ -37,7 +37,7 @@ import java.nio.ByteOrder;
  * 
  * @deprecated
  * @author &copy; <a href="http://www.bureau14.fr/">bureau14</a> - 2011
- * @version 1.1.0
+ * @version master
  * @since 0.5.2
  */
 public final class DirectByteBufferPool {

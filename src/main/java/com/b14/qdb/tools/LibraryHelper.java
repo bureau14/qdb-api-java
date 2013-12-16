@@ -248,9 +248,11 @@ public class LibraryHelper {
                 return new File(dirTemp + File.separator + inf.getName());
             }
             
-            fileTmp = new File(dirTemp + File.separator + inf.getName().substring(0, inf.getName().lastIndexOf('/')));
-            fileTmp.mkdirs();
-            fileTmp.deleteOnExit();
+            if (inf.getName().lastIndexOf('/') != -1) {
+                fileTmp = new File(dirTemp + File.separator + inf.getName().substring(0, inf.getName().lastIndexOf('/')));
+                fileTmp.mkdirs();
+                fileTmp.deleteOnExit();
+            }
             
             fileTmp = new File(dirTemp + File.separator + inf.getName());
             fileTmp.deleteOnExit();

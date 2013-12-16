@@ -61,7 +61,7 @@ import com.b14.qdb.tools.LibraryHelper;
 
 @RunWith(Feeder.class)
 public class QuasardbRawTest {
-    private static final int NB_LOOPS = 1000;
+    private static final int NB_LOOPS = 50;
     private static final int NB_THREADS = 1;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
@@ -144,8 +144,6 @@ public class QuasardbRawTest {
     public void rawPutGetUpdateDeleteTest(String key, Object value) {
         error_carrier error = new error_carrier();
         key += "_" + Thread.currentThread().getId();
-        
-        error_carrier error = new error_carrier();
         
         buffer.put((value.toString()).getBytes());
         buffer.flip();
