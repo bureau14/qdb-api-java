@@ -38,17 +38,13 @@ import java.util.Map;
 import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
-import org.databene.contiperf.junit.ContiPerfRule;
 import org.databene.feed4junit.Feeder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.b14.tests.tools.CustomContiperfFileExecutionLogger;
 
 @RunWith(Feeder.class)
 public class QuasardbParallelTest {
@@ -59,10 +55,7 @@ public class QuasardbParallelTest {
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
     private static final Map<String,String> config = new HashMap<String,String>();
     private static final Quasardb qdb = new Quasardb();
-    
-    @Rule
-    public ContiPerfRule i = new ContiPerfRule(new CustomContiperfFileExecutionLogger());
-    
+   
     public QuasardbParallelTest() {
     }
     

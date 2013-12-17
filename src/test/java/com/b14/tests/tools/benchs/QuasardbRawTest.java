@@ -39,17 +39,14 @@ import java.util.Map;
 import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
-import org.databene.contiperf.junit.ContiPerfRule;
 import org.databene.feed4junit.Feeder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.b14.tests.tools.CustomContiperfFileExecutionLogger;
 import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbTest;
@@ -61,7 +58,7 @@ import com.b14.qdb.tools.LibraryHelper;
 
 @RunWith(Feeder.class)
 public class QuasardbRawTest {
-    private static final int NB_LOOPS = 50;
+    private static final int NB_LOOPS = 10;
     private static final int NB_THREADS = 1;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
@@ -80,9 +77,6 @@ public class QuasardbRawTest {
             LibraryHelper.loadLibrairiesFromJar();
         }
     }
-    
-    @Rule
-    public ContiPerfRule i = new ContiPerfRule(new CustomContiperfFileExecutionLogger());
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -175,7 +169,6 @@ public class QuasardbRawTest {
         try {
             qdbDB.remove(key);
         } catch (QuasardbException e) {
-            e.printStackTrace();
         }
         
         try {
@@ -195,13 +188,13 @@ public class QuasardbRawTest {
             fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
+            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
             e.printStackTrace();
         } finally {
             // Clean up stored value
             try {
                 qdbDB.remove(key);
             } catch (QuasardbException e) {
-                e.printStackTrace();
             }
         } 
     }

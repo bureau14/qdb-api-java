@@ -114,7 +114,6 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *     <li><u>runBatch:</u> can increase performance when it is necessary to run many small operations.</li>
  *     <li><u>stopCurrentNode:</u> stop the current quasardb instance.</li>
  *     <li><u>stopNode:</u> stop a provided quasardb instance.</li>
- *     TODO
  * </ul>
  *
  * <p>
@@ -144,6 +143,14 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *       // Notice that this step is optional
  *       qdb.close();
  * </pre>
+ * </p>
+ * 
+ * <p>
+ * <u>Note about entries :</u>
+ * <br>
+ * A majority of entries type can be stored in quasardb without any further work.
+ * But there are some limitations. 
+ * As Kryo is the underlying framework used to serialize objects in quasard, you can find all limitations by consulting kryo's documentation (https://github.com/EsotericSoftware/kryo#compatibility)
  * </p>
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
