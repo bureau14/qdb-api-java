@@ -68,7 +68,7 @@ import com.b14.qdb.jni.qdb_operation_type_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
 import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
-import com.b14.qdb.tools.profiler.RamUsageEstimator;
+import com.b14.qdb.tools.profiler.Introspector;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.Input;
@@ -203,6 +203,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     // Default expiry time in second => 0 means that entry is eternal
     private long defaultExpiryTime = 0;
+    
+    // Class introspector => sizeOf like
+    private final Introspector classIntrospector = new Introspector();
 
     public Quasardb() {
     }
@@ -894,7 +897,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = (int) RamUsageEstimator.sizeOf(comparand);
+            bufferSize = (int) classIntrospector.introspect(comparand).getDeepSize();
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -1007,7 +1010,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 if ((operation.getValue() != null) && (req.getType() != qdb_operation_type_t.optionp_remove_if)) {
                     ByteBuffer buffer = null;
                     try {
-                        int bufferSize = (int) RamUsageEstimator.sizeOf(operation.getValue());
+                        int bufferSize = (int) classIntrospector.introspect(operation.getValue()).getDeepSize();
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
@@ -1031,7 +1034,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     ByteBuffer buffer = null;
                     V comparandValue = (req.getType() == qdb_operation_type_t.optionp_remove_if)?operation.getValue():operation.getCompareValue();
                     try {
-                        int bufferSize = (int) RamUsageEstimator.sizeOf(comparandValue);
+                        int bufferSize = (int) classIntrospector.introspect(comparandValue).getDeepSize();
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
@@ -1263,7 +1266,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = (int) RamUsageEstimator.sizeOf(value);
+            bufferSize = (int) classIntrospector.introspect(value).getDeepSize();
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -1296,7 +1299,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     } else {
                         int otherSize = BUFFER_SIZE;
                         try {
-                            otherSize = (int) RamUsageEstimator.sizeOf(other);
+                            otherSize = (int) classIntrospector.introspect(other).getDeepSize();
                             if (otherSize == 0) {
                                 otherSize = BUFFER_SIZE;
                             }

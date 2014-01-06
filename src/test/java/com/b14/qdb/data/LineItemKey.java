@@ -51,8 +51,7 @@ public final class LineItemKey implements Serializable {
             return false;
         }
         LineItemKey other = (LineItemKey) otherOb;
-        return ((orderId == null ? other.orderId == null : orderId
-                .equals(other.orderId)) && (itemId == other.itemId));
+        return ((orderId == null ? other.orderId == null : orderId.equals(other.orderId)) && (itemId == other.itemId));
     }
 
     public int hashCode() {
