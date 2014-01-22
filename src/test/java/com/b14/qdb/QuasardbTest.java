@@ -41,7 +41,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -53,9 +58,6 @@ import com.b14.qdb.batch.Result;
 import com.b14.qdb.batch.Results;
 import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.data.Pojo;
-import com.b14.qdb.entities.NodeConfig;
-import com.b14.qdb.entities.NodeStatus;
-import com.b14.qdb.entities.NodeTopology;
 import com.b14.qdb.entities.QuasardbEntry;
 
 public class QuasardbTest {
@@ -617,13 +619,75 @@ public class QuasardbTest {
         assertNull("Exception must be null", exception.getMessage());
     }  
     
-    @Test
-    public void testGetCurrentNodeConfig() throws QuasardbException {
+   @Test
+   public void testGetCurrentNodeConfig() throws QuasardbException {
         try {
-            NodeConfig test = null;
-            test = qdbInstance.getCurrentNodeConfig();
-            assertFalse(test == null);
-            assertTrue(test.getLocal().getNetwork().getListen_on().equalsIgnoreCase("127.0.0.1:2836"));
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            Pattern pattern = null;
+            
+            String test = qdbInstance.getCurrentNodeConfig();
+            
+            JsonFactory f = new JsonFactory();            
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("listen_on".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(IPADDRESS_PATTERN);
+                    jp.nextToken(); // listen_on value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("node_id".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(NODE_PATTERN);
+                    jp.nextToken(); // node_id value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    }
+   
+    @Test
+    public void testGetNodeConfig() throws QuasardbException {
+        try {
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            Pattern pattern = null;
+            
+            String test = qdbInstance.getNodeConfig("127.0.0.1", 2836);
+            
+            JsonFactory f = new JsonFactory();            
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("listen_on".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(IPADDRESS_PATTERN);
+                    jp.nextToken(); // listen_on value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("node_id".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(NODE_PATTERN);
+                    jp.nextToken(); // node_id value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
         } catch (Exception e) {
             fail("No exception allowed.");
         }
@@ -632,58 +696,216 @@ public class QuasardbTest {
     @Test
     public void testGetCurrentNodeStatus() throws QuasardbException {
         try {
-            NodeStatus test = null;
-            test = qdbInstance.getCurrentNodeStatus();
-            assertFalse(test == null);
-            assertTrue(test.getListening_addresses()[0].equalsIgnoreCase("127.0.0.1:2836"));
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String PORT_PATTERN = "\\d{2,6}";
+            final String TIMESTAMP_PATTERN = "[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
+            Pattern pattern = null;
+            
+            String test = qdbInstance.getCurrentNodeStatus();
+            
+            JsonFactory f = new JsonFactory();            
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("listening_address".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(IPADDRESS_PATTERN);
+                    jp.nextToken(); // listening_address value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("listening_port".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(PORT_PATTERN);
+                    jp.nextToken(); // listening_port value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("node_id".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(NODE_PATTERN);
+                    jp.nextToken(); // node_id value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("startup".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(TIMESTAMP_PATTERN);
+                    jp.nextToken(); // startup value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("timestamp".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(TIMESTAMP_PATTERN);
+                    jp.nextToken(); // timestamp value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
         } catch (Exception e) {
             fail("No exception allowed.");
         }
-    } 
-    
-    @Test
-    public void testGetCurrentNodeTopology() throws QuasardbException {
-        try {
-            NodeTopology test = null;
-            test = qdbInstance.getCurrentNodeTopology();
-            assertFalse(test == null);
-            assertTrue(test.getCenter().getEndpoint().equalsIgnoreCase("127.0.0.1:2836"));
-        } catch (Exception e) {
-            fail("No exception allowed.");
-        }
-    } 
-    
-    @Test
-    public void testGetNodeConfig() throws QuasardbException {
-        try {
-            NodeConfig test = null;
-            test = qdbInstance.getNodeConfig("127.0.0.1", 2836);
-            assertFalse(test == null);
-            assertTrue(test.getLocal().getNetwork().getListen_on().equalsIgnoreCase("127.0.0.1:2836"));
-        } catch (Exception e) {
-            fail("No exception allowed.");
-        }
-    } 
+    }
     
     @Test
     public void testGetNodeStatus() throws QuasardbException {
         try {
-            NodeStatus test = null;
-            test = qdbInstance.getNodeStatus("127.0.0.1", 2836);
-            assertFalse(test == null);
-            assertTrue(test.getListening_addresses()[0].equalsIgnoreCase("127.0.0.1:2836"));
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String PORT_PATTERN = "\\d{2,6}";
+            final String TIMESTAMP_PATTERN = "[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
+            Pattern pattern = null;
+            
+            String test = qdbInstance.getNodeStatus("127.0.0.1", 2836);
+            
+            JsonFactory f = new JsonFactory();            
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("listening_address".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(IPADDRESS_PATTERN);
+                    jp.nextToken(); // listening_address value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("listening_port".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(PORT_PATTERN);
+                    jp.nextToken(); // listening_port value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("node_id".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(NODE_PATTERN);
+                    jp.nextToken(); // node_id value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("startup".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(TIMESTAMP_PATTERN);
+                    jp.nextToken(); // startup value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("timestamp".equals(fieldname) && !"}".equals(jp.getText())) {
+                    pattern = Pattern.compile(TIMESTAMP_PATTERN);
+                    jp.nextToken(); // timestamp value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
         } catch (Exception e) {
             fail("No exception allowed.");
         }
-    } 
+    }
+    
+    @Test
+    public void testGetCurrentNodeTopology() throws QuasardbException {
+        try {
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+            
+            String test = qdbInstance.getCurrentNodeTopology();
+            
+            JsonFactory f = new JsonFactory();
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("center".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("predecessor".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("successor".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
+        } catch (Exception e) {
+            fail("No exception allowed.");
+        }
+    }
     
     @Test
     public void testGetNodeTopology() throws QuasardbException {
         try {
-            NodeTopology test = null;
-            test = qdbInstance.getNodeTopology("127.0.0.1", 2836);
-            assertFalse(test == null);
-            assertTrue(test.getCenter().getEndpoint().equalsIgnoreCase("127.0.0.1:2836"));
+            final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            final Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+            
+            String test = qdbInstance.getNodeTopology("127.0.0.1", 2836);
+            
+            JsonFactory f = new JsonFactory();
+            JsonParser jp = f.createJsonParser(test);
+            jp.nextToken();
+            while (jp.nextToken() != null) {
+                String fieldname = jp.getCurrentName();
+                if ("center".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("predecessor".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                } else if ("successor".equals(fieldname) && !"}".equals(jp.getText())) {
+                    jp.nextToken(); // {
+                    jp.nextToken(); // endpoint
+                    assertTrue(jp.getText().equals("endpoint"));
+                    jp.nextToken(); // endpoint value
+                    Matcher matcher = pattern.matcher(jp.getText());
+                    if (!matcher.find()) {
+                        fail("No exception allowed here.");
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            assertTrue(e.getMessage().indexOf("only regular white space") > -1);
         } catch (Exception e) {
             fail("No exception allowed.");
         }

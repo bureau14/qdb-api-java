@@ -116,12 +116,6 @@
             <artifactId>cdi-api</artifactId>
             <version>1.0-SP4</version>
         </dependency> -->
-
-		<dependency>
-		  <groupId>com.owlike</groupId>
-		  <artifactId>genson</artifactId>
-		  <version>0.94</version>
-		</dependency>
 		
 		<!-- Add dependency to the junit framework - Unit Testing tools -->
 		<dependency>
@@ -140,6 +134,14 @@
 			<groupId>org.databene</groupId>
 			<artifactId>feed4junit</artifactId>
 			<version>${feed4junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Add dependency to JSON parsing library - Unit Tests -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>1.9.13</version>
 			<scope>test</scope>
 		</dependency>
 		

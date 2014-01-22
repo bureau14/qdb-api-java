@@ -27,7 +27,7 @@
  */
 
 /**
- * Entities for supervision metrics like node status, node configuration or node topology.
+ * Entities.
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
  * @version master

@@ -52,9 +52,6 @@ import com.b14.qdb.batch.Operation;
 import com.b14.qdb.batch.Result;
 import com.b14.qdb.batch.Results;
 import com.b14.qdb.batch.TypeOperation;
-import com.b14.qdb.entities.NodeConfig;
-import com.b14.qdb.entities.NodeStatus;
-import com.b14.qdb.entities.NodeTopology;
 import com.b14.qdb.entities.QuasardbEntry;
 import com.b14.qdb.jni.BatchOpsVec;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
@@ -74,7 +71,6 @@ import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
-import com.owlike.genson.Genson;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
@@ -154,7 +150,7 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  * </p>
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.0
+ * @version master
  * @since 0.5.2
  */
 @SuppressWarnings("restriction")
@@ -191,9 +187,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     // Serializer initialisation
     private final Kryo serializer = new Kryo();
-    
-    // JSON Deserializer
-    private final Genson genson = new Genson();
 
     // Keep qdb session reference
     private transient SWIGTYPE_p_qdb_session session;
@@ -333,58 +326,399 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Retrieve the status of the current quasardb instance.
+     * Retrieve the status of the current quasardb instance in JSON format.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "engine_build_date":"87f8d02 2014-01-15 16:12:30 +0100",
+     *       "engine_version":"master",
+     *       "entries":
+     *       {
+     *          "persisted":{"count":0,"size":0},
+     *           "resident":{"count":0,"size":0}
+     *       },
+     *       "hardware_concurrency":6,
+     *       "memory":
+     *       {
+     *           "physmem":{"total":25767272448,"used":5493329920},
+     *           "vm":{"total":8796092891136,"used":417980416}
+     *       },
+     *       "network":{
+     *           "listening_address":"127.0.0.1",
+     *           "listening_port":2836,
+     *           "partitions":
+     *           {
+     *               "available_sessions":[1999,1999,2000,2000,2000],
+     *               "count":5,
+     *               "max_sessions":2000
+     *           }
+     *       },
+     *       "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9",
+     *       "operating_system":"Microsoft Windows 7 Ultimate Edition Service Pack 1 (build 7601), 64-bit",
+     *       "operations":
+     *       {
+     *           "compare_and_swap":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find_remove":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find_update":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "put":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "remove":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "remove_all":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *          },
+     *           "remove_if":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "update":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *          }
+     *       },
+     *       "overall":{
+     *           "count":0,
+     *           "evictions":0,
+     *           "failures":0,
+     *           "in_bytes":0,
+     *           "out_bytes":0,
+     *           "pageins":0,
+     *           "successes":0
+     *       },
+     *       "startup":"2014-01-20T15:01:11",
+     *       "timestamp":"2014-01-20T15:09:40"
+     * }
+     * </pre>
+     * 
      *
      * @since 0.7.4
      * 
-     * @return status of the current quasardb instance.
+     * @return status of the current quasardb instance in JSON
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeStatus getCurrentNodeStatus() throws QuasardbException {
+    public String getCurrentNodeStatus() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "status"), NodeStatus.class);
+            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "status");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
     }
     
     /**
-     * Retrieve the status of the current quasardb instance.
+     * Retrieve the status of the current quasardb instance in JSON format.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "engine_build_date":"87f8d02 2014-01-15 16:12:30 +0100",
+     *       "engine_version":"master",
+     *       "entries":
+     *       {
+     *          "persisted":{"count":0,"size":0},
+     *           "resident":{"count":0,"size":0}
+     *       },
+     *       "hardware_concurrency":6,
+     *       "memory":
+     *       {
+     *           "physmem":{"total":25767272448,"used":5493329920},
+     *           "vm":{"total":8796092891136,
+     *           "used":417980416}
+     *       },
+     *       "network":{
+     *           "listening_address":"127.0.0.1",
+     *           "listening_port":2836,
+     *           "partitions":
+     *           {
+     *               "available_sessions":[1999,1999,2000,2000,2000],
+     *               "count":5,
+     *               "max_sessions":2000
+     *           }
+     *       },
+     *       "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9",
+     *       "operating_system":"Microsoft Windows 7 Ultimate Edition Service Pack 1 (build 7601), 64-bit",
+     *       "operations":
+     *       {
+     *           "compare_and_swap":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *              "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find_remove":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "find_update":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "put":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "remove":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "remove_all":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *          },
+     *           "remove_if":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *           },
+     *           "update":{
+     *               "count":0,
+     *               "evictions":0,
+     *               "failures":0,
+     *               "in_bytes":0,
+     *               "out_bytes":0,
+     *               "pageins":0,
+     *               "successes":0
+     *          }
+     *       },
+     *       "overall":{
+     *           "count":0,
+     *           "evictions":0,
+     *           "failures":0,
+     *           "in_bytes":0,
+     *           "out_bytes":0,
+     *           "pageins":0,
+     *           "successes":0
+     *       },
+     *       "startup":"2014-01-20T15:01:11",
+     *       "timestamp":"2014-01-20T15:09:40"
+     * }
+     * </pre>
+     * 
      *
      * @since 0.7.4
      * 
      * @param node the host of the quasardb node you want to retrieve status
      * @param port the port of the quasardb node you want to retrieve status
-     * @return status of the current quasardb instance.
+     * @return status of the current quasardb instance in JSON
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeStatus getNodeStatus(final String node, final int port) throws QuasardbException {
+    public String getNodeStatus(final String node, final int port) throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo(node, port, "status"), NodeStatus.class);
+            return this.getNodeInfo(node, port, "status");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
     }
     
     /**
-     * Retrieve the configuration of the current quasardb instance.
+     * Retrieve the configuration of the current quasardb instance in JSON.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "global":{
+     *           "depot":{
+     *               "replication_factor":1,
+     *               "root":"db",
+     *               "sync":false,
+     *               "transient":false
+     *           },
+     *           "limiter":{
+     *               "max_bytes":12883636224,
+     *               "max_in_entries_count":100000
+     *           }
+     *       },
+     *       "local":{
+     *           "chord":{
+     *               "bootstrapping_peers":[],
+     *               "no_stabilization":false,
+     *               "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *           },
+     *           "logger":{
+     *               "dump_file":"qdb_error_dump.txt",
+     *               "flush_interval":3,
+     *               "log_files":[],
+     *               "log_level":2,
+     *               "log_to_console":true,
+     *               "log_to_syslog":false
+     *           },
+     *           "network":{
+     *               "client_timeout":60,
+     *               "idle_timeout":300,
+     *               "listen_on":"127.0.0.1:2836",
+     *               "partitions_count":5,
+     *               "server_sessions":2000
+     *           },
+     *           "user":{
+     *               "license_file":"qdb.lic"
+     *           }
+     *       }
+     * }
+     * </pre> 
      *
      * @since 0.7.4
      * 
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeConfig getCurrentNodeConfig() throws QuasardbException {
+    public String getCurrentNodeConfig() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "config"), NodeConfig.class);
+            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "config");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
     }
     
     /**
-     * Retrieve the configuration of the specific quasardb instance.
-     *
+     * Retrieve the configuration of the specific quasardb instance in JSON.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "global":{
+     *           "depot":{
+     *               "replication_factor":1,
+     *               "root":"db",
+     *               "sync":false,
+     *               "transient":false
+     *           },
+     *           "limiter":{
+     *               "max_bytes":12883636224,
+     *               "max_in_entries_count":100000
+     *           }
+     *       },
+     *       "local":{
+     *           "chord":{
+     *               "bootstrapping_peers":[],
+     *               "no_stabilization":false,
+     *               "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *           },
+     *           "logger":{
+     *               "dump_file":"qdb_error_dump.txt",
+     *               "flush_interval":3,
+     *               "log_files":[],
+     *               "log_level":2,
+     *               "log_to_console":true,
+     *               "log_to_syslog":false
+     *           },
+     *           "network":{
+     *               "client_timeout":60,
+     *               "idle_timeout":300,
+     *               "listen_on":"127.0.0.1:2836",
+     *               "partitions_count":5,
+     *               "server_sessions":2000
+     *           },
+     *           "user":{
+     *               "license_file":"qdb.lic"
+     *           }
+     *       }
+     * }
+     * </pre>      
+
      * @since 0.7.4
      * 
      * @param node the host of the quasardb node you want to retrieve configuration
@@ -392,25 +726,81 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeConfig getNodeConfig(final String node, final int port) throws QuasardbException {
+    public String getNodeConfig(final String node, final int port) throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo(node, port, "config"), NodeConfig.class);
+            return this.getNodeInfo(node, port, "config");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
     }
     
     /**
-     * Retrieve the topology of the current quasardb instance.
+     * Retrieve the topology of the current quasardb instance in JSON.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "center":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       },
+     *       "predecessor":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       },
+     *       "successor":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       }
+     * }
+     * 
+     * </pre>
      *
      * @since 0.7.4
      * 
      * @return topology of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public NodeTopology getCurrentNodeTopology() throws QuasardbException {
+    public String getCurrentNodeTopology() throws QuasardbException {
         try {
-            return genson.deserialize(this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "topology"), NodeTopology.class);
+            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "topology");
+        } catch (Exception e) {
+            throw new QuasardbException(e);
+        }
+    } 
+
+    /**
+     * Retrieve the topology of the current quasardb instance.
+     * <br>
+     * JSON response has the following format :
+     * <pre>
+     * {
+     *       "center":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       },
+     *       "predecessor":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       },
+     *       "successor":{
+     *           "endpoint":"127.0.0.1:2836",
+     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *       }
+     * }
+     * 
+     * </pre>
+     * 
+     * @since 0.7.4
+     * 
+     * @param node the host of the quasardb node you want to retrieve topology
+     * @param port the port of the quasardb node you want to retrieve topology
+     * @return topology of the current quasardb instance.
+     * @throws QuasardbException if the connection with the current instance fail.
+     */
+    public String getNodeTopology(final String node, final int port) throws QuasardbException {
+        try {
+            return this.getNodeInfo(node, port, "topology");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -553,24 +943,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      */
     public void setDefaultExpiryTimeInSeconds(long expiryTime) {
         this.defaultExpiryTime = (expiryTime < 0 ? 0 : expiryTime);
-    }
-    
-    /**
-     * Retrieve the topology of the current quasardb instance.
-     *
-     * @since 0.7.4
-     * 
-     * @param node the host of the quasardb node you want to retrieve topology
-     * @param port the port of the quasardb node you want to retrieve topology
-     * @return topology of the current quasardb instance.
-     * @throws QuasardbException if the connection with the current instance fail.
-     */
-    public NodeTopology getNodeTopology(final String node, final int port) throws QuasardbException {
-        try {
-            return genson.deserialize(this.getNodeInfo(node, port, "topology"), NodeTopology.class);
-        } catch (Exception e) {
-            throw new QuasardbException(e);
-        }
     }
     
     /**
