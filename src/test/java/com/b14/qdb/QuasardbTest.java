@@ -623,7 +623,7 @@ public class QuasardbTest {
    public void testGetCurrentNodeConfig() throws QuasardbException {
         try {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
             Pattern pattern = null;
             
             String test = qdbInstance.getCurrentNodeConfig();
@@ -660,7 +660,7 @@ public class QuasardbTest {
     public void testGetNodeConfig() throws QuasardbException {
         try {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
             Pattern pattern = null;
             
             String test = qdbInstance.getNodeConfig("127.0.0.1", 2836);
@@ -697,7 +697,7 @@ public class QuasardbTest {
     public void testGetCurrentNodeStatus() throws QuasardbException {
         try {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
             final String PORT_PATTERN = "\\d{2,6}";
             final String TIMESTAMP_PATTERN = "[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
             Pattern pattern = null;
@@ -757,7 +757,7 @@ public class QuasardbTest {
     public void testGetNodeStatus() throws QuasardbException {
         try {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-            final String NODE_PATTERN = "\\w{15,16}.\\w{15,16}.\\w{15,16}.\\w{15,16}";
+            final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
             final String PORT_PATTERN = "\\d{2,6}";
             final String TIMESTAMP_PATTERN = "[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
             Pattern pattern = null;
