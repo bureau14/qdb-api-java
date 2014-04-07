@@ -1013,7 +1013,7 @@ public class QuasardbTest {
         String result = qdbInstance.get("test_put_expiry_1");
         assertTrue(test.equals(result));
         try {
-            Thread.sleep(expiry * 1500);
+            Thread.sleep(1500);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1024,10 +1024,10 @@ public class QuasardbTest {
             assertTrue(e instanceof QuasardbException);
         }
 
-        // Test 2 : negative parameter
-        qdbInstance.put("test_put_expiry_1", test, 0);
+        // Test 2 : no expiry
+        qdbInstance.put("test_put_expiry_1", test, -1);
         try {
-            Thread.sleep(expiry * 1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1045,6 +1045,7 @@ public class QuasardbTest {
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
+
         try {
             qdbInstance.get("test_put_expiry_2");
             fail("An exception must be thrown because alias expired.");
@@ -1055,6 +1056,7 @@ public class QuasardbTest {
         // Test 4 : put entries with different expiry times
         qdbInstance.setDefaultExpiryTimeInSeconds(0L);
         qdbInstance.put("test_put_expiry_2", test);
+        assertTrue(qdbInstance.getExpiryTimeInSeconds("test_put_expiry_2") == 0);
         qdbInstance.put("test_put_expiry_3", test, expiry);
         qdbInstance.put("test_put_expiry_4", test, expiry + expiry);
         try {
@@ -1062,7 +1064,6 @@ public class QuasardbTest {
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
-        assertTrue(((String) qdbInstance.get("test_put_expiry_1")).equalsIgnoreCase(test));
         assertTrue(((String) qdbInstance.get("test_put_expiry_2")).equalsIgnoreCase(test));
         try {
             qdbInstance.get("test_put_expiry_3");
