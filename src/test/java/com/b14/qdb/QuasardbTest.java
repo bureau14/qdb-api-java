@@ -1175,7 +1175,7 @@ public class QuasardbTest {
         assertTrue(qdbInstance.getExpiryTimeInSeconds("test_expiry_1") == calculatedExpiry);
         
         // Test 1.2 : eternal expiry time
-        qdbInstance.setExpiryTimeInSeconds("test_expiry_1", -1);
+        qdbInstance.setExpiryTimeInSeconds("test_expiry_1", 0);
         try {
              Thread.sleep(1L * 1000 + 500);
         } catch (InterruptedException e1) {
