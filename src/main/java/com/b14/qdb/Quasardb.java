@@ -175,6 +175,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     private static final String WRONG_ALIAS = "Alias name is invalid.";
     private static final String WRONG_DATE = "Date is invalid.";
     private static final String BAD_SERIALIZATION = "Bad serialization.";
+    private static final String NEGATIVE_VALUE = "Value is negative. This is not allowed";
     private static final int BUFFER_SIZE = 4096;
     private static final int PUT = 1;
     private static final int UPDATE = 2;
@@ -871,7 +872,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * 
      * @param alias the object's unique key/alias.
      * @param expiryTime the expiry time in second related to the provided alias (0 means eternal)
-     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
+     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist or if a negative expiryTime is provided
      */
     public void setExpiryTimeInSeconds(final String alias, final long expiryTime) throws QuasardbException {
         // Checks params
@@ -883,7 +884,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         if (expiryTime > 0L) {
             qdbError = qdb.expires_from_now(session, alias, expiryTime);
         } else {
-            qdbError = qdb.expires_at(session, alias, 0);
+            throw new QuasardbException(NEGATIVE_VALUE);
         }
      
         // Handle errors
@@ -940,9 +941,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 1.1.0
      * 
      * @param expiryTime expiry time in seconds to set up
+     * @throws QuasardbException if a negative expiryTime is provided
      */
-    public void setDefaultExpiryTimeInSeconds(long expiryTime) {
-        this.defaultExpiryTime = (expiryTime < 0 ? 0 : expiryTime);
+    public void setDefaultExpiryTimeInSeconds(long expiryTime) throws QuasardbException {
+        if (expiryTime < 0L) {
+            throw new QuasardbException(NEGATIVE_VALUE);
+        }
+        this.defaultExpiryTime = expiryTime;
     }
     
     /**
