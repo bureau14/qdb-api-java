@@ -1013,7 +1013,7 @@ public class QuasardbTest {
         String result = qdbInstance.get("test_put_expiry_1");
         assertTrue(test.equals(result));
         try {
-            Thread.sleep(expiry * 1000);
+            Thread.sleep(expiry * 1500);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1025,7 +1025,7 @@ public class QuasardbTest {
         }
 
         // Test 2 : negative parameter
-        qdbInstance.put("test_put_expiry_1", test, -1);
+        qdbInstance.put("test_put_expiry_1", test, 0);
         try {
             Thread.sleep(expiry * 1000);
         } catch (InterruptedException e1) {
@@ -1041,7 +1041,7 @@ public class QuasardbTest {
         qdbInstance.put("test_put_expiry_2", test, 2L);
         assertTrue(qdbInstance.getExpiryTimeInSeconds("test_put_expiry_2") == calculatedExpiry);
         try {
-            Thread.sleep(2L * 1000);
+            Thread.sleep(3L * 1000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1072,7 +1072,7 @@ public class QuasardbTest {
         }
         assertTrue(((String) qdbInstance.get("test_put_expiry_4")).equalsIgnoreCase(test));
         try {
-            Thread.sleep(expiry * 1000);
+            Thread.sleep(expiry * 5000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
