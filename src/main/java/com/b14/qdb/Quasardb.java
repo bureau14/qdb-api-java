@@ -883,6 +883,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         qdb_error_t qdbError = null;
         if (expiryTime > 0L) {
             qdbError = qdb.expires_from_now(session, alias, expiryTime);
+        } else if (expiryTime == 0L) {
+            qdbError = qdb.expires_at(session, alias, expiryTime);
         } else {
             throw new QuasardbException(NEGATIVE_VALUE);
         }

@@ -26,7 +26,7 @@ import sun.misc.Unsafe;
  * </ul>
  * 
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
- * @version 1.1.1
+ * @version master
  * @since 1.1.1
  */
 @SuppressWarnings("restriction")
@@ -85,7 +85,7 @@ public class Introspector {
      * @return Object info
      * @throws IllegalAccessException
      * 
-     * @version 1.1.1
+     * @version master
      * @since 1.1.1
      */
     public ObjectInfo introspect(final Object obj) throws IllegalAccessException {
@@ -161,7 +161,7 @@ public class Introspector {
      * @param type
      * @return
      * 
-     * @version 1.1.1
+     * @version master
      * @since 1.1.1
      */
     private static List<Field> getAllFields(final Class<?> type) {
@@ -187,7 +187,7 @@ public class Introspector {
      * @param type
      * @return
      * 
-     * @version 1.1.1
+     * @version master
      * @since 1.1.1
      */
     private static boolean isObjectArray(final Class<?> type) {
@@ -214,7 +214,7 @@ public class Introspector {
      * @param type
      * @return
      * 
-     * @version 1.1.1
+     * @version master
      * @since 1.1.1
      */
     private static String getContents(final Object val, final Class<?> type) {
@@ -250,7 +250,7 @@ public class Introspector {
      * @param type
      * @return
      * 
-     * @version 1.1.1
+     * @version master
      * @since 1.1.1
      */
     private static int getShallowSize(final Class<?> type) {
