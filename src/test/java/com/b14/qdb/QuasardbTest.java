@@ -1023,7 +1023,7 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
-
+/*
         // Test 2 : no expiry
         qdbInstance.put("test_put_expiry_1", test, -1);
         try {
@@ -1086,7 +1086,7 @@ public class QuasardbTest {
 
         // Cleanup Qdb
         qdbInstance.remove("test_put_expiry_1");
-        qdbInstance.remove("test_put_expiry_2");
+        qdbInstance.remove("test_put_expiry_2");*/
     }
 
     @Test
