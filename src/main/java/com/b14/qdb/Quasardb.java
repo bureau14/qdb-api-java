@@ -1138,7 +1138,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if an error occurs or the entry already exists.
      */
     public <V> void put(final String alias, final V value) throws QuasardbException {
-        this.writeOperation(alias, value, null, PUT);
+        this.put(alias, value, defaultExpiryTime);
     }
     
     /**
@@ -1152,24 +1152,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if an error occurs or the entry already exists.
      */
     public <V> void put(final String alias, final V value, final long expiryTime) throws QuasardbException {
-        long expiryTemp = (expiryTime < 0) ? this.defaultExpiryTime : expiryTime;
-        if (expiryTime < 0) {
-            this.defaultExpiryTime = 0;
-        }
-            
-        this.put(alias, value);
-
-        if (expiryTime < 0) {
-            this.defaultExpiryTime = expiryTemp;
-        } else {
-            qdb_error_t qdbError = qdb.expires_from_now(session, alias, expiryTemp);
-            if (qdbError != qdb_error_t.error_ok) {
-                throw new QuasardbException(qdbError);
-            }
-        }
+        this.writeOperation(alias, value, null, PUT, expiryTime);
     }
     
-
     /**
      * Update an existing entry or create a new one.<br>
      *
@@ -1180,7 +1165,21 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if an error occurs.
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
-        this.writeOperation(alias, value, null, UPDATE);
+        this.update(alias, value, defaultExpiryTime);
+    }
+    
+    /**
+     * Update an existing entry or create a new one.<br>
+     *
+     * @since 1.1.3
+     *
+     * @param alias a key to uniquely identify the entry within the cluster.
+     * @param value the new object to associate to the key
+     * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
+     * @throws QuasardbException if an error occurs.
+     */
+    public <V> void update(final String alias, final V value, final long expiryTime) throws QuasardbException {
+        this.writeOperation(alias, value, null, UPDATE, expiryTime);
     }
 
     /**
@@ -1193,7 +1192,21 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 0.7.3
      */
     public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
-        return this.writeOperation(alias, value, null, GETANDUPDATE);
+        return this.getAndReplace(alias, value, defaultExpiryTime);
+    }
+    
+    /**
+     * Update an existing alias with data and return its previous value
+     *
+     * @param alias a key to uniquely identify the entry within the cluster
+     * @param value the new object to associate to the key
+     * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
+     * @return the previous value associated to the key
+     * 
+     * @since 1.1.3
+     */
+    public <V> V getAndReplace(final String alias, final V value, final long expiryTime) throws QuasardbException {
+        return this.writeOperation(alias, value, null, GETANDUPDATE, expiryTime);
     }
 
     /**
@@ -1207,9 +1220,23 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 0.7.3
      */
     public <V> V compareAndSwap(final String alias, final V value, final V comparand) throws QuasardbException {
-        return this.writeOperation(alias, value, comparand, CAS);
+        return this.compareAndSwap(alias, value, comparand, defaultExpiryTime);
     }
 
+    /**
+     * Compare an existing alias with comparand, updates it to new if they match and return the original value
+     *
+     * @param alias a key to uniquely identify the entry within the cluster
+     * @param value the new object to associate to the key
+     * @param comparand the object to compare with original value associated to the key
+     * @return the original value associated to the key
+     * 
+     * @since 0.7.3
+     */
+    public <V> V compareAndSwap(final String alias, final V value, final V comparand, final long expiryTime) throws QuasardbException {
+        return this.writeOperation(alias, value, comparand, CAS, expiryTime);
+    }
+    
     /**
      * Delete the object associated with the <i>alias</i> key.
      *
@@ -1622,10 +1649,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param other other object to compare with value
      * @param operation to apply on the two first parameters.
      * @return the buffer containing the serialized form of the <i>value</i> object.
-     * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized.
+     * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized or if expiry value is negative
      */
     @SuppressWarnings("unchecked")
-    private final <V> V writeOperation(final String alias, final V value, final V other, final int operation) throws QuasardbException {
+    private final <V> V writeOperation(final String alias, final V value, final V other, final int operation, final long expiry) throws QuasardbException {
         // Checks params
         this.checkSession();
         this.checkAlias(alias);
@@ -1638,6 +1665,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         if (value == null) {
             throw new QuasardbException(NULL_VALUE);
         }
+        
+        //  -> A negative expiry value is forbidden 
+        if (expiry < 0L) {
+            throw new QuasardbException(NEGATIVE_VALUE);
+        }
+        
+        // Compute expiry time
+        long time = (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry;
 
         // Allocate buffer :
         //  -> intialize with default value
@@ -1667,10 +1702,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             error_carrier error = new error_carrier();
             switch (operation) {
                 case PUT :
-                    qdbError = qdb.put(session, alias, buffer, buffer.limit(), defaultExpiryTime);
+                    qdbError = qdb.put(session, alias, buffer, buffer.limit(), time);
                     break;
                 case UPDATE :
-                    qdbError = qdb.update(session, alias, buffer, buffer.limit(), defaultExpiryTime);
+                    qdbError = qdb.update(session, alias, buffer, buffer.limit(), time);
                     break;
                 case CAS :
                     if (other == null) {
@@ -1689,12 +1724,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         Output otherOutput = new Output(otherSize);
                         serializer.writeClassAndObject(otherOutput, other);
                         otherBuffer.put(otherOutput.getBuffer());
-                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), defaultExpiryTime, error);
+                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), time, error);
                         qdbError = error.getError();
                     }
                     break;
                 case GETANDUPDATE :
-                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), defaultExpiryTime, error);
+                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), time, error);
                     qdbError = error.getError();
                     break;
                 default :
