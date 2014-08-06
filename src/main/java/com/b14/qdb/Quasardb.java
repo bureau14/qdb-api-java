@@ -1803,6 +1803,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**************/
     /** override **/
     /**************/
+    /**
+     */
     @Override
     public String toString() {
         try {
