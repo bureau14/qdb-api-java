@@ -85,8 +85,9 @@ import de.javakaffee.kryoserializers.SynchronizedCollectionsSerializer;
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 
 /**
- * Quasardb main abstraction layer.<br>
- *
+ * Quasardb main abstraction layer.
+ * <br>
+ * <br>
  * The following operations are allowed:
  *
  * <ul>
@@ -144,9 +145,10 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  * <p>
  * <u>Note about entries :</u>
  * <br>
- * A majority of entries type can be stored in quasardb without any further work.
- * But there are some limitations. 
- * As Kryo is the underlying framework used to serialize objects in quasard, you can find all limitations by consulting kryo's documentation (https://github.com/EsotericSoftware/kryo#compatibility)
+ * <ul>
+ * <li>You cannot create or access entries starting with <b>"qdb"</b>.</li>
+ * <li>A majority of entries type can be stored in quasardb without any further work. But there are some limitations. As Kryo is the underlying framework used to serialize objects in quasard, you can find all limitations by consulting kryo's documentation (https://github.com/EsotericSoftware/kryo#compatibility)</li>
+ * </ul>
  * </p>
  *
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
@@ -814,7 +816,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * 
      * @param alias the object's unique key/alias.
      * @return the expiry time in second related to the provided alias. 0 means eternal duration.
-     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
      */
     public long getExpiryTimeInSeconds(final String alias) throws QuasardbException {
         // Checks params
@@ -843,7 +845,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * 
      * @param alias the object's unique key/alias.
      * @return the expiry date related to the provided alias.
-     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
      */
     public Date getExpiryTimeInDate(final String alias) throws QuasardbException {
         // Checks params
@@ -872,7 +874,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * 
      * @param alias the object's unique key/alias.
      * @param expiryTime the expiry time in second related to the provided alias (0 means eternal)
-     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist or if a negative expiryTime is provided
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or a negative expiryTime is provided or prodived alias is reserved.
      */
     public void setExpiryTimeInSeconds(final String alias, final long expiryTime) throws QuasardbException {
         // Checks params
@@ -896,13 +898,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Change the expiry time for a provided alias at the provided date
+     * Change the expiry time for a provided alias at the provided date.
      * 
      * @since 1.1.0
      * 
      * @param alias the object's unique key/alias.
      * @param expiryDate the expiry date related to the provided alias.
-     * @throws QuasardbException if the connection with current instance fail or if provided alias doesn't exist.
+     * @throws QuasardbException if the connection with current instance fail, provided alias does not exist or is reserved
      */
     public void setExpiryTimeAt(final String alias, final Date expiryDate) throws QuasardbException {
         // Checks params
@@ -1036,12 +1038,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Get the entry associated with the supplied unique key (<i>alias</i>).
+     * <br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      * 
      * @since 0.5.2
      *  
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
-     * @throws QuasardbException if an error occurs or the entry does not exist
+     * @throws QuasardbException if an error occurs, the entry does not exist or the entry starts with "qdb".
      */
     @SuppressWarnings("unchecked")
     public <V> V get(final String alias) throws QuasardbException {
@@ -1083,12 +1088,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Atomically get the entry associated with the supplied unique key (<i>alias</i>) and remove it.
+     * <br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @since 0.7.3
      *
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
-     * @throws QuasardbException if an error occurs or the entry does not exist
+     * @throws QuasardbException if an error occurs, the entry does not exist or the entry starts with "qdb".
      */
     @SuppressWarnings("unchecked")
     public <V> V getRemove(final String alias) throws QuasardbException {
@@ -1129,40 +1137,46 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key. The entry must not already exist.<br>
+     * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key.<br>
+     * <ul><li>Entries must not already exist.</li>
+     * <li>Entries starting with "qdb" are reserved.</li></ul>
      *
      * @since 0.5.2
      *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
-     * @throws QuasardbException if an error occurs or the entry already exists.
+     * @throws QuasardbException if an error occurs, the entry already exists or the entry starts with "qdb".
      */
     public <V> void put(final String alias, final V value) throws QuasardbException {
         this.put(alias, value, defaultExpiryTime);
     }
     
     /**
-     * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key. The entry must not already exist.<br>
+     * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key.<br>
+     * <ul><li>Entries must not already exist.</li>
+     * <li>Entries starting with "qdb" are reserved.</li></ul>
      *
      * @since 1.1.0
      * 
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
-     * @throws QuasardbException if an error occurs or the entry already exists.
+     * @throws QuasardbException if an error occurs (for example : lost session) or the entry already exists or the entry is reserved (it starts with "qdb").
      */
     public <V> void put(final String alias, final V value, final long expiryTime) throws QuasardbException {
         this.writeOperation(alias, value, null, PUT, expiryTime);
     }
     
     /**
-     * Update an existing entry or create a new one.<br>
-     *
-     * @since 0.5.2
+     * Update an existing entry or create a new one.
+     * <br><br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
-     * @throws QuasardbException if an error occurs.
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
+     * 
+     * @since 0.5.2
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
         this.update(alias, value, defaultExpiryTime);
@@ -1170,24 +1184,29 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Update an existing entry or create a new one.<br>
-     *
-     * @since 1.1.3
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
-     * @throws QuasardbException if an error occurs.
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
+     * 
+     * @since 1.1.3
      */
     public <V> void update(final String alias, final V value, final long expiryTime) throws QuasardbException {
         this.writeOperation(alias, value, null, UPDATE, expiryTime);
     }
 
     /**
-     * Update an existing alias with data and return its previous value
+     * Update an existing alias with data and return its previous value.<br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
      * @return the previous value associated to the key
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * 
      * @since 0.7.3
      */
@@ -1196,12 +1215,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Update an existing alias with data and return its previous value
+     * Update an existing alias with data and return its previous value.<br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @return the previous value associated to the key
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * 
      * @since 1.1.3
      */
@@ -1210,12 +1232,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Compare an existing alias with comparand, updates it to new if they match and return the original value
+     * Compare an existing alias with comparand, updates it to new if they match and return the original value.<br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
      * @param comparand the object to compare with original value associated to the key
      * @return the original value associated to the key
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * 
      * @since 0.7.3
      */
@@ -1224,12 +1249,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Compare an existing alias with comparand, updates it to new if they match and return the original value
+     * Compare an existing alias with comparand, updates it to new if they match and return the original value.
+     * <br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
      * @param comparand the object to compare with original value associated to the key
      * @return the original value associated to the key
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * 
      * @since 0.7.3
      */
@@ -1238,12 +1267,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Delete the object associated with the <i>alias</i> key.
+     * Delete the object associated with the <i>alias</i> key.<br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      *
      * @since 0.5.2
      *
      * @param alias the alias you want to delete.
-     * @throws QuasardbException if the connection with the current instance fail.
+     * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
      */
     public void remove(final String alias) throws QuasardbException {
         // Check params
@@ -1280,13 +1311,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Delete the object associated whith the <i>alias</i> key if the object is equal to comparand
+     * Delete the object associated whith the <i>alias</i> key if the object is equal to comparand.
+     * <br>
+     * <br>
+     * Please note that entries starting with "qdb" are reserved.
      * 
      * @since 0.7.2
      * 
      * @param alias the alias you want to delete
      * @param comparand the object you want to compare with
-     * @throws QuasardbException if the connecion with the current instance fail
+     * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
      */
     public <V> void removeIf(final String alias, final V comparand) throws QuasardbException {
         // Check params
@@ -1326,7 +1360,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 throw new QuasardbException(qdbError);
             }
         } catch (Exception e) {
-            throw new QuasardbException(BAD_SERIALIZATION, e);
+            if (!(e instanceof QuasardbException)) {
+                throw new QuasardbException(BAD_SERIALIZATION, e);
+            } else {
+                throw (QuasardbException) e;
+            }
         } finally {
             // Cleanup
             try {
@@ -1342,14 +1380,17 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Submit a list of operation which can increase performance when it is necessary to run many small operations.
-     * Using properly the batch operations requires initializing, running list of operations and read results
+     * Submit a list of operation which can increase performance when it is necessary to run many small operations.<br>
+     * Using properly the batch operations requires :
+     * <ol><li>initializing</li>
+     * <li>running list of operations</li>
+     * <li>read results</li>
+     * </ol>
      * 
      * @param operations List of operations to submit in batch mode to Quasardb. See {@link Operation}
      * @return All results of submitted operations in batch mode.  See {@link Results}
      * 
      * @since 1.1.0
-     * 
      */
     @SuppressWarnings("unchecked")
     public <V> Results runBatch(List<Operation<V>> operations) throws QuasardbException {
@@ -1547,14 +1588,19 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Prefix based search on all entries. 
-     * Search is on entries (i.e. aliases) but not on values.
+     * Perform a search prefix based operation on all quasardb entries.<br>
+     * Pay attention that :
+     * <ul>
+     * <li>search operation is based on aliases, not on values.</li>
+     * <li>search operation is case sensitive.</li>
+     * <li>searching on reserved aliases (starts with "qdb") is not allowed.</li>
+     * </ul>
      * 
      * @since 1.1.0
      * 
-     * @param prefix 
-     * @return all matching entries, but not the associated content.
-     * @throws QuasardbException
+     * @param prefix prefix 
+     * @return all entries matching specified prefix
+     * @throws QuasardbException if an error occurs (for example : lost session) or provided prefix is reserved.
      */
     public List<String> startsWith(final String prefix) throws QuasardbException {
         // Check params
@@ -1756,7 +1802,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             
             return result;
         } catch (Exception e) {
-            throw new QuasardbException(BAD_SERIALIZATION, e);
+            if (!(e instanceof QuasardbException)) {
+                throw new QuasardbException(BAD_SERIALIZATION, e);    
+            } else {
+                throw (QuasardbException) e;
+            }
         } finally {
             // Cleanup
             try {

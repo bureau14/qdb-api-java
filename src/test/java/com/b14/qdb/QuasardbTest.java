@@ -167,6 +167,15 @@ public class QuasardbTest {
             fail("Very long alias are allowed now.");
         }
 
+        // Test 2.5 : wrong parameter -> alias is reserved
+        try {
+            qdbInstance.put("qdb.test", "alias is reserved");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
+        
         // Test 3 : put with a key already mapped
         try {
             qdbInstance.put("test_put_2", "test_put_2 key is already mapped");
@@ -216,6 +225,15 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
+        
+        // Test 4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.get("qdb.test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
 
         // Cleanup
         qdbInstance.remove("test_nominal");
@@ -249,6 +267,15 @@ public class QuasardbTest {
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.3 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.getAndReplace("qdb.test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
 
         // Test 2 : nominal case
@@ -310,6 +337,15 @@ public class QuasardbTest {
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.getAndReplace("qdb.test", "test", 0);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
 
         // Test 2 : nominal case
@@ -392,6 +428,15 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
+        
+        // Test 4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.getRemove("qdb.test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
     }
 
     /**
@@ -430,6 +475,15 @@ public class QuasardbTest {
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.5 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.compareAndSwap("qdb.test", "test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
 
         // Test 2.1 : nominal case -> swap case
@@ -512,6 +566,15 @@ public class QuasardbTest {
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.6 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.compareAndSwap("qdb.test", "test", "test", 0);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
 
         // Test 2.1 : nominal case -> swap case
@@ -615,6 +678,15 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
+        
+        // Test 1.4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.remove("qdb.test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
 
         // Test 2 : nominal case - simple object
         String test = "Voici un super test";
@@ -696,6 +768,15 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
+        
+        // Test 1.4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.removeIf("qdb.test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
 
         // Test 2.1 : nominal case -> remove case
         Pojo pojo = new Pojo();
@@ -745,7 +826,7 @@ public class QuasardbTest {
      */
     @Test
     public void testUpdate() throws QuasardbException {
-        // Test 2.1 : wrong parameter
+        // Test 1.1 : wrong parameter
         try {
             qdbInstance.update("test_update_1", null);
             fail("An exception must be thrown.");
@@ -753,7 +834,7 @@ public class QuasardbTest {
             assertTrue(e instanceof QuasardbException);
         }
 
-        // Test 2.2 : wrong parameter
+        // Test 1.2 : wrong parameter
         try {
             qdbInstance.update(null, "test_update_1");
             fail("An exception must be thrown.");
@@ -761,12 +842,21 @@ public class QuasardbTest {
             assertTrue(e instanceof QuasardbException);
         }
 
-        // Test 2.3 : wrong parameter
+        // Test 1.3 : wrong parameter
         try {
             qdbInstance.update(null, null);
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.4 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.update("qdb.test", "test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
 
         // Test 2.1 : nominal case - simple object
@@ -828,6 +918,15 @@ public class QuasardbTest {
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
+        }
+        
+        // Test 1.5 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.update("qdb.test", "test", 0);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
         }
         
         // Test 2.1 : nominal case - simple object
@@ -1363,6 +1462,15 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
+        
+        // Test 6 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.put("qdb.test", "test", expiry);
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
 
         // Cleanup Qdb
         qdbInstance.remove("test_put_expiry_1");
@@ -1633,6 +1741,15 @@ public class QuasardbTest {
             assertTrue(((Pojo) qdbInstance.get(result.get(i))).getText().equalsIgnoreCase("test number " + (i*2)));
         }
         result = null;
+        
+        // Test 5 : wrong alias -> alias is reserved
+        try {
+            qdbInstance.startsWith("qdb.test");
+            fail("An exception must be thrown.");
+        } catch (Exception e) {
+            assertTrue(e instanceof QuasardbException);
+            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
+        }
 
         // Cleanup Qdb
         qdbInstance.removeAll();

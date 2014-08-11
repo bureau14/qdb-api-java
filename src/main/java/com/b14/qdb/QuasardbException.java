@@ -45,6 +45,9 @@ public class QuasardbException extends Exception {
 
     // The exception message
     private transient String message;
+    
+    // The exception code
+    private transient String code;
 
     /**
      * Default constructor
@@ -55,47 +58,88 @@ public class QuasardbException extends Exception {
 
     /**
      * Custom Quasardb message exception
+     * 
      * @param message the specific message related to the exception
      */
     protected QuasardbException(final String message) {
         super(message);
+        this.code = message;
+        this.message = message;
+    }
+    
+    /**
+     * Custom Quasardb message exception
+     * 
+     * @param message the specific message related to the exception
+     */
+    protected QuasardbException(final String code, final String message) {
+        super(message);
+        this.code = code;
         this.message = message;
     }
 
     /**
      * Build a QuasardbException using a thrown exception
+     * 
      * @param cause the exception to handle
      */
     protected QuasardbException(final Throwable cause) {
         super(cause);
+        this.message = cause.getMessage();
+        this.code = cause.getClass().toString();
+    }
+    
+    /**
+     * Build a QuasardbException from a thrown exception and a custom message
+     * 
+     * @param message the custom message of exception
+     * @param cause the exception to handle
+     */
+    protected QuasardbException(final String code, final String message, final Throwable cause) {
+        super(message, cause);
+        this.code = code;
+        this.message = message;
     }
 
     /**
      * Build a QuasardbException from a thrown exception and a custom message
+     * 
      * @param message the custom message of exception
      * @param cause the exception to handle
      */
     protected QuasardbException(final String message, final Throwable cause) {
         super(message, cause);
         this.message = message;
+        this.code = message;
     }
     
     /**
      * Handle all JNI errors by providing a custom QuasardbException
+     * 
      * @param jniError the JNI error to handle
      */
     protected QuasardbException(final qdb_error_t jniError) {
         super();
-        this.message = qdb.make_error_string(jniError);;
+        this.message = qdb.make_error_string(jniError);
+        this.code = jniError.toString();
     }
 
     @Override
     public String toString() {
-        return this.message;
+        return this.code + " : " + this.message;
     }
 
     @Override
     public String getMessage() {
         return this.message;
+    }
+    
+    /**
+     * Get error code of Exception
+     * 
+     * @return error code
+     */
+    public String getCode() {
+        return this.code;
     }
 }

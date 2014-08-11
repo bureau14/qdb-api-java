@@ -38,7 +38,7 @@ package com.b14.qdb.batch;
  * <li>GET_REMOVE</li>
  * </ul>
  * 
- * Operation types which need a value are :
+ * Operation types which needs a value are :
  * <ul>
  * <li>PUT</li>
  * <li>UPDATE</li>
@@ -51,10 +51,13 @@ package com.b14.qdb.batch;
  * <li>CAS</li>
  * </ul>
  * 
- * Please notice that one invalid entry in array of operations can invalidate all submitted batch operations.
- * <br>
- * For example : if one "PUT operation" is invalid (aka put with null value), all submitted operations will have an error.
- * <br>
+ * Please note that :
+ * <ul>
+ * <li>one invalid entry in operations array can invalidate all submitted batch operations.
+ * <br>For example : if one "PUT operation" is invalid (aka put with null value), all submitted operations will have an error.
+ * </li>
+ * <li>operation on reserved aliases are not allowed (see previous item)</li>
+ * </ul>
  * 
  * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
  * @version master
