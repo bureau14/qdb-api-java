@@ -415,7 +415,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *               "pageins":0,
      *               "successes":0
      *           },
-     *           "remove_all":{
+     *           "purge_all":{
      *               "count":0,
      *               "evictions":0,
      *               "failures":0,
@@ -559,7 +559,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *               "pageins":0,
      *               "successes":0
      *           },
-     *           "remove_all":{
+     *           "purge_all":{
      *               "count":0,
      *               "evictions":0,
      *               "failures":0,
@@ -1297,12 +1297,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *
      * @throws QuasardbException if the connection with the current instance fail.
      */
-    public void removeAll() throws QuasardbException {
+    public void purgeAll() throws QuasardbException {
         // Checks params
         this.checkSession();
 
          // Delete the entry on Quasardb instance
-        final qdb_error_t qdbError = qdb.remove_all(session);
+        final qdb_error_t qdbError = qdb.purge_all(session);
 
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
@@ -1898,19 +1898,45 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             iteratorStarted = false;
         }
 
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         private final void startIterator() throws QuasardbException {
             // Checks params
             checkSession();
                 
             // Start iterator operation
             this.iterator = new qdb_const_iterator_t();
-            final qdb_error_t qdbError = qdb.iterator_begin(session, this.iterator);
+            final qdb_error_t qdbError = qdb.iterator_begin(session, this.iterator);            
             
             // Handle errors
             if (qdbError != qdb_error_t.error_ok) {
                 throw new QuasardbException(qdbError);
             }
-            iteratorStarted = true;
+            
+            // Get alias value
+            if (iterator.getContent_size() != 0) {
+                ByteBuffer buffer = qdb.iterator_content(iterator);
+                
+                // Prepare ByteBuffer
+                if (buffer != null) {
+                    buffer.rewind();
+                }
+        
+                // De-serialize
+                V value = null;
+                try {
+                    value = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+                } catch (Exception e) {
+                    throw new QuasardbException(e.getMessage(), e);
+                } finally {
+                    // Free ressources
+                    qdb.free_buffer(session, buffer);
+                    buffer = null;
+                }
+                
+                // Prepare entry
+                nextEntry = new QuasardbEntry(iterator.getAlias(), value);
+                iteratorStarted = true;
+            }
         }
         
         private final void closeIterator() throws QuasardbException {

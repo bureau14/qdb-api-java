@@ -26,6 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package com.b14.qdb;
+
 import java.util.HashMap;
 import java.util.Map;
 

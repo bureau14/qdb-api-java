@@ -705,14 +705,14 @@ public class QuasardbTest {
      * @throws QuasardbException
      */
     @Test
-    public void testRemoveAll() throws QuasardbException {
+    public void testPurgeAll() throws QuasardbException {
         // Test : nominal case - add 4 objects and remove them all
         String test = "Voici un super test";
         qdbInstance.put("test_del_1", test);
         qdbInstance.put("test_del_2", test);
         qdbInstance.put("test_del_3", test);
         qdbInstance.put("test_del_4", test);
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
         try {
             qdbInstance.get("test_del_1");
             fail("An exception must be thrown.");
@@ -1299,13 +1299,13 @@ public class QuasardbTest {
                 assertTrue(qdbInstance.get(qdbe.getAlias()).equals(qdbe.getValue()));
                 i++;
             }
-            assertTrue(i == (nbIterations - 1));
+            assertTrue(i == (nbIterations));
         } catch (Exception e) {
             fail("No exception allowed.");
         }
 
         // Test 2 : iterate with no entries
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
         assertFalse(qdbInstance.iterator().hasNext());
 
         // Test 2 : iterate on 1000 entries
@@ -1324,11 +1324,11 @@ public class QuasardbTest {
                 assertTrue(qdbe.getValue() instanceof Pojo);
                 i++;
             }
-            assertTrue(i == (nbIterations - 1));
+            assertTrue(i == (nbIterations));
         } catch (Exception e) {
             fail("No exception allowed.");
         }
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
     }
 
     @Test
@@ -1439,7 +1439,7 @@ public class QuasardbTest {
         qdbInstance.put("test_put_expiry_3", test, expiry);
         qdbInstance.put("test_put_expiry_4", test, expiry + expiry);
         try {
-            Thread.sleep((expiry + (expiry / 2)) * 1000);
+            Thread.sleep((expiry + (expiry / 2)) * 1100);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1452,7 +1452,7 @@ public class QuasardbTest {
         }
         assertTrue(((String) qdbInstance.get("test_put_expiry_4")).equalsIgnoreCase(test));
         try {
-            Thread.sleep(expiry * 1000);
+            Thread.sleep(expiry * 1100);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -1480,7 +1480,7 @@ public class QuasardbTest {
     @Test
     public void testSetExpiryTimeInSeconds() throws QuasardbException {
         qdbInstance.setDefaultExpiryTimeInSeconds(0L);
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 1 : nominal case
         String test = "Voici un super test";
@@ -1547,7 +1547,7 @@ public class QuasardbTest {
     @Test
     public void testGetExpiryTimeInSeconds() throws QuasardbException {
         qdbInstance.setDefaultExpiryTimeInSeconds(0L);
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
         String test = "Voici un super test";
 
         // Test 1.1 : nominal case
@@ -1603,7 +1603,7 @@ public class QuasardbTest {
     @Test
     public void testSetExpiryTimeAt() throws QuasardbException {
         qdbInstance.setDefaultExpiryTimeInSeconds(0L);
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
         String test = "Voici un super test";
         qdbInstance.put("test_expiry_1", test);
         long time = System.currentTimeMillis() + (1000 * 60 * 60);
@@ -1647,12 +1647,12 @@ public class QuasardbTest {
         assertTrue((qdbInstance.getExpiryTimeInSeconds("test_expiry_1") + "").equals(sTime.substring(0, sTime.length() - 3)));
 
         // Cleanup Qdb
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
     }
 
     @Test
     public void testGetExpiryTimeInDate() throws QuasardbException {
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 1 : null param
         try {
@@ -1686,12 +1686,12 @@ public class QuasardbTest {
         assertTrue(qdbInstance.getExpiryTimeInDate("test_expiry_1").toString().equals(expiryDate.toString()));
 
         // Cleanup Qdb
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
     }
 
     @Test
     public void testStartsWith() throws QuasardbException {
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 1 : null param
         try {
@@ -1752,12 +1752,12 @@ public class QuasardbTest {
         }
 
         // Cleanup Qdb
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
     }
 
     @Test
     public void testRunBatch() throws QuasardbException {
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 1 : null param
         try {
@@ -1786,7 +1786,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.2 : nominal case -> PUT
         Pojo testPut = new Pojo();
@@ -1807,7 +1807,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.3 : nominal case -> UPDATE
         qdbInstance.put("test_batch_update", "test");
@@ -1830,7 +1830,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.4 : nominal case -> REMOVE
         Pojo testRemove = new Pojo();
@@ -1856,7 +1856,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.5 : nominal case -> CAS
         Pojo testCas1 = new Pojo();
@@ -1881,7 +1881,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.6 : nominal case -> GET REMOVE
         Pojo testGetRemove = new Pojo();
@@ -1910,7 +1910,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.7 : nominal case -> GET UPDATE
         Pojo testGetUpdate = new Pojo();
@@ -1936,7 +1936,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 2.8 : nominal case -> REMOVE IF
         Pojo testRemoveIf = new Pojo();
@@ -1962,7 +1962,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 3 : Failed batch operations
         //  -> Test 3.1 : Fail a GET
@@ -1980,7 +1980,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.2 : Fail a PUT
         operationPut = new Operation<Pojo>(TypeOperation.PUT, "test_batch_put", null);
@@ -2003,7 +2003,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.3 : Fail a UPDATE
         operationUpdate = new Operation<Pojo>(TypeOperation.UPDATE, "test_batch_update", null);
@@ -2026,7 +2026,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.4 : Fail a REMOVE
         operationRemove = new Operation<Pojo>(TypeOperation.REMOVE, "test_batch_remove");
@@ -2043,7 +2043,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.5 : Fail a CAS
         qdbInstance.put("test_batch_cas", testCas1);
@@ -2062,7 +2062,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.6 : Fail a GET REMOVE
         operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_remove");
@@ -2079,7 +2079,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.7 : Fail a GET UPDATE
         operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_update", testGetUpdate2);
@@ -2096,7 +2096,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         //  -> Test 3.8 : Fail a REMOVE IF
         operationRemoveIf = new Operation<Pojo>(TypeOperation.REMOVE_IF, "test_batch_remove_if", testRemoveIf);
@@ -2113,7 +2113,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 4 : simple successful put operations
         testPut = new Pojo();
@@ -2135,7 +2135,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 5 : multiple successful operations
         Pojo test = new Pojo();
@@ -2192,7 +2192,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 6 : simple put operations with entry errors => all operations are in error.
         testPut = new Pojo();
@@ -2220,7 +2220,7 @@ public class QuasardbTest {
         }
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
         // Test 7 : simple put operations with legal errors
         testPut = new Pojo();
@@ -2249,7 +2249,7 @@ public class QuasardbTest {
         assertTrue(it == 0);
         operations = null;
         results = null;
-        qdbInstance.removeAll();
+        qdbInstance.purgeAll();
 
     }
 }
