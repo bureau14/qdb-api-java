@@ -225,15 +225,6 @@ public class QuasardbTest {
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
         }
-        
-        // Test 4 : wrong alias -> alias is reserved
-        try {
-            qdbInstance.get("qdb.test");
-            fail("An exception must be thrown.");
-        } catch (Exception e) {
-            assertTrue(e instanceof QuasardbException);
-            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
-        }
 
         // Cleanup
         qdbInstance.remove("test_nominal");
@@ -1742,15 +1733,6 @@ public class QuasardbTest {
         }
         result = null;
         
-        // Test 5 : wrong alias -> alias is reserved
-        try {
-            qdbInstance.startsWith("qdb.test");
-            fail("An exception must be thrown.");
-        } catch (Exception e) {
-            assertTrue(e instanceof QuasardbException);
-            assertTrue(((QuasardbException) e).getCode().equals("error_reserved_alias"));
-        }
-
         // Cleanup Qdb
         qdbInstance.purgeAll();
     }
