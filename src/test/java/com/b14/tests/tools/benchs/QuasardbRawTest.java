@@ -33,22 +33,24 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
+import org.databene.contiperf.junit.ContiPerfRule;
 import org.databene.feed4junit.Feeder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.b14.qdb.Quasardb;
+import com.b14.qdb.QuasardbConfig;
 import com.b14.qdb.QuasardbException;
+import com.b14.qdb.QuasardbNode;
 import com.b14.qdb.QuasardbTest;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
@@ -59,12 +61,11 @@ import com.b14.qdb.tools.LibraryHelper;
 @RunWith(Feeder.class)
 public class QuasardbRawTest {
     private static final int NB_LOOPS = 10;
-    private static final int NB_THREADS = 1;
+    private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
     private static final ByteBuffer buffer = ByteBuffer.allocateDirect(4096);
-    private static final String QDB_NAME = "compareAPI";
-    private static final Map<String,String> config = new HashMap<String,String>();
+    private static final QuasardbConfig config = new QuasardbConfig();
     
     private static SWIGTYPE_p_qdb_session session;
     
@@ -77,6 +78,8 @@ public class QuasardbRawTest {
             LibraryHelper.loadLibrairiesFromJar();
         }
     }
+    
+    @Rule public ContiPerfRule rule = new ContiPerfRule();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -85,7 +88,7 @@ public class QuasardbRawTest {
         session = qdb.open();
         
         // Try to connect to the qdb node
-        qdb_error_t qdbError = qdb.connect(session, QuasardbTest.HOST, Integer.parseInt(QuasardbTest.PORT));
+        qdb_error_t qdbError = qdb.connect(session, QuasardbTest.HOST, QuasardbTest.PORT);
         
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
@@ -94,9 +97,8 @@ public class QuasardbRawTest {
         }
         
         // **** INIT QDB API ****
-        config.put("name", QDB_NAME);
-        config.put("host", QuasardbTest.HOST);
-        config.put("port", QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        config.addNode(node);
     }
     
     @AfterClass
@@ -135,7 +137,7 @@ public class QuasardbRawTest {
     @Generator(GENERATOR_NAME)
     @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
     @Required(average = REQ_AVERAGE_EXECUTION_TIME)
-    public void rawPutGetUpdateDeleteTest(String key, Object value) {
+    public synchronized void rawPutGetUpdateDeleteTest(String key, Object value) {
         error_carrier error = new error_carrier();
         key += "_" + Thread.currentThread().getId();
         
@@ -245,10 +247,9 @@ public class QuasardbRawTest {
 //            System.gc();
 //        }   
         
-        Map<String,String> config = new HashMap<String,String>();
-        config.put("name", "TEST_QDB");
-        config.put("host", QuasardbTest.HOST);
-        config.put("port", QuasardbTest.PORT);
+        QuasardbConfig config = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        config.addNode(node);
         Quasardb qdbDB = new Quasardb(config);
 
         for (int i = 0; i < 1000000; i++) {

@@ -4,10 +4,10 @@
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
 	<version>${api-version}</version>
-	<name>Quasardb Java API</name>
+	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
-	<url>https://www.quasardb.net/</url>
+	<url>https://www.quasardb.fr/</url>
 
 	<licenses>
 		<license>
@@ -38,22 +38,22 @@
 	</issueManagement>
 
 	<organization>
-		<name>Bureau 14</name>
-		<url>https://www.bureau14.fr</url>
+		<name>quasardb</name>
+		<url>http://www.quasardb.fr</url>
 	</organization>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<powermock.version>1.4.12</powermock.version>
+		<powermock.version>1.6.0</powermock.version>
 		<cglib.version>2.2.2</cglib.version>
-		<kryo.version>2.21</kryo.version>
-		<kryo.serializers.version>0.26</kryo.serializers.version>
-		<junit.version>4.8.2</junit.version>
-		<contiperf.version>1.07</contiperf.version>
+		<kryo.version>3.0.0</kryo.version>
+		<kryo.serializers.version>0.27</kryo.serializers.version>
+		<junit.version>4.11</junit.version>
+		<contiperf.version>2.1.0</contiperf.version>
 		<feed4junit.version>0.6.6</feed4junit.version>
-		<log4j.version>1.2.16</log4j.version>
-		<slf4j.version>1.6.1</slf4j.version>
-		<findbugs.version>2.3.2</findbugs.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.7</slf4j.version>
+		<findbugs.version>3.0.0</findbugs.version>
 	</properties>
 
 	<repositories>
@@ -77,10 +77,9 @@
 	<dependencies>
 		<!-- Add dependency to the kryo serialization framework -->
 		<dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
+			<groupId>com.esotericsoftware</groupId>
+			<artifactId>kryo-shaded</artifactId>
 			<version>${kryo.version}</version>
-			<classifier>shaded</classifier>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>

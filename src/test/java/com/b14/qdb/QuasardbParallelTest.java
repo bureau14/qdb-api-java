@@ -32,38 +32,44 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
+import org.databene.contiperf.junit.ContiPerfRule;
+import org.databene.contiperf.report.CSVInvocationReportModule;
+import org.databene.contiperf.report.CSVLatencyReportModule;
+import org.databene.contiperf.report.CSVSummaryReportModule;
+import org.databene.contiperf.report.HtmlReportModule;
 import org.databene.feed4junit.Feeder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Feeder.class)
 public class QuasardbParallelTest {
-    private static final String QDB_NAME = "testParallel";
-    private static final int NB_LOOPS = 2;
+    private static final int NB_LOOPS = 100;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
+    private static final int REQ_MAX_LATENCY = 1000;
+    private static final int REQ_MEDIAN_LATENCY = 500;
+    private static final int REQ_THROUGHPUT = 10;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
-    private static final Map<String,String> config = new HashMap<String,String>();
+    private static final QuasardbConfig config = new QuasardbConfig();
     private static final Quasardb qdb = new Quasardb();
+    
+    @Rule public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule(), new CSVSummaryReportModule(), new CSVInvocationReportModule(), new CSVLatencyReportModule());
    
     public QuasardbParallelTest() {
     }
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        config.put("name", QDB_NAME);
-        config.put("host", QuasardbTest.HOST);
-        config.put("port", QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        config.addNode(node);
         try {
             qdb.setConfig(config); 
             qdb.connect();
@@ -94,9 +100,13 @@ public class QuasardbParallelTest {
     
     @Test
     @Generator(GENERATOR_NAME)
-    @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
-    @Required(average = REQ_AVERAGE_EXECUTION_TIME)
-    public void putGetUpdateDeleteTest(String key, Object value) {
+    @PerfTest(invocations = NB_LOOPS, 
+              threads = NB_THREADS)
+    @Required(average = REQ_AVERAGE_EXECUTION_TIME, 
+              max = REQ_MAX_LATENCY, 
+              median = REQ_MEDIAN_LATENCY, 
+              throughput = REQ_THROUGHPUT)
+    public void quasardbParallelTest(String key, Object value) {
         key += "_" + Thread.currentThread().getId();
         
         // Try to clean up stored value if exists
@@ -118,9 +128,39 @@ public class QuasardbParallelTest {
             // Check if a value has been updated at key
             assertFalse(qdb.get(key).equals(value));
             assertTrue(qdb.get(key).equals(value + "_UPDATED"));
+            
+            // Get and replace
+            assertTrue(qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
+            assertTrue(qdb.get(key).equals(value));
+            
+            // Get and remove
+            assertTrue(qdb.getRemove(key).equals(value));
+            try {
+                qdb.get(key);
+                fail("Key " + key + " had to be removed by getRemove().");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
+            
+            // Remove if
+            qdb.put(key , value);
+            try {
+                qdb.removeIf(key, value + "_FAUX");
+                fail("Value " + value + "_FAUX for key " + key + " doesn't match content => API must thrown an exception");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+                assertTrue(qdb.get(key).equals(value));
+            }
+            qdb.removeIf(key, value);
+            try {
+                qdb.get(key);
+                fail("Key " + key + " had to be removed by getRemove().");
+            } catch (Exception e) {
+                assertTrue(e instanceof QuasardbException);
+            }
         } catch (QuasardbException e) {
-            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
             e.printStackTrace();
+            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

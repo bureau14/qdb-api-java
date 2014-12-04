@@ -72,8 +72,7 @@ import com.b14.qdb.data.SubscriptionType;
 import com.b14.qdb.data.User;
 
 public class QuasardbStabilityTest {
-    private static final String QDB_NAME = "testStability";
-    private static final Map<String,String> config = new HashMap<String,String>();
+    private static final QuasardbConfig config = new QuasardbConfig();
     private static final Quasardb qdb = new Quasardb();
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -90,9 +89,8 @@ public class QuasardbStabilityTest {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        config.put("name", QDB_NAME);
-        config.put("host", QuasardbTest.HOST);
-        config.put("port", QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        config.addNode(node);
         try {
             qdb.setConfig(config); 
             qdb.connect();

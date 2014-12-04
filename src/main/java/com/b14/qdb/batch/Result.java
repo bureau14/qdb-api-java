@@ -37,11 +37,10 @@ package com.b14.qdb.batch;
  * <li>An error which can be the result of the current operation.</li>
  * </ul>
  * 
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @param <V> Object type associated with the current operation.
  * @version master
  * @since 1.1.0
- * 
- * @param <V> Object type associated with the current operation.
  */
 public class Result<V> {
     private boolean success;

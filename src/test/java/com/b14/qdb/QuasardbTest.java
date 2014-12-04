@@ -38,9 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,13 +57,12 @@ import com.b14.qdb.batch.Result;
 import com.b14.qdb.batch.Results;
 import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.data.Pojo;
-import com.b14.qdb.entities.QuasardbEntry;
+import com.b14.qdb.QuasardbEntry;
 
 public class QuasardbTest {
     public static final String HOST = "127.0.0.1";
-    public static final String PORT = "2836";
-    private static final Map<String,String> config = new HashMap<String,String>();
-
+    public static final int PORT = 2836;
+    private static final QuasardbConfig config = new QuasardbConfig();
     private Quasardb qdbInstance = null;
 
     public QuasardbTest() {
@@ -73,9 +70,8 @@ public class QuasardbTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        config.put("name", "test");
-        config.put("host", HOST);
-        config.put("port", PORT);
+        QuasardbNode quasardbNode = new QuasardbNode(HOST, PORT);
+        config.addNode(quasardbNode);
     }
 
     @AfterClass
@@ -967,15 +963,13 @@ public class QuasardbTest {
     @Test
     public void testErrors() throws QuasardbException {
         // Testing timeout
-        Map<String,String> config = new HashMap<String,String>();
-        config.put("name", "testerror");
-        config.put("host", "unknown_host");
-        config.put("port", PORT);
+        QuasardbConfig config = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode("unknown_host", PORT);
+        config.addNode(node);
         try {
             new Quasardb(config);
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
-            assertTrue(e.getMessage().equalsIgnoreCase("Host provided was not found."));
         }
 
         // Testing empty error
@@ -983,8 +977,8 @@ public class QuasardbTest {
         assertNull("Exception must be null", exception.getMessage());
     }
 
-   @Test
-   public void testGetCurrentNodeConfig() throws QuasardbException {
+    @Test
+    public void testGetCurrentNodeConfig() throws QuasardbException {
         try {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
             final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
@@ -1348,11 +1342,10 @@ public class QuasardbTest {
         }
 
         // Test 4 : test default expiry time with config
-        Map<String,String> config2 = new HashMap<String,String>();
-        config2.put("name", "test");
-        config2.put("host", HOST);
-        config2.put("port", PORT);
-        config2.put("expiry", "20");
+        QuasardbConfig config2 = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode(HOST, PORT);
+        config2.addNode(node);
+        config2.setExpiryTimeInSeconds(20);
         qdbInstance = new Quasardb(config2);
         try {
             qdbInstance.connect();
@@ -1428,7 +1421,7 @@ public class QuasardbTest {
         qdbInstance.put("test_put_expiry_2", test);
         assertTrue(qdbInstance.getExpiryTimeInSeconds("test_put_expiry_2") == 0);
         qdbInstance.put("test_put_expiry_3", test, expiry);
-        qdbInstance.put("test_put_expiry_4", test, expiry + expiry);
+        qdbInstance.put("test_put_expiry_4", test, 3 * expiry);
         try {
             Thread.sleep((expiry + (expiry / 2)) * 1100);
         } catch (InterruptedException e1) {
@@ -1443,7 +1436,7 @@ public class QuasardbTest {
         }
         assertTrue(((String) qdbInstance.get("test_put_expiry_4")).equalsIgnoreCase(test));
         try {
-            Thread.sleep(expiry * 1100);
+            Thread.sleep(expiry * 2000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -2232,6 +2225,42 @@ public class QuasardbTest {
         operations = null;
         results = null;
         qdbInstance.purgeAll();
-
+    }
+    
+    @Test
+    public void testMultinodes() throws QuasardbException {
+        QuasardbConfig conf = new QuasardbConfig();
+        QuasardbNode node1 = new QuasardbNode(HOST, 12345);
+        QuasardbNode node2 = new QuasardbNode("unknown_host2", PORT);
+        QuasardbNode node3 = new QuasardbNode(HOST, PORT);
+        conf.addNode(node1);
+        conf.addNode(node2);
+        
+        // Test 1 : wrong ring provided
+        Quasardb qdb = new Quasardb(conf);
+        try {
+            qdb.connect();
+            fail("An exception must be thrown => wrong config provided");
+        } catch (QuasardbException e) {
+            assertTrue(e.getMessage().startsWith("Wrong config provided"));
+        }
+        qdb = null;
+        
+        // Test 2 : wrong nodes and one right node
+        conf.addNode(node3);
+        qdb = new Quasardb(conf);
+        try {
+            qdb.connect();
+            qdb.put("conf", conf);
+            QuasardbConfig qdbConf = qdb.get("conf");
+            assertTrue(qdbConf.getNodes().size() == conf.getNodes().size());
+            
+            qdb.purgeAll();
+        } catch (Exception e) {
+            fail("No exception allowed => node " + node3.getHostName() + ":" + node3.getPort() + " must be OK.");
+        }
+        
+        conf = null;
+        qdb = null;
     }
 }

@@ -34,7 +34,7 @@ import com.b14.qdb.jni.qdb_error_t;
 /**
  * Quasardb exceptions.<br>
  * 
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
  * @since 0.5.2
  */
@@ -121,6 +121,18 @@ public class QuasardbException extends Exception {
     protected QuasardbException(final qdb_error_t jniError) {
         super();
         this.message = qdb.make_error_string(jniError);
+        this.code = jniError.toString();
+    }
+    
+    /**
+     * Handle all JNI errors with a custom message by providing a custom QuasardbException
+     * 
+     * @param jniError the JNI error to handle
+     * @since 1.1.5
+     */
+    protected QuasardbException(final String message, final qdb_error_t jniError) {
+        super();
+        this.message = message + " -> " + qdb.make_error_string(jniError);
         this.code = jniError.toString();
     }
 

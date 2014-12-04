@@ -29,7 +29,7 @@
 /**
  * This package help to profiling java objects.
  *
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
  * @since 0.5.2
  */

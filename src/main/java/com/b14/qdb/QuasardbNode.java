@@ -25,58 +25,88 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.b14.qdb.batch;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.b14.qdb;
 
 /**
- * Quasardb run batch operations results.
- * 
+ * A quasardb <a href="https://doc.quasardb.net/1.1.4/glossary.html#term-node">node</a> is a <i>{hostname, port}</i> tuple.
+ *  
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
- * @since 1.1.0
+ * @since 1.1.5
  */
-public class Results {
-    private boolean success;
-    private List<Result<?>> results = new ArrayList<Result<?>>();
+public class QuasardbNode {
+    // Hostname of quasardb node
+    private String hostName;
     
-    public Results() {
+    // Port of quasardb node
+    private int port;
+    
+    /**
+     * Default constructor. Build a node with default values. Default values are :
+     * <ul>
+     *  <li>hostname => 127.0.0.1</li>
+     *  <li>port => 2836</li>
+     * </ul>
+     * 
+     * @since 1.1.5
+     */
+    public QuasardbNode() {
+        this.hostName = "127.0.0.1";
+        this.port = 2836;
     }
     
     /**
-     * Are all submitted batch operations in success ?
+     * Build a QuasardbNode with a provided hostname and port.
      * 
-     * @return true if all submitted operations are successful. false in all other cases.  
+     * @param hostName hostname of the quasardb node. Example : 127.0.0.1
+     * @param port port of the quasardb node. Example : 2836
+     * @since 1.1.5
      */
-    public boolean isSuccess() {
-        return success;
+    public QuasardbNode(String hostName, int port) {
+        this.hostName = hostName;
+        this.port = port;
     }
     
     /**
-     * Set if all submitted batch operations are successful or not.
+     * Get the hostname of the current quasardb node.
      * 
-     * @param success true if all submitted operations are successful. false in all other cases.
+     * @return the hostname of the quasardb node
+     * @since 1.1.5
      */
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public String getHostName() {
+        return this.hostName;
     }
     
     /**
-     * Get all results of submitted operations.
+     * Set hostname for a quasardb node.
+     * Example : 127.0.0.1
      * 
-     * @return all results for submitted batch operations.
+     * <b>N.B :</b>hostname can be a logical name 
+     * 
+     * @param hostName the host to set
+     * @since 1.1.5
      */
-    public List<Result<?>> getResults() {
-        return results;
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
     
     /**
-     * Set all results of submitted operations.
+     * Get the port of the current quasardb node.
      * 
-     * @param results results for submitted batch operations.
+     * @return the port of the quasardb node
+     * @since 1.1.5
      */
-    public void setResults(List<Result<?>> results) {
-        this.results = results;
+    public int getPort() {
+        return this.port;
+    }
+    
+    /**
+     * Set port for a quasardb node.
+     * 
+     * @param port the quasardb node port to set to the node
+     * @since 1.1.5
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 }

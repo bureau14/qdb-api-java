@@ -41,7 +41,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
@@ -52,7 +51,6 @@ import com.b14.qdb.batch.Operation;
 import com.b14.qdb.batch.Result;
 import com.b14.qdb.batch.Results;
 import com.b14.qdb.batch.TypeOperation;
-import com.b14.qdb.entities.QuasardbEntry;
 import com.b14.qdb.jni.BatchOpsVec;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.StringVec;
@@ -63,14 +61,17 @@ import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.jni.qdb_operation_t;
 import com.b14.qdb.jni.qdb_operation_type_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
+import com.b14.qdb.jni.remoteNodeArray;
 import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
 import com.b14.qdb.tools.profiler.Introspector;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
+import com.esotericsoftware.kryo.pool.KryoFactory;
+import com.esotericsoftware.kryo.pool.KryoPool;
 
 import de.javakaffee.kryoserializers.ArraysAsListSerializer;
 import de.javakaffee.kryoserializers.CollectionsEmptyListSerializer;
@@ -106,37 +107,47 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *     <li><u>getVersion:</u> get API version.</li>
  *     <li><u>getBuild:</u> get API build number.</li>
  *     <li><u>getCurrentNodeConfig:</u> retrieve the configuration of the current quasardb instance.</li>
+ *     <li><u>getNodeConfig:</u> retrieve the configuration of the given quasardb instance.</li>
  *     <li><u>getCurrentNodeStatus:</u> retrieve the status of the current quasardb instance.</li>
+ *     <li><u>getNodeStatus:</u> retrieve the status of the given quasardb instance.</li>
  *     <li><u>getCurrentNodeTopology:</u> retrieve the topology of the current quasardb instance.</li>
+ *     <li><u>getNodeTopology:</u> retrieve the topology of the given quasardb instance.</li>
  *     <li><u>runBatch:</u> can increase performance when it is necessary to run many small operations.</li>
  *     <li><u>stopCurrentNode:</u> stop the current quasardb instance.</li>
  *     <li><u>stopNode:</u> stop a provided quasardb instance.</li>
+ *     <li><u>purgeAll:</u> remove all entries of quasardb cluster in one operation.</li>
+ *     <li><u>startsWith:</u> perform a search prefix based operation on all quasardb entries.</li>
+ *     <li><u>set/getExpiryTimeInSeconds:</u> set or retrieve expiry time in seconds for a provided alias.</li>
+ *     <li><u>set/getExpiryTimeInDate:</u> set or retrieve expiry time in {@link java.util.Date} for a provided alias.</li>
  * </ul>
  *
  * <p>
  * <u>Usage example :</u>
  * <p>
  * <pre>
- *       // First : create a configuration map.
- *       Map<String,String> config = new HashMap<String,String>();
- *       config.put("name", "quasardb name");
- *       config.put("host", "quasardb host");
- *       config.put("port", "quasardb port");
+ *       // First : create a configuration object.
+ *       QuasardbConfig config = new QuasardbConfig();
+ *       
+ *       // Second : create a node object
+ *       QuasardbNode node = new QuasardbNode("127.0.0.1", 1234);
+ *       
+ *       // Third : add new node to config
+ *       config.addNode(node);
  *
- *       // Second : create a related quasardb instance.
+ *       // Fourth : create a related quasardb instance.
  *       Quasardb qdb = new Quasardb(config);
  *       // Or you can supply the configuration later :
  *       //   Quasardb qdb = new Quasardb();
  *       //   qdb.setConfig(config);
  *
- *       // Third : connect to quasardb cluster.
+ *       // Fifth : connect to quasardb cluster.
  *       qdb.connect();
  *
- *       // Fourth : use the quasardb instance :
+ *       // Sixth : use the quasardb instance :
  *       qdb.put("foo", new String("bar"));
  *       System.out.println("  => key 'foo' contains : " + qdb.get("foo"));
  *       
- *       // Fifth : disconnect from the quasardb cluster
+ *       // Seventh : disconnect from the quasardb cluster
  *       // Notice that this step is optional
  *       qdb.close();
  * </pre>
@@ -147,11 +158,11 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  * <br>
  * <ul>
  * <li>You cannot create or access entries starting with <b>"qdb"</b>.</li>
- * <li>A majority of entries type can be stored in quasardb without any further work. But there are some limitations. As Kryo is the underlying framework used to serialize objects in quasard, you can find all limitations by consulting kryo's documentation (https://github.com/EsotericSoftware/kryo#compatibility)</li>
+ * <li>A majority of entries type can be stored in quasardb without any further work. But there are some limitations. As Kryo is the underlying framework used to serialize objects in quasardb, you can find all limitations by consulting kryo's documentation (https://github.com/EsotericSoftware/kryo#compatibility)</li>
  * </ul>
  * </p>
  *
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
  * @since 0.5.2
  */
@@ -186,16 +197,35 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     // ByteBuffer to String
     private static final Charset charset = Charset.forName("UTF-8");
-    private static final CharsetDecoder decoder = charset.newDecoder();
-
-    // Serializer initialisation
-    private final Kryo serializer = new Kryo();
+    private static final CharsetDecoder decoder = charset.newDecoder();   
+    
+    private final KryoFactory factory = new KryoFactory() {
+        public Kryo create () {
+            // Initialize serializer
+            Kryo serializer = new Kryo();
+            serializer.setRegistrationRequired(false);
+            serializer.setReferences(false);
+            serializer.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
+            serializer.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
+            serializer.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
+            serializer.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
+            serializer.register(Collections.singletonList("").getClass(), new CollectionsSingletonListSerializer());
+            serializer.register(Collections.singleton("").getClass(), new CollectionsSingletonSetSerializer());
+            serializer.register(Collections.singletonMap("", "").getClass(), new CollectionsSingletonMapSerializer());
+            serializer.register(GregorianCalendar.class, new GregorianCalendarSerializer());
+            serializer.register(InvocationHandler.class, new JdkProxySerializer());
+            UnmodifiableCollectionsSerializer.registerSerializers(serializer);
+            SynchronizedCollectionsSerializer.registerSerializers(serializer);
+            return serializer;
+        }
+    };
+    private final KryoPool serializerPool = new KryoPool.Builder(factory).softReferences().build();
 
     // Keep qdb session reference
     private transient SWIGTYPE_p_qdb_session session;
 
     // Configuration of the qdb instance
-    private transient Map<String,String> config = null;
+    private transient QuasardbConfig config = null;
     
     // Default expiry time in second => 0 means that entry is eternal
     private long defaultExpiryTime = 0;
@@ -207,12 +237,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Create a quasardb instance with the provided configuration map.<br>
-     * The configuration map must have the following parameters :
+     * Create a quasardb instance with the provided configuration.<br>
+     * The configuration must have the following parameters :
      * <ul>
-     *     <li><i>name:</i> the unique name under which the quasardb instance will be referenced/registered.</li>
-     *     <li><i>host:</i> the host of the quasardb cluster you want to connect to - can be a IP address or a hostname.</li>
-     *     <li><i>port: </i> the port of the quasardb cluster you want to connect to.</li>
+     *     <li><i>nodes:</i> a collection of {@link QuasardbNode}.</li>
      *     <li><i>expiry: </i> the default expiry time in seconds for all new entries.</li>
      * </ul>
      * <br>
@@ -220,14 +248,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <u>Example :</u>
      * <p>
      * <pre>
-     *         // First : create a configuration map.
-     *         Map<String,String> config = new HashMap<String,String>();
-     *      config.put("name", "quasardb name");
-     *      config.put("host", "quasardb host");
-     *      config.put("port", "quasardb port");
+     *      // First : create a configuration.
+     *      QuasardbConfig config = new QuasardbConfig();
+     *      
+     *      // Second : add a node to the configuration
+     *      QuasardbNode node = new QuasardbNode("127.0.0.1", 2836);
+     *      config.addNode(node);
      *      
      *      // Optionnaly set a default expiry time in seconds on all next entries
-     *      config.put("expiry", "2");
+     *      config.setExpiryTimeInSeconds(2);
      *
      *      // Second : create a related quasardb instance.
      *      Quasardb myQuasardbInstance = new Quasardb(config);
@@ -236,79 +265,67 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *
      * @param config the config map in order to initialize connexion with the quasardb instance
      * @throws QuasardbException if initialization step fail
+     * @since 0.5.2
      */
-    public Quasardb(final Map<String,String> config) {
+    public Quasardb(final QuasardbConfig config) {
         this.config = config;
     }
 
     /**
      * Initialize connection to the quasardb instance and setup serialization framework.
-     *
-     * @since 0.5.2
      *  
      * @throws QuasardbException if connection to the quasardb instance fail
+     * @since 0.5.2
      */
     public void connect() throws QuasardbException {
         // Check params
-        if (config == null) {
+        if ((config == null) || (config.getNodes().isEmpty())) {
             throw new QuasardbException(NO_CONFIG_PROVIDED);
         }
 
-        if (config.get("host") == null) {
-            throw new QuasardbException(WRONG_CONFIG_PROVIDED);
-        }
-
-        if ((config.get("port") == null)) {
-            throw new QuasardbException(WRONG_CONFIG_PROVIDED);
-        }
-
-        try {
-            Integer.parseInt(config.get("port"));
-        } catch (NumberFormatException e) {
-            throw new QuasardbException(WRONG_CONFIG_PROVIDED, e);
-        }
+        // Set default expiry time
+        this.setDefaultExpiryTimeInSeconds(config.getExpiryTimeInSeconds());
         
-        try {
-            this.setDefaultExpiryTimeInSeconds(Long.parseLong(config.get("expiry")));
-        } catch (NumberFormatException e) {
-            this.setDefaultExpiryTimeInSeconds(0);
-        }
-        
-        // Initialize serializer
-        serializer.setRegistrationRequired(false);
-        serializer.setReferences(false);
-        serializer.setInstantiatorStrategy(new StdInstantiatorStrategy());
-        serializer.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
-        serializer.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
-        serializer.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
-        serializer.register(Collections.EMPTY_SET.getClass(), new CollectionsEmptySetSerializer());
-        serializer.register(Collections.singletonList("").getClass(), new CollectionsSingletonListSerializer());
-        serializer.register(Collections.singleton("").getClass(), new CollectionsSingletonSetSerializer());
-        serializer.register(Collections.singletonMap("", "").getClass(), new CollectionsSingletonMapSerializer());
-        serializer.register(GregorianCalendar.class, new GregorianCalendarSerializer());
-        serializer.register(InvocationHandler.class, new JdkProxySerializer());
-        UnmodifiableCollectionsSerializer.registerSerializers(serializer);
-        SynchronizedCollectionsSerializer.registerSerializers(serializer);
-
         // Try to open a qdb session
         session = qdb.open();
 
-        // Try to connect to the qdb node
-        final qdb_error_t qdbError = qdb.connect(session, config.get("host"), Integer.parseInt(config.get("port")));
-
-        // Handle errors
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QuasardbException(qdbError);
+        // Read provided configuration
+        remoteNodeArray nodes = new remoteNodeArray();
+        for (QuasardbNode node : config.getNodes()) {
+            final qdb_remote_node_t remoteNode = new qdb_remote_node_t();
+            remoteNode.setAddress(node.getHostName());
+            remoteNode.setPort(node.getPort());
+            remoteNode.setError(qdb_error_t.error_uninitialized);
+            nodes.push_back(remoteNode);
+        }
+        
+        // Try to connect to the qdb nodes
+        if (config.getNodes().size() == 1) {
+            final qdb_error_t qdbError = qdb.connect(session, config.getNodes().iterator().next().getHostName(), config.getNodes().iterator().next().getPort());
+            if (qdbError != qdb_error_t.error_ok) {
+                throw new QuasardbException(WRONG_CONFIG_PROVIDED, qdbError);
+            }
+        } else {
+            nodes = qdb.multi_connect(session, nodes);
+            boolean oneNodeOK = false;
+            for (int i = 0; i < nodes.size(); i++) {
+                if (nodes.get(i).getError() == qdb_error_t.error_ok) {
+                    oneNodeOK = true;
+                    break;
+                }
+            }
+            if (!oneNodeOK) {
+                throw new QuasardbException(WRONG_CONFIG_PROVIDED, nodes.get(0).getError());
+            }
         }
     }
 
     /**
      * Retrieve the version of the current quasardb instance.
-     *
-     * @since 0.7.4
-     *
+     * 
      * @return version of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getVersion() throws QuasardbException {
         this.checkSession();
@@ -318,10 +335,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Retrieve the build version of the current quasardb instance.
      *
-     * @since 0.7.4
-     *
      * @return build version of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getBuild() throws QuasardbException {
         this.checkSession();
@@ -457,15 +473,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * }
      * </pre>
      * 
-     *
-     * @since 0.7.4
-     * 
      * @return status of the current quasardb instance in JSON
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getCurrentNodeStatus() throws QuasardbException {
         try {
-            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "status");
+            return this.getNodeInfo(config.getNodes().iterator().next().getHostName(), config.getNodes().iterator().next().getPort(), "status");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -601,13 +615,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * }
      * </pre>
      * 
-     *
-     * @since 0.7.4
-     * 
      * @param node the host of the quasardb node you want to retrieve status
      * @param port the port of the quasardb node you want to retrieve status
      * @return status of the current quasardb instance in JSON
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getNodeStatus(final String node, final int port) throws QuasardbException {
         try {
@@ -662,15 +674,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *       }
      * }
      * </pre> 
-     *
-     * @since 0.7.4
      * 
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getCurrentNodeConfig() throws QuasardbException {
         try {
-            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "config");
+            return this.getNodeInfo(config.getNodes().iterator().next().getHostName(), config.getNodes().iterator().next().getPort(), "config");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -721,13 +732,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *       }
      * }
      * </pre>      
-
-     * @since 0.7.4
      * 
      * @param node the host of the quasardb node you want to retrieve configuration
      * @param port the port of the quasardb node you want to retrieve configuration
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getNodeConfig(final String node, final int port) throws QuasardbException {
         try {
@@ -758,15 +768,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * }
      * 
      * </pre>
-     *
-     * @since 0.7.4
      * 
      * @return topology of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getCurrentNodeTopology() throws QuasardbException {
         try {
-            return this.getNodeInfo(config.get("host"), Integer.parseInt(config.get("port")), "topology");
+            return this.getNodeInfo(config.getNodes().iterator().next().getHostName(), config.getNodes().iterator().next().getPort(), "topology");
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
@@ -794,12 +803,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * 
      * </pre>
      * 
-     * @since 0.7.4
-     * 
      * @param node the host of the quasardb node you want to retrieve topology
      * @param port the port of the quasardb node you want to retrieve topology
      * @return topology of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     public String getNodeTopology(final String node, final int port) throws QuasardbException {
         try {
@@ -812,11 +820,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Retrieve the expiry time in seconds for a provided alias
      * 
-     * @since 1.1.0
-     * 
      * @param alias the object's unique key/alias.
      * @return the expiry time in second related to the provided alias. 0 means eternal duration.
      * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
+     * @since 1.1.0
      */
     public long getExpiryTimeInSeconds(final String alias) throws QuasardbException {
         // Checks params
@@ -841,11 +848,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Retrieve the expiry time in date for a provided alias
      * 
-     * @since 1.1.0
-     * 
      * @param alias the object's unique key/alias.
      * @return the expiry date related to the provided alias.
      * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
+     * @since 1.1.0
      */
     public Date getExpiryTimeInDate(final String alias) throws QuasardbException {
         // Checks params
@@ -870,11 +876,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Change the expiry time in seconds for a provided alias
      * 
-     * @since 1.1.0
-     * 
      * @param alias the object's unique key/alias.
      * @param expiryTime the expiry time in second related to the provided alias (0 means eternal)
      * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or a negative expiryTime is provided or prodived alias is reserved.
+     * @since 1.1.0
      */
     public void setExpiryTimeInSeconds(final String alias, final long expiryTime) throws QuasardbException {
         // Checks params
@@ -900,11 +905,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Change the expiry time for a provided alias at the provided date.
      * 
-     * @since 1.1.0
-     * 
      * @param alias the object's unique key/alias.
      * @param expiryDate the expiry date related to the provided alias.
      * @throws QuasardbException if the connection with current instance fail, provided alias does not exist or is reserved
+     * @since 1.1.0
      */
     public void setExpiryTimeAt(final String alias, final Date expiryDate) throws QuasardbException {
         // Checks params
@@ -931,9 +935,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Get the default expiry time in seconds for all new entries. 
      * Return the 0 value if entries are eternal
      * 
-     * @since 1.1.0
-     * 
      * @return 0 if entries are eternal, a value in seconds instead.
+     * @since 1.1.0
      */
     public long getDefaultExpiryTimeInSeconds() {
         return defaultExpiryTime;
@@ -942,10 +945,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Set the default expiry time in seconds for all next entries.
      * 
-     * @since 1.1.0
-     * 
      * @param expiryTime expiry time in seconds to set up
      * @throws QuasardbException if a negative expiryTime is provided
+     * @since 1.1.0
      */
     public void setDefaultExpiryTimeInSeconds(long expiryTime) throws QuasardbException {
         if (expiryTime < 0L) {
@@ -957,15 +959,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Stop the current node with a given reason.
      * 
-     * @since 0.7.4
-     * 
      * @param reason the reason to stop the selected node.
+     * @since 0.7.4
      */
     public void stopCurrentNode(final String reason) throws QuasardbException {
         qdb_error_t qdbError = null;
         final qdb_remote_node_t remote_node = new qdb_remote_node_t();
-        remote_node.setAddress(config.get("host"));
-        remote_node.setPort(Integer.parseInt(config.get("port")));
+        remote_node.setAddress(config.getNodes().iterator().next().getHostName());
+        remote_node.setPort(config.getNodes().iterator().next().getPort());
         qdbError = qdb.stop_node(session, remote_node, reason);
         
         // Handle errors
@@ -977,11 +978,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Stop a specific node with a given reason.
      * 
-     * @since 0.7.4
-     * 
      * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.
      * @param port the port of the quasardb node you want to stop.
      * @param reason the reason to stop the selected node.
+     * @since 0.7.4
      */
     public void stopNode(final String node, final int port, final String reason) throws QuasardbException {
         qdb_error_t qdbError = null;
@@ -998,22 +998,21 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     
     /**
      * Utility method to retrieve information operations on the current qdb instance.<br>
-     *
-     * @since 0.7.4
      * 
      * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.
      * @param port the port of the quasardb node you want to stop.
      * @param operation operation to apply on the current node.
      * @return the information related to the information operation.
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.4
      */
     private String getNodeInfo(final String node, final int port, final String operation) throws QuasardbException {
         this.checkSession();
         String result = "";
         final qdb_remote_node_t remote_node = new qdb_remote_node_t();
-        remote_node.setAddress(config.get("host"));
-        remote_node.setPort(Integer.parseInt(config.get("port")));
-        qdb.multi_connect(session, remote_node, 1);
+        remote_node.setAddress(node);
+        remote_node.setPort(port);
+        qdb.connect(session, remote_node.getAddress(), remote_node.getPort());
         final error_carrier error = new error_carrier();
         ByteBuffer buffer;
         if (operation.equalsIgnoreCase("config")) {
@@ -1041,12 +1040,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
-     * 
-     * @since 0.5.2
      *  
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
      * @throws QuasardbException if an error occurs, the entry does not exist or the entry starts with "qdb".
+     * @since 0.5.2
      */
     @SuppressWarnings("unchecked")
     public <V> V get(final String alias) throws QuasardbException {
@@ -1059,7 +1057,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         error_carrier error = new error_carrier();
         
         // Get value associated with alias
-        ByteBuffer buffer = qdb.get_buffer(session, alias, error);
+        final ByteBuffer buffer = qdb.get_buffer(session, alias, error);
         
         // Prepare ByteBuffer
         if (buffer != null) {
@@ -1073,13 +1071,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         // De-serialize
         try {
+            Kryo serializer = serializerPool.borrow();
             result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+            serializerPool.release(serializer);
         } catch (Exception e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
             // Free ressources
             qdb.free_buffer(session, buffer);
-            buffer = null;
+            //buffer = null;
             error = null;
         }
 
@@ -1092,11 +1092,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      *
-     * @since 0.7.3
-     *
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
      * @throws QuasardbException if an error occurs, the entry does not exist or the entry starts with "qdb".
+     * @since 0.7.3
      */
     @SuppressWarnings("unchecked")
     public <V> V getRemove(final String alias) throws QuasardbException {
@@ -1109,7 +1108,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         error_carrier error = new error_carrier();
         
         // Get value associated with alias
-        ByteBuffer buffer = qdb.get_remove(session, alias, error);
+        final ByteBuffer buffer = qdb.get_remove(session, alias, error);
         
         // Prepare ByteBuffer
         if (buffer != null) {
@@ -1123,13 +1122,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         // De-serialize
         try {
+            Kryo serializer = serializerPool.borrow();
             result = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+            serializerPool.release(serializer);
         } catch (Exception e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
             // Free ressources
             qdb.free_buffer(session, buffer);
-            buffer = null;
+            //buffer = null;
             error = null;
         }
         
@@ -1141,11 +1142,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <ul><li>Entries must not already exist.</li>
      * <li>Entries starting with "qdb" are reserved.</li></ul>
      *
-     * @since 0.5.2
-     *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @throws QuasardbException if an error occurs, the entry already exists or the entry starts with "qdb".
+     * @since 0.5.2
      */
     public <V> void put(final String alias, final V value) throws QuasardbException {
         this.put(alias, value, defaultExpiryTime);
@@ -1155,13 +1155,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key.<br>
      * <ul><li>Entries must not already exist.</li>
      * <li>Entries starting with "qdb" are reserved.</li></ul>
-     *
-     * @since 1.1.0
      * 
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @throws QuasardbException if an error occurs (for example : lost session) or the entry already exists or the entry is reserved (it starts with "qdb").
+     * @since 1.1.0
      */
     public <V> void put(final String alias, final V value, final long expiryTime) throws QuasardbException {
         this.writeOperation(alias, value, null, PUT, expiryTime);
@@ -1175,7 +1174,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 0.5.2
      */
     public <V> void update(final String alias, final V value) throws QuasardbException {
@@ -1191,7 +1189,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param value the new object to associate to the key
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 1.1.3
      */
     public <V> void update(final String alias, final V value, final long expiryTime) throws QuasardbException {
@@ -1207,7 +1204,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param value the new object to associate to the key
      * @return the previous value associated to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 0.7.3
      */
     public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
@@ -1224,7 +1220,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @return the previous value associated to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 1.1.3
      */
     public <V> V getAndReplace(final String alias, final V value, final long expiryTime) throws QuasardbException {
@@ -1241,7 +1236,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param comparand the object to compare with original value associated to the key
      * @return the original value associated to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 0.7.3
      */
     public <V> V compareAndSwap(final String alias, final V value, final V comparand) throws QuasardbException {
@@ -1259,7 +1253,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param comparand the object to compare with original value associated to the key
      * @return the original value associated to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
-     * 
      * @since 0.7.3
      */
     public <V> V compareAndSwap(final String alias, final V value, final V comparand, final long expiryTime) throws QuasardbException {
@@ -1271,10 +1264,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      *
-     * @since 0.5.2
-     *
      * @param alias the alias you want to delete.
      * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
+     * @since 0.5.2
      */
     public void remove(final String alias) throws QuasardbException {
         // Check params
@@ -1293,9 +1285,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Delete all the stored objects in the current quasardb instance. Use with caution.
      *
-     * @since 0.7.2
-     *
      * @throws QuasardbException if the connection with the current instance fail.
+     * @since 0.7.2
      */
     public void purgeAll() throws QuasardbException {
         // Checks params
@@ -1316,11 +1307,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      * 
-     * @since 0.7.2
-     * 
      * @param alias the alias you want to delete
      * @param comparand the object you want to compare with
      * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
+     * @since 0.7.2
      */
     public <V> void removeIf(final String alias, final V comparand) throws QuasardbException {
         // Check params
@@ -1337,7 +1327,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = (int) classIntrospector.introspect(comparand).getDeepSize();
+            synchronized(this) {
+                bufferSize = (int) classIntrospector.introspect(comparand).getDeepSize();
+            }
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -1348,8 +1340,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Get a direct byte buffer from pool with the specified size
         ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
         try {
-            Output output = new Output(bufferSize);
+            final Output output = new Output(bufferSize);
+            Kryo serializer = serializerPool.borrow();
             serializer.writeClassAndObject(output, comparand);
+            serializerPool.release(serializer);
             buffer.put(output.getBuffer());
 
             // Apply remove if
@@ -1388,8 +1382,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * </ol>
      * 
      * @param operations List of operations to submit in batch mode to Quasardb. See {@link Operation}
-     * @return All results of submitted operations in batch mode.  See {@link Results}
-     * 
+     * @return All results of submitted operations in batch mode.  See {@link Results} 
      * @since 1.1.0
      */
     @SuppressWarnings("unchecked")
@@ -1405,7 +1398,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
         
         // Prepare all batch requests
-        for (Operation<V> operation : operations) {
+        for (final Operation<V> operation : operations) {
             if (operation.getType() != null) {
                 qdb_operation_t req = new qdb_operation_t();
                 
@@ -1457,13 +1450,18 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 if ((operation.getValue() != null) && (req.getType() != qdb_operation_type_t.optionp_remove_if)) {
                     ByteBuffer buffer = null;
                     try {
-                        int bufferSize = (int) classIntrospector.introspect(operation.getValue()).getDeepSize();
+                        int bufferSize = 0;
+                        synchronized(this) {
+                            bufferSize = (int) classIntrospector.introspect(operation.getValue()).getDeepSize();
+                        }
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
                         buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
-                        Output output = new Output(bufferSize);
+                        final Output output = new Output(bufferSize);
+                        Kryo serializer = serializerPool.borrow();
                         serializer.writeClassAndObject(output, operation.getValue());
+                        serializerPool.release(serializer);
                         buffer.put(output.getBuffer());
                         req.setContent_size(bufferSize);
                         req.setContent(buffer);
@@ -1479,15 +1477,20 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 // Prepare comparand content
                 if ((operation.getCompareValue() != null) || ((req.getType() == qdb_operation_type_t.optionp_remove_if) && (operation.getValue() != null))) {
                     ByteBuffer buffer = null;
-                    V comparandValue = (req.getType() == qdb_operation_type_t.optionp_remove_if)?operation.getValue():operation.getCompareValue();
+                    final V comparandValue = (req.getType() == qdb_operation_type_t.optionp_remove_if)?operation.getValue():operation.getCompareValue();
                     try {
-                        int bufferSize = (int) classIntrospector.introspect(comparandValue).getDeepSize();
+                        int bufferSize = 0;
+                        synchronized(this) {
+                            bufferSize = (int) classIntrospector.introspect(comparandValue).getDeepSize();
+                        }
                         if (bufferSize == 0) {
                             bufferSize = BUFFER_SIZE;
                         }
                         buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
-                        Output output = new Output(bufferSize);
+                        final Output output = new Output(bufferSize);
+                        Kryo serializer = serializerPool.borrow();
                         serializer.writeClassAndObject(output, comparandValue);
+                        serializerPool.release(serializer);
                         buffer.put(output.getBuffer());
                         req.setComparand_size(bufferSize);
                         req.setComparand(buffer);
@@ -1552,13 +1555,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             
             // Set value
             if (hasValue) {
-                ByteBuffer buffer = operation.getResult();
+                final ByteBuffer buffer = operation.getResult();
                 if (buffer != null) {
                     buffer.rewind();
                 }
                 
                 try {
+                    Kryo serializer = serializerPool.borrow();
                     result.setValue((V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer))));
+                    serializerPool.release(serializer);
                 } catch (Exception e) {
                     result.setValue(null);
                     result.setError(qdb_error_t.error_unmatched_content.toString());
@@ -1596,11 +1601,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <li>searching on reserved aliases (starts with "qdb") is not allowed.</li>
      * </ul>
      * 
-     * @since 1.1.0
-     * 
      * @param prefix prefix 
      * @return all entries matching specified prefix
      * @throws QuasardbException if an error occurs (for example : lost session) or provided prefix is reserved.
+     * @since 1.1.0
      */
     public List<String> startsWith(final String prefix) throws QuasardbException {
         // Check params
@@ -1630,9 +1634,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Close the connection to the quasardb instance and frees resources.
      * 
-     * @since 0.5.2
-     * 
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
+     * @since 0.5.2
      */
     public void close() throws QuasardbException {
         // Check params
@@ -1658,9 +1661,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Check if the current qdb session is valid
      * 
-     * @since 0.5.2
-     * 
      * @throws QuasardbException if the connection to the qdb instance cannot be closed
+     * @since 0.5.2
      */
     private final void checkSession() throws QuasardbException {
         if (session == null) {
@@ -1671,10 +1673,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Check if the provided alias is valid
      * 
-     * @since 0.5.2
-     * 
      * @param alias to store object
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
+     * @since 0.5.2
      */
     private final void checkAlias(final String alias) throws QuasardbException {
          // Testing parameters
@@ -1688,14 +1689,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Utility method to apply write operations in the current qdb instance.<br>
      * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a qdb instance.
      * 
-     * @since 0.5.3
-     * 
      * @param alias alias under the object <i>value</i> will be stored.
      * @param value object to serialize and store into the qdb instance.
      * @param other other object to compare with value
      * @param operation to apply on the two first parameters.
      * @return the buffer containing the serialized form of the <i>value</i> object.
      * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized or if expiry value is negative
+     * @since 0.5.3
      */
     @SuppressWarnings("unchecked")
     private final <V> V writeOperation(final String alias, final V value, final V other, final int operation, final long expiry) throws QuasardbException {
@@ -1726,7 +1726,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         //  -> try to evaluate the size of the object at runtime using sizeOf
         try {
-            bufferSize = (int) classIntrospector.introspect(value).getDeepSize();
+            synchronized(this) {
+                bufferSize = (int) classIntrospector.introspect(value).getDeepSize();
+            }
             if (bufferSize == 0) {
                 bufferSize = BUFFER_SIZE;
             }
@@ -1738,8 +1740,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
 
         try {
-            Output output = new Output(bufferSize);
+            final Output output = new Output(bufferSize);
+            Kryo serializer = serializerPool.borrow();
             serializer.writeClassAndObject(output, value);
+            serializerPool.release(serializer);
             buffer.put(output.getBuffer());
 
             // Put or update value into QuasarDB
@@ -1759,7 +1763,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     } else {
                         int otherSize = BUFFER_SIZE;
                         try {
-                            otherSize = (int) classIntrospector.introspect(other).getDeepSize();
+                            synchronized(this) {
+                                otherSize = (int) classIntrospector.introspect(other).getDeepSize();
+                            }
                             if (otherSize == 0) {
                                 otherSize = BUFFER_SIZE;
                             }
@@ -1767,7 +1773,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                             throw new QuasardbException(BAD_SIZE, e);
                         }
                         ByteBuffer otherBuffer = ByteBuffer.allocateDirect(otherSize).order(ByteOrder.nativeOrder());
-                        Output otherOutput = new Output(otherSize);
+                        final Output otherOutput = new Output(otherSize);
                         serializer.writeClassAndObject(otherOutput, other);
                         otherBuffer.put(otherOutput.getBuffer());
                         bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), time, error);
@@ -1798,8 +1804,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     qdb.free_buffer(session, bufferResult);
                     bufferResult = null;
                 }
-            }
-            
+            }            
             return result;
         } catch (Exception e) {
             if (!(e instanceof QuasardbException)) {
@@ -1828,24 +1833,24 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Get the current instance configuration.
      *
-     * @since 0.5.2
-     *
      * @return current quasardb configuration
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
+     * @see QuasardbConfig
+     * @since 0.5.2
      */
-    public final Map<String, String> getConfig() {
+    public final QuasardbConfig getConfig() {
         return config;
     }
 
     /**
      * Updates the configuration properties
      *
-     * @since 0.5.2
-     *
      * @param config configuration properties
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
+     * @see QuasardbConfig
+     * @since 0.5.2
      */
-    public void setConfig(final Map<String, String> config) {
+    public void setConfig(final QuasardbConfig config) {
         this.config = config;
     }
     
@@ -1875,7 +1880,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 1.0.0
      * @see java.lang.Iterable#iterator()
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Iterator<QuasardbEntry<?>> iterator() {
         return new QuasardbIterator(session);
     }
@@ -1914,7 +1919,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             
             // Get alias value
             if (iterator.getContent_size() != 0) {
-                ByteBuffer buffer = qdb.iterator_content(iterator);
+                final ByteBuffer buffer = qdb.iterator_content(iterator);
                 
                 // Prepare ByteBuffer
                 if (buffer != null) {
@@ -1924,13 +1929,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 // De-serialize
                 V value = null;
                 try {
+                    Kryo serializer = serializerPool.borrow();
                     value = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+                    serializerPool.release(serializer);
                 } catch (Exception e) {
                     throw new QuasardbException(e.getMessage(), e);
                 } finally {
                     // Free ressources
                     qdb.free_buffer(session, buffer);
-                    buffer = null;
+                    //buffer = null;
                 }
                 
                 // Prepare entry
@@ -1969,7 +1976,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             // Handle errors
             if (qdbError == qdb_error_t.error_ok) {        
                 // Get alias value
-                ByteBuffer buffer = qdb.iterator_content(iterator);
+                final ByteBuffer buffer = qdb.iterator_content(iterator);
                 
                 // Prepare ByteBuffer
                 if (buffer != null) {
@@ -1979,13 +1986,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 // De-serialize
                 V value = null;
                 try {
+                    Kryo serializer = serializerPool.borrow();
                     value = (V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer)));
+                    serializerPool.release(serializer);
                 } catch (Exception e) {
                     throw new QuasardbException(e.getMessage(), e);
                 } finally {
                     // Free ressources
                     qdb.free_buffer(session, buffer);
-                    buffer = null;
+                    //buffer = null;
                 }
                 
                 // Prepare entry
@@ -2038,5 +2047,4 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new UnsupportedOperationException("Not yet implemented");
         }
     }
-
 }

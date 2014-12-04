@@ -26,11 +26,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.b14.qdb;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import com.b14.qdb.*; 
 
 class QuasardbExample {
@@ -39,13 +34,11 @@ class QuasardbExample {
         // Object needed to access your database
         Quasardb cache = null;
         
-        // You need to configure your qdb instance thanks to a map
-        // it will tell the client API where the daemon is
-        Map<String,String> config = new HashMap<String,String>();
-        String cacheName = "test";
-        config.put("name", cacheName);
-        config.put("host", "127.0.0.1");
-        config.put("port", "5909");
+        // You need to configure your qdb instance thanks to a QuasardbConfig object.
+        // It will tell the client API where the daemon is
+        QuasardbConfig config = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode("127.0.0.1", 2836);
+        config.addNode(node);
 
         // the key has to be a string
         String keyName = "myKey";

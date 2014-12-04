@@ -59,7 +59,7 @@ package com.b14.qdb.batch;
  * <li>operation on reserved aliases are not allowed (see previous item)</li>
  * </ul>
  * 
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
  * @since 1.1.0
  */

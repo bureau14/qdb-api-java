@@ -43,7 +43,7 @@ package com.b14.qdb.batch;
  * <li>NO_OP : no operation.</li>
  * </ul>
  * 
- * @author &copy; <a href="https://www.bureau14.fr/">bureau14</a> - 2013
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master
  * @since 1.1.0
  */
