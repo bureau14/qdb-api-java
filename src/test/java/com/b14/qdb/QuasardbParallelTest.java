@@ -54,8 +54,8 @@ public class QuasardbParallelTest {
     private static final int NB_LOOPS = 100;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
-    private static final int REQ_MAX_LATENCY = 1000;
-    private static final int REQ_MEDIAN_LATENCY = 500;
+    private static final int REQ_MAX_LATENCY = 2000;
+    private static final int REQ_MEDIAN_LATENCY = 1000;
     private static final int REQ_THROUGHPUT = 10;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
     private static final QuasardbConfig config = new QuasardbConfig();
