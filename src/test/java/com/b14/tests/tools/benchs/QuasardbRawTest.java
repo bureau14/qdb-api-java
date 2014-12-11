@@ -60,7 +60,7 @@ import com.b14.qdb.tools.LibraryHelper;
 
 @RunWith(Feeder.class)
 public class QuasardbRawTest {
-    private static final int NB_LOOPS = 10;
+    private static final int NB_LOOPS = 1;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
@@ -79,7 +79,8 @@ public class QuasardbRawTest {
         }
     }
     
-    @Rule public ContiPerfRule rule = new ContiPerfRule();
+    @Rule 
+    public ContiPerfRule rule = new ContiPerfRule();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -138,26 +139,32 @@ public class QuasardbRawTest {
     @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
     @Required(average = REQ_AVERAGE_EXECUTION_TIME)
     public synchronized void rawPutGetUpdateDeleteTest(String key, Object value) {
-        error_carrier error = new error_carrier();
-        key += "_" + Thread.currentThread().getId();
-        
-        buffer.put((value.toString()).getBytes());
-        buffer.flip();
-        
-        qdb.remove(session, key);
-        qdb.put(session, key, buffer, buffer.limit(), 0);
-        
-        buffer.clear();
-        
-        ByteBuffer bufferGet = qdb.get_buffer(session, key, error);
-        qdb.free_buffer(session, bufferGet);
-        
-        buffer.rewind();
-        buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());
-        qdb.update(session, key, buffer, buffer.limit(), 0);
-        buffer.clear();
-        
-        qdb.remove(session, key);
+        ByteBuffer bufferGet = null;
+        try {
+            error_carrier error = new error_carrier();
+            key += "_" + Thread.currentThread().getId();
+            
+            buffer.put((value.toString()).getBytes());
+            buffer.flip();
+            
+            qdb.remove(session, key);
+            qdb.put(session, key, buffer, buffer.limit(), 0);
+            
+            buffer.clear();
+            
+            bufferGet = qdb.get_buffer(session, key, error);
+            
+            buffer.rewind();
+            buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());
+            qdb.update(session, key, buffer, buffer.limit(), 0);
+            buffer.clear();
+            
+            qdb.remove(session, key);
+        } finally {
+            if (bufferGet != null) {
+                qdb.free_buffer(session, bufferGet);
+            }
+        }
     }
     
     @Test
@@ -187,11 +194,11 @@ public class QuasardbRawTest {
             assertFalse(qdbDB.get(key).equals(value));
             assertTrue(qdbDB.get(key).equals(value + "_UPDATED"));
         } catch (QuasardbException e) {
-            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
             e.printStackTrace();
+            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
         } catch (Exception e) {
-            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
             e.printStackTrace();
+            fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
         } finally {
             // Clean up stored value
             try {
