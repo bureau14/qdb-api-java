@@ -20,11 +20,11 @@
 	<mailingLists>
 		<mailingList>
 			<name>Information</name>
-			<post>contact@bureau14.fr</post>
+			<post>contact@quasardb.net</post>
 		</mailingList>
 		<mailingList>
 			<name>Sales</name>
-			<post>sales@bureau14.fr</post>
+			<post>sales@quasardb.net</post>
 		</mailingList>
 		<mailingList>
 			<name>Bugs</name>
@@ -348,7 +348,7 @@
 							<licenseFamilyName>Bureau 14 Qdb License (B14WML) 1.0</licenseFamilyName>
 							<notes></notes>
 							<patterns>
-								<pattern>Copyright (c) 2009-2011, Bureau 14 SARL</pattern>
+								<pattern>Copyright (c) 2009-2015, quasardb SAS</pattern>
 							</patterns>
 						</license>
 					</licenses>
