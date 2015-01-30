@@ -1173,11 +1173,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
+     * @return true if entry was updated
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * @since 0.5.2
      */
-    public <V> void update(final String alias, final V value) throws QuasardbException {
-        this.update(alias, value, defaultExpiryTime);
+    public <V> boolean update(final String alias, final V value) throws QuasardbException {
+        return this.update(alias, value, defaultExpiryTime);
     }
     
     /**
@@ -1188,11 +1189,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value the new object to associate to the key
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
+     * @return true if entry was updated
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * @since 1.1.3
      */
-    public <V> void update(final String alias, final V value, final long expiryTime) throws QuasardbException {
-        this.writeOperation(alias, value, null, UPDATE, expiryTime);
+    public <V> boolean update(final String alias, final V value, final long expiryTime) throws QuasardbException {
+        return (this.writeOperation(alias, value, null, UPDATE, expiryTime) == null);
     }
 
     /**
@@ -1227,7 +1229,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Compare an existing alias with comparand, updates it to new if they match and return the original value.<br>
+     * Atomically compare an existing alias with comparand, updates it to new if they match and return the original value.<br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      *
@@ -1243,14 +1245,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Compare an existing alias with comparand, updates it to new if they match and return the original value.
-     * <br>
+     * Atomically compare an existing alias with comparand, updates it to new if they match and return the original value.<br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias a key to uniquely identify the entry within the cluster
      * @param value the new object to associate to the key
      * @param comparand the object to compare with original value associated to the key
+     * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @return the original value associated to the key
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * @since 0.7.3
@@ -1265,10 +1267,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Please note that entries starting with "qdb" are reserved.
      *
      * @param alias the alias you want to delete.
+     * @return true if alias has been removed.
      * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
      * @since 0.5.2
      */
-    public void remove(final String alias) throws QuasardbException {
+    public boolean remove(final String alias) throws QuasardbException {
         // Check params
         this.checkSession();
         this.checkAlias(alias);
@@ -1276,14 +1279,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Delete the entry on Quasardb instance
         final qdb_error_t qdbError = qdb.remove(session, alias);
 
-        // Handle errors
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QuasardbException(qdbError);
-        }
+        // Return result
+        return (qdbError == qdb_error_t.error_ok);
     }
 
     /**
-     * Delete all the stored objects in the current quasardb instance. Use with caution.
+     * Delete all the stored objects in the current quasardb instance.<br>
+     * <b>Use with caution</b>
      *
      * @throws QuasardbException if the connection with the current instance fail.
      * @since 0.7.2
@@ -1293,7 +1295,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         this.checkSession();
 
          // Delete the entry on Quasardb instance
-        final qdb_error_t qdbError = qdb.purge_all(session);
+        final qdb_error_t qdbError = qdb.remove_all(session);
 
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
@@ -1302,21 +1304,21 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
     
     /**
-     * Delete the object associated whith the <i>alias</i> key if the object is equal to comparand.
+     * Atomically delete the object associated whith the <i>alias</i> key if the object is equal to comparand.
      * <br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
      * 
      * @param alias the alias you want to delete
      * @param comparand the object you want to compare with
+     * @return true if provided alias has been removed
      * @throws QuasardbException if the connection with the current instance fail or provided alias is reserved (it starts with "qdb").
      * @since 0.7.2
      */
-    public <V> void removeIf(final String alias, final V comparand) throws QuasardbException {
+    public <V> boolean removeIf(final String alias, final V comparand) throws QuasardbException {
         // Check params
         this.checkSession();
         this.checkAlias(alias);
-        
         if (comparand == null) {
             throw new QuasardbException(NULL_VALUE);
         }
@@ -1349,10 +1351,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             // Apply remove if
             final qdb_error_t qdbError = qdb.remove_if(session, alias, buffer, buffer.limit());
     
-            // Handle errors
-            if (qdbError != qdb_error_t.error_ok) {
-                throw new QuasardbException(qdbError);
-            }
+            // Return result
+            return (qdbError == qdb_error_t.error_ok);
         } catch (Exception e) {
             if (!(e instanceof QuasardbException)) {
                 throw new QuasardbException(BAD_SERIALIZATION, e);
@@ -1693,6 +1693,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @param value object to serialize and store into the qdb instance.
      * @param other other object to compare with value
      * @param operation to apply on the two first parameters.
+     * @param expiry expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
      * @return the buffer containing the serialized form of the <i>value</i> object.
      * @throws QuasardbException if parameters are not allowed or if the provided value cannot be serialized or if expiry value is negative
      * @since 0.5.3
@@ -1859,6 +1860,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /** override **/
     /**************/
     /**
+     * {@inheritDoc}
      */
     @Override
     public String toString() {
@@ -1903,7 +1905,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             iteratorStarted = false;
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings({ "unchecked" })
         private final void startIterator() throws QuasardbException {
             // Checks params
             checkSession();
@@ -1941,7 +1943,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 }
                 
                 // Prepare entry
-                nextEntry = new QuasardbEntry(iterator.getAlias(), value);
+                nextEntry = new QuasardbEntry<V>(iterator.getAlias(), value);
                 iteratorStarted = true;
             }
         }
@@ -1965,7 +1967,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             iterator = null;
         }
         
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings({ "unchecked" })
         private final void fetch() throws QuasardbException {
             // Checks params
             checkSession();
@@ -1998,7 +2000,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 }
                 
                 // Prepare entry
-                nextEntry = new QuasardbEntry(iterator.getAlias(), value);
+                nextEntry = new QuasardbEntry<V>(iterator.getAlias(), value);
             } else if (qdbError == qdb_error_t.error_alias_not_found) {
                 nextEntry = null;
                 this.closeIterator();

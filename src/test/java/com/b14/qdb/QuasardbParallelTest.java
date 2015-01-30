@@ -111,62 +111,67 @@ public class QuasardbParallelTest {
         
         // Try to clean up stored value if exists
         try {
-            qdb.remove(key);
+            if (qdb != null) {
+                qdb.remove(key);
+            }
         } catch (QuasardbException e) {
+            // Nothing to do
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("No exception allowed here => " + e.getMessage());
         }
         
         try {
-            // Insert the provided value at provided key
-            qdb.put(key , value);
-            
-            // Check if a value has been stored at key
-            assertTrue(qdb.get(key).equals(value));
-            
-            // Update value
-            qdb.update(key, value + "_UPDATED");
-            
-            // Check if a value has been updated at key
-            assertFalse(qdb.get(key).equals(value));
-            assertTrue(qdb.get(key).equals(value + "_UPDATED"));
-            
-            // Get and replace
-            assertTrue(qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
-            assertTrue(qdb.get(key).equals(value));
-            
-            // Get and remove
-            assertTrue(qdb.getRemove(key).equals(value));
-            try {
-                qdb.get(key);
-                fail("Key " + key + " had to be removed by getRemove().");
-            } catch (Exception e) {
-                assertTrue(e instanceof QuasardbException);
-            }
-            
-            // Remove if
-            qdb.put(key , value);
-            try {
-                qdb.removeIf(key, value + "_FAUX");
-                fail("Value " + value + "_FAUX for key " + key + " doesn't match content => API must thrown an exception");
-            } catch (Exception e) {
-                assertTrue(e instanceof QuasardbException);
+            if (qdb != null) {
+                // Insert the provided value at provided key
+                qdb.put(key , value);
+                
+                // Check if a value has been stored at key
                 assertTrue(qdb.get(key).equals(value));
-            }
-            qdb.removeIf(key, value);
-            try {
-                qdb.get(key);
-                fail("Key " + key + " had to be removed by getRemove().");
-            } catch (Exception e) {
-                assertTrue(e instanceof QuasardbException);
+                
+                // Update value
+                qdb.update(key, value + "_UPDATED");
+                
+                // Check if a value has been updated at key
+                assertFalse(qdb.get(key).equals(value));
+                assertTrue(qdb.get(key).equals(value + "_UPDATED"));
+                
+                // Get and replace
+                assertTrue(qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
+                assertTrue(qdb.get(key).equals(value));
+                
+                // Get and remove
+                assertTrue(qdb.getRemove(key).equals(value));
+                try {
+                    qdb.get(key);
+                    fail("Key " + key + " had to be removed by getRemove().");
+                } catch (Exception e) {
+                    assertTrue(e instanceof QuasardbException);
+                }
+                
+                // Remove if
+                qdb.put(key , value);
+                assertFalse("Value " + value + "_FAUX for key " + key + " doesn't match content => removeIf should return false", qdb.removeIf(key, value + "_FAUX"));
+                assertTrue("Key [" + key + "] should have been removed successfully", qdb.removeIf(key, value));
+                try {
+                    qdb.get(key);
+                    fail("Should raise an Exception because key " + key + " should have been removed by removeIf().");
+                } catch (Exception e) {
+                    assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
+                }
             }
         } catch (QuasardbException e) {
             e.printStackTrace();
             fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            fail("No exception allowed here => " + e.getMessage());
         } finally {
             // Clean up stored value
             try {
-                qdb.remove(key);
+                if (qdb != null) {
+                    qdb.remove(key);
+                }
             } catch (QuasardbException e) {
             }
         } 

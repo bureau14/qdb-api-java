@@ -28,9 +28,7 @@
 
 package com.b14.qdb;
 
-import com.b14.qdb.*; 
-
-class QuasardbExample {
+public class QuasardbExample {
     
     public static void main(String argv[]) {
         // Object needed to access your database

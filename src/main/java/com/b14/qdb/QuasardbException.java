@@ -120,8 +120,8 @@ public class QuasardbException extends Exception {
      */
     protected QuasardbException(final qdb_error_t jniError) {
         super();
-        this.message = qdb.make_error_string(jniError);
-        this.code = jniError.toString();
+        this.message = (jniError != null) ? qdb.make_error_string(jniError) : "No message available";
+        this.code = (jniError != null) ? jniError.toString() : "No error code available";
     }
     
     /**
