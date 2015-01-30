@@ -1295,7 +1295,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         this.checkSession();
 
          // Delete the entry on Quasardb instance
-        final qdb_error_t qdbError = qdb.remove_all(session);
+        final qdb_error_t qdbError = qdb.purge_all(session);
 
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
