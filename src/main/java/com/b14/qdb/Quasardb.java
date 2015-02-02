@@ -1717,9 +1717,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         if (expiry < 0L) {
             throw new QuasardbException(NEGATIVE_VALUE);
         }
-        
-        // Compute expiry time
-        long time = (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry;
 
         // Allocate buffer :
         //  -> intialize with default value
@@ -1753,10 +1750,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             error_carrier error = new error_carrier();
             switch (operation) {
                 case PUT :
-                    qdbError = qdb.put(session, alias, buffer, buffer.limit(), time);
+                    qdbError = qdb.put(session, alias, buffer, buffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry);
                     break;
                 case UPDATE :
-                    qdbError = qdb.update(session, alias, buffer, buffer.limit(), time);
+                    qdbError = qdb.update(session, alias, buffer, buffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry);
                     break;
                 case CAS :
                     if (other == null) {
@@ -1777,12 +1774,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         final Output otherOutput = new Output(otherSize);
                         serializer.writeClassAndObject(otherOutput, other);
                         otherBuffer.put(otherOutput.getBuffer());
-                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), time, error);
+                        bufferResult = qdb.compare_and_swap(session, alias, buffer, buffer.limit(), otherBuffer, otherBuffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry, error);
                         qdbError = error.getError();
                     }
                     break;
                 case GETANDUPDATE :
-                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), time, error);
+                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry, error);
                     qdbError = error.getError();
                     break;
                 default :

@@ -32,6 +32,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
@@ -60,6 +62,7 @@ public class QuasardbParallelTest {
     private static final String GENERATOR_NAME = "com.b14.qdb.data.ParallelDataGenerator";
     private static final QuasardbConfig config = new QuasardbConfig();
     private static final Quasardb qdb = new Quasardb();
+    private final AtomicInteger counter = new AtomicInteger();
     
     @Rule public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule(), new CSVSummaryReportModule(), new CSVInvocationReportModule(), new CSVLatencyReportModule());
    
@@ -74,9 +77,11 @@ public class QuasardbParallelTest {
             qdb.setConfig(config); 
             qdb.connect();
         } catch (QuasardbException e) {
-            System.err.println("Could not initialize Quasardb connection pool for Loader: " + e.toString());
             e.printStackTrace();
-            return;
+            fail("Could not initialize Quasardb connection pool for Loader => " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("No exception allowed in test class setup => " + e.getMessage());
         }
     }
 
@@ -107,7 +112,9 @@ public class QuasardbParallelTest {
               median = REQ_MEDIAN_LATENCY, 
               throughput = REQ_THROUGHPUT)
     public void quasardbParallelTest(String key, Object value) {
-        key += "_" + Thread.currentThread().getId();
+        synchronized(this) {
+            key += "_" + this.counter.incrementAndGet();
+        }
         
         // Try to clean up stored value if exists
         try {
@@ -127,26 +134,26 @@ public class QuasardbParallelTest {
                 qdb.put(key , value);
                 
                 // Check if a value has been stored at key
-                assertTrue(qdb.get(key).equals(value));
+                assertTrue("Put case => Key [" + key + "] should be equals to [" + value + "]", qdb.get(key).equals(value));
                 
                 // Update value
                 qdb.update(key, value + "_UPDATED");
                 
                 // Check if a value has been updated at key
-                assertFalse(qdb.get(key).equals(value));
-                assertTrue(qdb.get(key).equals(value + "_UPDATED"));
+                assertFalse("Update case => Key [" + key + "] shouldn't be equals to [" + value + "]", qdb.get(key).equals(value));
+                assertTrue("Update case => Key [" + key + "] should be equals to [" + value + "_UPDATED]", qdb.get(key).equals(value + "_UPDATED"));
                 
                 // Get and replace
-                assertTrue(qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
-                assertTrue(qdb.get(key).equals(value));
+                assertTrue("Get and replace case => Old key [" + key + "] should be equals to [" + value + "_UPDATED]", qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
+                assertTrue("Get and replace case => New Key [" + key + "] should be equals to [" + value + "]", qdb.get(key).equals(value));
                 
                 // Get and remove
-                assertTrue(qdb.getRemove(key).equals(value));
+                assertTrue("Get remove case => Old Key [" + key + "] should be equals to [" + value + "]", qdb.getRemove(key).equals(value));
                 try {
                     qdb.get(key);
-                    fail("Key " + key + " had to be removed by getRemove().");
+                    fail("Key " + key + " should have been removed by getRemove().");
                 } catch (Exception e) {
-                    assertTrue(e instanceof QuasardbException);
+                    assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
                 }
                 
                 // Remove if

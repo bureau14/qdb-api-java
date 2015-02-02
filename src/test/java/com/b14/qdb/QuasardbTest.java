@@ -521,12 +521,12 @@ public class QuasardbTest {
         pojo2.setText("test2");
         qdbInstance.remove("test_nominal");
         qdbInstance.put("test_nominal", pojo, 0);
-        Pojo pojoresult = qdbInstance.getAndReplace("test_nominal", pojo2, 1);
+        Pojo pojoresult = qdbInstance.getAndReplace("test_nominal", pojo2, 2);
         assertTrue("Old value should be equals to initial pojo " + pojo, pojo.getText().equals(pojoresult.getText()));
         Pojo pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Replaced value should be equals to new pojo " + pojo2, pojo2.getText().equals(pojoGet.getText()));
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (Exception e) {
             fail("No exception allowed here because process is just in sleeping mode.");
         }
@@ -947,15 +947,15 @@ public class QuasardbTest {
         Pojo pojoGet = null;
         
         // Test case
-        pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo, 1);
+        pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo, 2);
         assertTrue("Pojo " + pojo + " should be equals to Pojo " + pojoresult, pojo.getText().equals(pojoresult.getText()));
         pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Pojo " + pojo2 + " should be equals to Pojo " + pojoGet, pojo2.getText().equals(pojoGet.getText()));
         assertFalse("Pojo " + pojo + " shouldn't be equals to Pojo " + pojoGet, pojo.getText().equals(pojoGet.getText()));
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (Exception e) {
-            fail("Shouldn't raise an exception because it's just a pause of 1.5 seconds.");
+            fail("Shouldn't raise an exception because it's just a pause of 2.5 seconds.");
         }
         try {
             qdbInstance.get("test_nominal");
@@ -990,14 +990,14 @@ public class QuasardbTest {
         
         // Test case
         qdbInstance.update("test_nominal", pojo);
-        pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo3, 1);
+        pojoresult = qdbInstance.compareAndSwap("test_nominal", pojo2, pojo3, 2);
         assertFalse("Pojo " + pojo3 + " shouldn't be equals to Pojo " + pojoresult, pojo3.getText().equals(pojoresult.getText()));
         pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Pojo " + pojo + " should be equals to Pojo " + pojoGet, pojo.getText().equals(pojoGet.getText()));
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (Exception e) {
-            fail("Shouldn't raise an exception because it's just a pause of 1.5 seconds.");
+            fail("Shouldn't raise an exception because it's just a pause of 2.5 seconds.");
         }
         pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Pojo " + pojo + " should be equals to Pojo " + pojoGet, pojo.getText().equals(pojoGet.getText()));
@@ -1367,7 +1367,6 @@ public class QuasardbTest {
      */
     @Test
     public void testUpdateWithExpiryNullParamsMeansAnException() throws QuasardbException {
-        // Test 1.3 : wrong parameter
         try {
             qdbInstance.update(null, null, 0);
             fail("Should raise an exception because params are null.");
@@ -1448,11 +1447,11 @@ public class QuasardbTest {
     public void testUpdateWithExpiry() throws QuasardbException {
         Pojo pojo = new Pojo();
         qdbInstance.put("test_update_3", pojo);
-        assertTrue("Update should be successfull.", qdbInstance.update("test_update_3", "expiry_test", 1));
+        assertTrue("Update should be successfull.", qdbInstance.update("test_update_3", "expiry_test", 2));
         String resultat = qdbInstance.get("test_update_3");
         assertTrue("Entry should be here => no expiry yet (1 second)", resultat.equals("expiry_test"));
         try {
-            Thread.sleep(1800);
+            Thread.sleep(2500);
         } catch (Exception e) {
             fail("No exception here.");
         }
@@ -1968,13 +1967,13 @@ public class QuasardbTest {
      */
     @Test
     public void testPutWithExpiryTimeOneSecondValue() throws QuasardbException {
-        long expiry = 1L;
+        long expiry = 2L;
         String test = "Voici un super test";
         qdbInstance.put("test_put_expiry_1", test, expiry);
         String result = qdbInstance.get("test_put_expiry_1");
         assertTrue("Alias test_put_expiry_1 should exists.", test.equals(result));
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -2042,7 +2041,7 @@ public class QuasardbTest {
     @Test
     public void testPutWithExpiryTimeDifferentExpiryTimes() throws QuasardbException {
         // Init case
-        long expiry = 1L;
+        long expiry = 2L;
         String test = "Voici un super test";
         qdbInstance.setDefaultExpiryTimeInSeconds(0L);
         qdbInstance.put("test_put_expiry_2", test);
@@ -2050,7 +2049,7 @@ public class QuasardbTest {
         qdbInstance.put("test_put_expiry_3", test, expiry);
         qdbInstance.put("test_put_expiry_4", test, 3 * expiry);
         try {
-            Thread.sleep((expiry + (expiry / 2)) * 1100);
+            Thread.sleep((expiry + (expiry / 2)) * 1000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -2063,7 +2062,7 @@ public class QuasardbTest {
         }
         assertTrue("Entry[test_put_expiry_2] should be here => expiry time was " + 3 * expiry, ((String) qdbInstance.get("test_put_expiry_4")).equalsIgnoreCase(test));
         try {
-            Thread.sleep(expiry * 2000);
+            Thread.sleep(3 * expiry * 1000);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
@@ -2107,14 +2106,14 @@ public class QuasardbTest {
         String test = "Voici un super test";
         qdbInstance.put("test_expiry_1", test);
         try {
-            Thread.sleep(1L * 1000);
+            Thread.sleep(500);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
         assertTrue("Entry [test_expiry_1] should exist because there is no expiry time.", ((String) qdbInstance.get("test_expiry_1")).equalsIgnoreCase(test));
         qdbInstance.setExpiryTimeInSeconds("test_expiry_1", 1L);
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1500);
         } catch (InterruptedException e1) {
             fail("No exception allowed.");
         }
