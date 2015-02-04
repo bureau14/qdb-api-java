@@ -3241,4 +3241,53 @@ public class QuasardbTest {
         conf = null;
         qdb = null;
     }
+    
+    /**
+     * Test of class {@link Quasardb#isConnected()}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testIsConnectWithNoSessionsMeansFalse() throws QuasardbException {
+        Quasardb qdbWithNoSession = new Quasardb();
+        assertFalse("qdbWithNoSession shouldn't be connected", qdbWithNoSession.isConnected());
+    }
+    
+    /**
+     * Test of class {@link Quasardb#isConnected()}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testIsConnectWithWrongConfigMeansFalse() throws QuasardbException {
+        QuasardbConfig conf = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode(HOST, 123456);
+        conf.addNode(node);
+        Quasardb qdbWithWrongConfig = new Quasardb(conf);
+        assertFalse("qdbWithWrongConfig shouldn't be connected.", qdbWithWrongConfig.isConnected());
+    }
+    
+    /**
+     * Test of class {@link Quasardb#isConnected()}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testIsConnectWithNoConnectionMeansFalse() throws QuasardbException {
+        QuasardbConfig conf = new QuasardbConfig();
+        QuasardbNode node = new QuasardbNode(HOST, PORT);
+        conf.addNode(node);
+        Quasardb qdbWithNoConnection = new Quasardb(conf);
+        assertFalse("qdbWithNoConnection shouldn't be connected.", qdbWithNoConnection.isConnected());
+    }
+    
+    /**
+     * Test of class {@link Quasardb#isConnected()}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testIsConnect() throws QuasardbException {
+        assertTrue("qdbInstance should be connected.", qdbInstance.isConnected());
+    }
 }

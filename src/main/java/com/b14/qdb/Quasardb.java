@@ -119,6 +119,7 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *     <li><u>startsWith:</u> perform a search prefix based operation on all quasardb entries.</li>
  *     <li><u>set/getExpiryTimeInSeconds:</u> set or retrieve expiry time in seconds for a provided alias.</li>
  *     <li><u>set/getExpiryTimeInDate:</u> set or retrieve expiry time in {@link java.util.Date} for a provided alias.</li>
+ *     <li><u>isConnected:</u> ask if client is connected to current node instance.</li>
  * </ul>
  *
  * <p>
@@ -317,6 +318,20 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             if (!oneNodeOK) {
                 throw new QuasardbException(WRONG_CONFIG_PROVIDED, nodes.get(0).getError());
             }
+        }
+    }
+    
+    /**
+     * Check if client is connected to quasardb instance.
+     * 
+     * @return true if client is connected to quasardb instance
+     * @since 1.1.6
+     */
+    public final boolean isConnected() {
+        try {
+            return !this.getCurrentNodeConfig().isEmpty();
+        } catch (Exception e) {
+            return false;
         }
     }
 

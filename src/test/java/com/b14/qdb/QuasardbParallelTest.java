@@ -28,8 +28,6 @@
 
 package com.b14.qdb;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -134,45 +132,67 @@ public class QuasardbParallelTest {
                 qdb.put(key , value);
                 
                 // Check if a value has been stored at key
-                assertTrue("Put case => Key [" + key + "] should be equals to [" + value + "]", qdb.get(key).equals(value));
+                if (!qdb.get(key).equals(value)) {
+                    fail("Stored value at key [" + key + "] should be equals to " + value);
+                }
                 
                 // Update value
                 qdb.update(key, value + "_UPDATED");
                 
                 // Check if a value has been updated at key
-                assertFalse("Update case => Key [" + key + "] shouldn't be equals to [" + value + "]", qdb.get(key).equals(value));
-                assertTrue("Update case => Key [" + key + "] should be equals to [" + value + "_UPDATED]", qdb.get(key).equals(value + "_UPDATED"));
+                if (qdb.get(key).equals(value)) {
+                    fail("Stored value at key [" + key + "] shouldn't be equals to " + value);
+                }
+                if (!qdb.get(key).equals(value + "_UPDATED")) {
+                    fail("Stored value at key [" + key + "] should be equals to " + value + "_UPDATED");
+                }
                 
                 // Get and replace
-                assertTrue("Get and replace case => Old key [" + key + "] should be equals to [" + value + "_UPDATED]", qdb.getAndReplace(key, value).equals(value + "_UPDATED"));
-                assertTrue("Get and replace case => New Key [" + key + "] should be equals to [" + value + "]", qdb.get(key).equals(value));
+                if (!qdb.getAndReplace(key, value).equals(value + "_UPDATED")) {
+                    fail("Previous stored value at key [" + key + "] shouldn't be equals to " + value + "_UPDATED");
+                }
+                if (!qdb.get(key).equals(value)) {
+                    fail("New stored value at key [" + key + "] shouldn't be equals to " + value);
+                }
                 
                 // Get and remove
-                assertTrue("Get remove case => Old Key [" + key + "] should be equals to [" + value + "]", qdb.getRemove(key).equals(value));
+                if (!qdb.getRemove(key).equals(value)) {
+                    fail("Previous stored value at key [" + key + "] shouldn't be equals to " + value);
+                }
                 try {
                     qdb.get(key);
                     fail("Key " + key + " should have been removed by getRemove().");
                 } catch (Exception e) {
-                    assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
+                    if (! (e instanceof QuasardbException)) {
+                        fail("Should raise a QuasardbException => " + e.toString());
+                    }
                 }
                 
                 // Remove if
                 qdb.put(key , value);
-                assertFalse("Value " + value + "_FAUX for key " + key + " doesn't match content => removeIf should return false", qdb.removeIf(key, value + "_FAUX"));
-                assertTrue("Key [" + key + "] should have been removed successfully", qdb.removeIf(key, value));
+                if (qdb.removeIf(key, value + "_FAUX")) {
+                    fail("Value " + value + "_FAUX for key " + key + " doesn't match content => removeIf should return false");
+                }
+                if (!qdb.removeIf(key, value)) {
+                    fail("Key [" + key + "] should have been removed successfully");
+                }
                 try {
                     qdb.get(key);
-                    fail("Should raise an Exception because key " + key + " should have been removed by removeIf().");
+                    fail("Should raise an Exception because key " + key + " should have been removed by previous removeIf().");
                 } catch (Exception e) {
-                    assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
+                    if (! (e instanceof QuasardbException)) {
+                        fail("Should raise a QuasardbException => " + e.toString());
+                    }
                 }
+            } else {
+                fail("qdb object shouldn't be null.");
             }
         } catch (QuasardbException e) {
             e.printStackTrace();
             fail("Cannot insert or read key[" + key + "] ->" + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            fail("No exception allowed here => " + e.getMessage());
+            fail("Shouldn't raise an Exception => " + e.toString());
         } finally {
             // Clean up stored value
             try {

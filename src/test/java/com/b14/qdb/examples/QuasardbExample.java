@@ -26,7 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.b14.qdb;
+package com.b14.qdb.examples;
+
+import com.b14.qdb.Quasardb;
+import com.b14.qdb.QuasardbConfig;
+import com.b14.qdb.QuasardbException;
+import com.b14.qdb.QuasardbNode;
 
 public class QuasardbExample {
     
