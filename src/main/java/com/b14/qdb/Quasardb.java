@@ -61,6 +61,7 @@ import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.jni.qdb_operation_t;
 import com.b14.qdb.jni.qdb_operation_type_t;
 import com.b14.qdb.jni.qdb_remote_node_t;
+import com.b14.qdb.jni.RemoteNode;
 import com.b14.qdb.jni.remoteNodeArray;
 import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
@@ -128,10 +129,10 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  * <pre>
  *       // First : create a configuration object.
  *       QuasardbConfig config = new QuasardbConfig();
- *       
+ *
  *       // Second : create a node object
  *       QuasardbNode node = new QuasardbNode("127.0.0.1", 1234);
- *       
+ *
  *       // Third : add new node to config
  *       config.addNode(node);
  *
@@ -147,13 +148,13 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *       // Sixth : use the quasardb instance :
  *       qdb.put("foo", new String("bar"));
  *       System.out.println("  => key 'foo' contains : " + qdb.get("foo"));
- *       
+ *
  *       // Seventh : disconnect from the quasardb cluster
  *       // Notice that this step is optional
  *       qdb.close();
  * </pre>
  * </p>
- * 
+ *
  * <p>
  * <u>Note about entries :</u>
  * <br>
@@ -195,11 +196,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     private static final int UPDATE = 2;
     private static final int CAS = 3;
     private static final int GETANDUPDATE = 4;
-    
+
     // ByteBuffer to String
     private static final Charset charset = Charset.forName("UTF-8");
-    private static final CharsetDecoder decoder = charset.newDecoder();   
-    
+    private static final CharsetDecoder decoder = charset.newDecoder();
+
     private final KryoFactory factory = new KryoFactory() {
         public Kryo create () {
             // Initialize serializer
@@ -227,10 +228,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     // Configuration of the qdb instance
     private transient QuasardbConfig config = null;
-    
+
     // Default expiry time in second => 0 means that entry is eternal
     private long defaultExpiryTime = 0;
-    
+
     // Class introspector => sizeOf like
     private final Introspector classIntrospector = new Introspector();
 
@@ -251,11 +252,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <pre>
      *      // First : create a configuration.
      *      QuasardbConfig config = new QuasardbConfig();
-     *      
+     *
      *      // Second : add a node to the configuration
      *      QuasardbNode node = new QuasardbNode("127.0.0.1", 2836);
      *      config.addNode(node);
-     *      
+     *
      *      // Optionnaly set a default expiry time in seconds on all next entries
      *      config.setExpiryTimeInSeconds(2);
      *
@@ -274,7 +275,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Initialize connection to the quasardb instance and setup serialization framework.
-     *  
+     *
      * @throws QuasardbException if connection to the quasardb instance fail
      * @since 0.5.2
      */
@@ -286,7 +287,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         // Set default expiry time
         this.setDefaultExpiryTimeInSeconds(config.getExpiryTimeInSeconds());
-        
+
         // Try to open a qdb session
         session = qdb.open();
 
@@ -299,7 +300,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             remoteNode.setError(qdb_error_t.error_uninitialized);
             nodes.push_back(remoteNode);
         }
-        
+
         // Try to connect to the qdb nodes
         if (config.getNodes().size() == 1) {
             final qdb_error_t qdbError = qdb.connect(session, config.getNodes().iterator().next().getHostName(), config.getNodes().iterator().next().getPort());
@@ -320,10 +321,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             }
         }
     }
-    
+
     /**
      * Check if client is connected to quasardb instance.
-     * 
+     *
      * @return true if client is connected to quasardb instance
      * @since 1.1.6
      */
@@ -337,7 +338,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Retrieve the version of the current quasardb instance.
-     * 
+     *
      * @return version of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      * @since 0.7.4
@@ -487,7 +488,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *       "timestamp":"2014-01-20T15:09:40"
      * }
      * </pre>
-     * 
+     *
      * @return status of the current quasardb instance in JSON
      * @throws QuasardbException if the connection with the current instance fail.
      * @since 0.7.4
@@ -499,7 +500,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(e);
         }
     }
-    
+
     /**
      * Retrieve the status of the current quasardb instance in JSON format.
      * <br>
@@ -629,7 +630,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *       "timestamp":"2014-01-20T15:09:40"
      * }
      * </pre>
-     * 
+     *
      * @param node the host of the quasardb node you want to retrieve status
      * @param port the port of the quasardb node you want to retrieve status
      * @return status of the current quasardb instance in JSON
@@ -643,7 +644,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(e);
         }
     }
-    
+
     /**
      * Retrieve the configuration of the current quasardb instance in JSON.
      * <br>
@@ -688,8 +689,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *           }
      *       }
      * }
-     * </pre> 
-     * 
+     * </pre>
+     *
      * @return configuration of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      * @since 0.7.4
@@ -701,7 +702,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(e);
         }
     }
-    
+
     /**
      * Retrieve the configuration of the specific quasardb instance in JSON.
      * <br>
@@ -746,8 +747,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *           }
      *       }
      * }
-     * </pre>      
-     * 
+     * </pre>
+     *
      * @param node the host of the quasardb node you want to retrieve configuration
      * @param port the port of the quasardb node you want to retrieve configuration
      * @return configuration of the current quasardb instance.
@@ -761,7 +762,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(e);
         }
     }
-    
+
     /**
      * Retrieve the topology of the current quasardb instance in JSON.
      * <br>
@@ -781,9 +782,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
      *       }
      * }
-     * 
+     *
      * </pre>
-     * 
+     *
      * @return topology of the current quasardb instance.
      * @throws QuasardbException if the connection with the current instance fail.
      * @since 0.7.4
@@ -794,7 +795,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         } catch (Exception e) {
             throw new QuasardbException(e);
         }
-    } 
+    }
 
     /**
      * Retrieve the topology of the current quasardb instance.
@@ -815,9 +816,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
      *       }
      * }
-     * 
+     *
      * </pre>
-     * 
+     *
      * @param node the host of the quasardb node you want to retrieve topology
      * @param port the port of the quasardb node you want to retrieve topology
      * @return topology of the current quasardb instance.
@@ -831,13 +832,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(e);
         }
     }
-    
+
     /**
      * Retrieve the expiry time in seconds for a provided alias
-     * 
+     *
      * @param alias the object's unique key/alias.
      * @return the expiry time in second related to the provided alias. 0 means eternal duration.
-     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or provided alias is reserved.
      * @since 1.1.0
      */
     public long getExpiryTimeInSeconds(final String alias) throws QuasardbException {
@@ -848,10 +849,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Init
         long result = 0;
         error_carrier error = new error_carrier();
-        
+
         // Get value associated with alias
         result = qdb.get_expiry(session, alias, error);
-        
+
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
@@ -859,13 +860,41 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         return result;
     }
-    
+
+    /**
+     * Retrieve the location for a provided alias
+     *
+     * @param alias the object's unique key/alias.
+     * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or provided alias is reserved.
+     * @since 2.0.0
+     */
+    public RemoteNode getLocation(final String alias) throws QuasardbException {
+        // Checks params
+        this.checkSession();
+        this.checkAlias(alias);
+
+        // Init
+        RemoteNode location;
+        error_carrier error = new error_carrier();
+
+        // Get value associated with alias
+        location = qdb.get_location(session, alias, error);
+
+        // Handle errors
+        if (error.getError() != qdb_error_t.error_ok) {
+            throw new QuasardbException(error.getError());
+        }
+
+        return location;
+    }
+
     /**
      * Retrieve the expiry time in date for a provided alias
-     * 
+     *
      * @param alias the object's unique key/alias.
      * @return the expiry date related to the provided alias.
-     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or prodived alias is reserved.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or provided alias is reserved.
      * @since 1.1.0
      */
     public Date getExpiryTimeInDate(final String alias) throws QuasardbException {
@@ -876,10 +905,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Init
         long time = 0;
         error_carrier error = new error_carrier();
-        
+
         // Get value associated with alias
         time = qdb.get_expiry(session, alias, error);
-        
+
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
@@ -887,13 +916,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         return new Date(time * 1000);
     }
-    
+
     /**
      * Change the expiry time in seconds for a provided alias
-     * 
+     *
      * @param alias the object's unique key/alias.
      * @param expiryTime the expiry time in second related to the provided alias (0 means eternal)
-     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or a negative expiryTime is provided or prodived alias is reserved.
+     * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or a negative expiryTime is provided or provided alias is reserved.
      * @since 1.1.0
      */
     public void setExpiryTimeInSeconds(final String alias, final long expiryTime) throws QuasardbException {
@@ -910,16 +939,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         } else {
             throw new QuasardbException(NEGATIVE_VALUE);
         }
-     
+
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
             throw new QuasardbException(qdbError);
         }
     }
-    
+
     /**
      * Change the expiry time for a provided alias at the provided date.
-     * 
+     *
      * @param alias the object's unique key/alias.
      * @param expiryDate the expiry date related to the provided alias.
      * @throws QuasardbException if the connection with current instance fail, provided alias does not exist or is reserved
@@ -939,27 +968,27 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         cal.setTime(expiryDate);
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         qdbError = qdb.expires_at(session, alias, cal.getTimeInMillis()/1000);
-     
+
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
             throw new QuasardbException(qdbError);
         }
     }
-    
+
     /**
-     * Get the default expiry time in seconds for all new entries. 
+     * Get the default expiry time in seconds for all new entries.
      * Return the 0 value if entries are eternal
-     * 
+     *
      * @return 0 if entries are eternal, a value in seconds instead.
      * @since 1.1.0
      */
     public long getDefaultExpiryTimeInSeconds() {
         return defaultExpiryTime;
     }
-    
+
     /**
      * Set the default expiry time in seconds for all next entries.
-     * 
+     *
      * @param expiryTime expiry time in seconds to set up
      * @throws QuasardbException if a negative expiryTime is provided
      * @since 1.1.0
@@ -970,10 +999,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         }
         this.defaultExpiryTime = expiryTime;
     }
-    
+
     /**
      * Stop the current node with a given reason.
-     * 
+     *
      * @param reason the reason to stop the selected node.
      * @since 0.7.4
      */
@@ -983,16 +1012,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         remote_node.setAddress(config.getNodes().iterator().next().getHostName());
         remote_node.setPort(config.getNodes().iterator().next().getPort());
         qdbError = qdb.stop_node(session, remote_node, reason);
-        
+
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
             throw new QuasardbException(qdbError);
         }
     }
-    
+
     /**
      * Stop a specific node with a given reason.
-     * 
+     *
      * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.
      * @param port the port of the quasardb node you want to stop.
      * @param reason the reason to stop the selected node.
@@ -1004,16 +1033,16 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         remote_node.setAddress(node);
         remote_node.setPort(port);
         qdbError = qdb.stop_node(session, remote_node, reason);
-        
+
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
             throw new QuasardbException(qdbError);
         }
     }
-    
+
     /**
      * Utility method to retrieve information operations on the current qdb instance.<br>
-     * 
+     *
      * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.
      * @param port the port of the quasardb node you want to stop.
      * @param operation operation to apply on the current node.
@@ -1038,9 +1067,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             buffer = qdb.node_status(session, remote_node, error);
         }
         try {
-            if (buffer != null) { 
+            if (buffer != null) {
                 result = decoder.decode(buffer).toString();
-            } 
+            }
         } catch (CharacterCodingException e) {
             throw new QuasardbException(e.getMessage(), e);
         } finally {
@@ -1049,13 +1078,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         }
         return result;
     }
-    
+
     /**
      * Get the entry associated with the supplied unique key (<i>alias</i>).
      * <br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
-     *  
+     *
      * @param alias the object's unique key/alias.
      * @return the object's related to the alias
      * @throws QuasardbException if an error occurs, the entry does not exist or the entry starts with "qdb".
@@ -1070,15 +1099,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Init
         V result = null;
         error_carrier error = new error_carrier();
-        
+
         // Get value associated with alias
         final ByteBuffer buffer = qdb.get_buffer(session, alias, error);
-        
+
         // Prepare ByteBuffer
         if (buffer != null) {
             buffer.rewind();
         }
-        
+
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
@@ -1100,7 +1129,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         return result;
     }
-    
+
     /**
      * Atomically get the entry associated with the supplied unique key (<i>alias</i>) and remove it.
      * <br>
@@ -1121,15 +1150,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Init
         V result = null;
         error_carrier error = new error_carrier();
-        
+
         // Get value associated with alias
         final ByteBuffer buffer = qdb.get_remove(session, alias, error);
-        
+
         // Prepare ByteBuffer
         if (buffer != null) {
             buffer.rewind();
         }
-        
+
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
@@ -1148,7 +1177,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             //buffer = null;
             error = null;
         }
-        
+
         return result;
     }
 
@@ -1165,12 +1194,12 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public <V> void put(final String alias, final V value) throws QuasardbException {
         this.put(alias, value, defaultExpiryTime);
     }
-    
+
     /**
      * Adds an entry (<i>value</i>) to the current qdb instance under the <i>alias</i> key.<br>
      * <ul><li>Entries must not already exist.</li>
      * <li>Entries starting with "qdb" are reserved.</li></ul>
-     * 
+     *
      * @param alias a key to uniquely identify the entry within the cluster.
      * @param value object to associate to the key.
      * @param expiryTime expiry time in seconds associate to the key. The provided value is prior to the default expiry time.
@@ -1180,7 +1209,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public <V> void put(final String alias, final V value, final long expiryTime) throws QuasardbException {
         this.writeOperation(alias, value, null, PUT, expiryTime);
     }
-    
+
     /**
      * Update an existing entry or create a new one.
      * <br><br>
@@ -1195,7 +1224,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public <V> boolean update(final String alias, final V value) throws QuasardbException {
         return this.update(alias, value, defaultExpiryTime);
     }
-    
+
     /**
      * Update an existing entry or create a new one.<br>
      * <br>
@@ -1226,7 +1255,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
         return this.getAndReplace(alias, value, defaultExpiryTime);
     }
-    
+
     /**
      * Update an existing alias with data and return its previous value.<br>
      * <br>
@@ -1275,7 +1304,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public <V> V compareAndSwap(final String alias, final V value, final V comparand, final long expiryTime) throws QuasardbException {
         return this.writeOperation(alias, value, comparand, CAS, expiryTime);
     }
-    
+
     /**
      * Delete the object associated with the <i>alias</i> key.<br>
      * <br>
@@ -1317,13 +1346,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(qdbError);
         }
     }
-    
+
     /**
      * Atomically delete the object associated whith the <i>alias</i> key if the object is equal to comparand.
      * <br>
      * <br>
      * Please note that entries starting with "qdb" are reserved.
-     * 
+     *
      * @param alias the alias you want to delete
      * @param comparand the object you want to compare with
      * @return true if provided alias has been removed
@@ -1337,7 +1366,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         if (comparand == null) {
             throw new QuasardbException(NULL_VALUE);
         }
-        
+
         // Allocate buffer :
         //  -> intialize with default value
         int bufferSize = BUFFER_SIZE;
@@ -1365,7 +1394,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
             // Apply remove if
             final qdb_error_t qdbError = qdb.remove_if(session, alias, buffer, buffer.limit());
-    
+
             // Return result
             return (qdbError == qdb_error_t.error_ok);
         } catch (Exception e) {
@@ -1387,7 +1416,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             buffer = null;
         }
     }
-    
+
     /**
      * Submit a list of operation which can increase performance when it is necessary to run many small operations.<br>
      * Using properly the batch operations requires :
@@ -1395,9 +1424,9 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <li>running list of operations</li>
      * <li>read results</li>
      * </ol>
-     * 
+     *
      * @param operations List of operations to submit in batch mode to Quasardb. See {@link Operation}
-     * @return All results of submitted operations in batch mode.  See {@link Results} 
+     * @return All results of submitted operations in batch mode.  See {@link Results}
      * @since 1.1.0
      */
     @SuppressWarnings("unchecked")
@@ -1407,60 +1436,60 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         if (operations == null) {
             throw new QuasardbException(NULL_VALUE);
         }
-        
+
         BatchOpsVec requests = new BatchOpsVec();
         Results results = null;
         List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
-        
+
         // Prepare all batch requests
         for (final Operation<V> operation : operations) {
             if (operation.getType() != null) {
                 qdb_operation_t req = new qdb_operation_t();
-                
+
                 // Set operation type
                 switch (operation.getType()) {
                     case GET :
                         req.setType(qdb_operation_type_t.optionp_get_alloc);
                         break;
-                        
+
                     case PUT :
                         req.setType(qdb_operation_type_t.optionp_put);
                         break;
-                        
+
                     case UPDATE :
                         req.setType(qdb_operation_type_t.optionp_update);
                         break;
-                        
+
                     case REMOVE :
                         req.setType(qdb_operation_type_t.optionp_remove);
                         break;
-                        
+
                     case CAS :
                         req.setType(qdb_operation_type_t.optionp_cas);
                         break;
-                        
+
                     case GET_UPDATE :
                         req.setType(qdb_operation_type_t.optionp_get_update);
                         break;
-                        
+
                     case GET_REMOVE :
                         req.setType(qdb_operation_type_t.optionp_get_remove);
                         break;
-                        
+
                     case REMOVE_IF:
                         req.setType(qdb_operation_type_t.optionp_remove_if);
                         break;
-                        
+
                     default :
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
                         break;
                 }
-                
+
                 // Set alias
                 if ((operation.getAlias() != null) && (!operation.getAlias().equals(""))) {
                     req.setAlias(operation.getAlias());
                 }
-                
+
                 // Prepare content
                 if ((operation.getValue() != null) && (req.getType() != qdb_operation_type_t.optionp_remove_if)) {
                     ByteBuffer buffer = null;
@@ -1480,15 +1509,15 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         buffer.put(output.getBuffer());
                         req.setContent_size(bufferSize);
                         req.setContent(buffer);
-                        
+
                         buffers.add(buffer);
                     } catch (Exception e) {
                         req.setContent_size(0);
                         req.setContent(null);
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
-                    } 
+                    }
                 }
-                
+
                 // Prepare comparand content
                 if ((operation.getCompareValue() != null) || ((req.getType() == qdb_operation_type_t.optionp_remove_if) && (operation.getValue() != null))) {
                     ByteBuffer buffer = null;
@@ -1509,7 +1538,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         buffer.put(output.getBuffer());
                         req.setComparand_size(bufferSize);
                         req.setComparand(buffer);
-                        
+
                         buffers.add(buffer);
                     } catch (Exception e) {
                         req.setComparand_size(0);
@@ -1517,31 +1546,31 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
                     }
                 }
-                
+
                 // Prepare requests
                 requests.push_back(req);
             }
         }
-        
+
         // Run batch
         run_batch_result qdbResults = qdb.run_batch(session, requests);
-        
+
         // Build results
         results = new Results();
         results.setSuccess(qdbResults.getSuccesses() == operations.size());
         for (int i = 0; i < operations.size(); i++) {
             qdb_operation_t operation = qdbResults.getResults().get(i);
             Result<V> result = new Result<V>();
-            
+
             // Set alias
             result.setAlias(operation.getAlias());
-            
+
             // Set error
             result.setSuccess(operation.getError() == qdb_error_t.error_ok);
             if (!result.isSuccess()) {
                 result.setError(operation.getError().toString());
             }
-            
+
             // Set type
             boolean hasValue = false;
             if (operation.getType() == qdb_operation_type_t.optionp_get_alloc) { // GET operation
@@ -1567,14 +1596,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             } else { // NO OPERATION
                 result.setTypeOperation(TypeOperation.NO_OP);
             }
-            
+
             // Set value
             if (hasValue) {
                 final ByteBuffer buffer = operation.getResult();
                 if (buffer != null) {
                     buffer.rewind();
                 }
-                
+
                 try {
                     Kryo serializer = serializerPool.borrow();
                     result.setValue((V) serializer.readClassAndObject(new Input(new ByteBufferInputStream(buffer))));
@@ -1585,11 +1614,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     result.setSuccess(false);
                 }
             }
-            
-            // Add result           
+
+            // Add result
             results.getResults().add(result);
         }
-        
+
         // Cleanup buffers
         qdb.release_batch_result(session, qdbResults);
         for (ByteBuffer buffer : buffers) {
@@ -1603,7 +1632,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             }
         }
         buffers = null;
- 
+
         return results;
     }
 
@@ -1615,8 +1644,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * <li>search operation is case sensitive.</li>
      * <li>searching on reserved aliases (starts with "qdb") is not allowed.</li>
      * </ul>
-     * 
-     * @param prefix prefix 
+     *
+     * @param prefix prefix
      * @return all entries matching specified prefix
      * @throws QuasardbException if an error occurs (for example : lost session) or provided prefix is reserved.
      * @since 1.1.0
@@ -1625,30 +1654,30 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         // Check params
         this.checkSession();
         this.checkAlias(prefix);
-        
+
         // Search aliases
         error_carrier error = new error_carrier();
         StringVec aliases = qdb.prefix_get(session, prefix, error);
-        
+
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
         }
-        
+
         // Build result
-        List<String> resultat = new ArrayList<String>(); 
+        List<String> resultat = new ArrayList<String>();
         if (aliases != null && !aliases.empty()) {
             for (int i = 0; i < aliases.size(); i++) {
                 resultat.add(aliases.get(i));
             }
         }
-        
+
         return resultat;
     }
-    
+
     /**
      * Close the connection to the quasardb instance and frees resources.
-     * 
+     *
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      * @since 0.5.2
      */
@@ -1669,13 +1698,13 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         this.session = null;
     }
 
-    
+
     /*********************/
     /** private methods **/
     /*********************/
     /**
      * Check if the current qdb session is valid
-     * 
+     *
      * @throws QuasardbException if the connection to the qdb instance cannot be closed
      * @since 0.5.2
      */
@@ -1687,7 +1716,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     /**
      * Check if the provided alias is valid
-     * 
+     *
      * @param alias to store object
      * @throws QuasardbException if the connection to the quasardb instance cannot be closed
      * @since 0.5.2
@@ -1703,7 +1732,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     /**
      * Utility method to apply write operations in the current qdb instance.<br>
      * The main goal is to serialize an object into a <a href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/ByteBuffer.html">ByteBuffer</a> and store it into a qdb instance.
-     * 
+     *
      * @param alias alias under the object <i>value</i> will be stored.
      * @param value object to serialize and store into the qdb instance.
      * @param other other object to compare with value
@@ -1721,14 +1750,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
         // Init
         V result = null;
-        
+
         // Testing parameters :
         //  -> A null value is forbidden
         if (value == null) {
             throw new QuasardbException(NULL_VALUE);
         }
-        
-        //  -> A negative expiry value is forbidden 
+
+        //  -> A negative expiry value is forbidden
         if (expiry < 0L) {
             throw new QuasardbException(NEGATIVE_VALUE);
         }
@@ -1817,11 +1846,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     qdb.free_buffer(session, bufferResult);
                     bufferResult = null;
                 }
-            }            
+            }
             return result;
         } catch (Exception e) {
             if (!(e instanceof QuasardbException)) {
-                throw new QuasardbException(BAD_SERIALIZATION, e);    
+                throw new QuasardbException(BAD_SERIALIZATION, e);
             } else {
                 throw (QuasardbException) e;
             }
@@ -1838,7 +1867,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             buffer = null;
         }
     }
-    
+
 
     /***********************/
     /** getter and setter **/
@@ -1866,8 +1895,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public void setConfig(final QuasardbConfig config) {
         this.config = config;
     }
-    
-    
+
+
     /**************/
     /** override **/
     /**************/
@@ -1883,14 +1912,14 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         }
     }
 
-    
+
     /****************/
     /** implements **/
     /****************/
-    /** 
+    /**
      * Quasardb implements {@link Iterable} for {@link QuasardbEntry}, providing support for simplified iteration.
      * However iteration should be used with caution. It is an O(n) operation.
-     * 
+     *
      * @since 1.0.0
      * @see java.lang.Iterable#iterator()
      */
@@ -1898,7 +1927,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     public Iterator<QuasardbEntry<?>> iterator() {
         return new QuasardbIterator(session);
     }
-    
+
     /*****************/
     /** inner class **/
     /*****************/
@@ -1908,7 +1937,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         private transient qdb_const_iterator_t iterator = null;
         private boolean iteratorStarted = false;
         private transient SWIGTYPE_p_qdb_session session;
-        
+
         private QuasardbIterator(final SWIGTYPE_p_qdb_session session) {
             this.session = session;
             nextEntry = null;
@@ -1921,25 +1950,25 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         private final void startIterator() throws QuasardbException {
             // Checks params
             checkSession();
-                
+
             // Start iterator operation
             this.iterator = new qdb_const_iterator_t();
-            final qdb_error_t qdbError = qdb.iterator_begin(session, this.iterator);            
-            
+            final qdb_error_t qdbError = qdb.iterator_begin(session, this.iterator);
+
             // Handle errors
             if (qdbError != qdb_error_t.error_ok) {
                 throw new QuasardbException(qdbError);
             }
-            
+
             // Get alias value
             if (iterator.getContent_size() != 0) {
                 final ByteBuffer buffer = qdb.iterator_content(iterator);
-                
+
                 // Prepare ByteBuffer
                 if (buffer != null) {
                     buffer.rewind();
                 }
-        
+
                 // De-serialize
                 V value = null;
                 try {
@@ -1953,50 +1982,50 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     qdb.free_buffer(session, buffer);
                     //buffer = null;
                 }
-                
+
                 // Prepare entry
                 nextEntry = new QuasardbEntry<V>(iterator.getAlias(), value);
                 iteratorStarted = true;
             }
         }
-        
+
         private final void closeIterator() throws QuasardbException {
             // Checks params
             checkSession();
-            
+
             // End iterator operation
             final qdb_error_t qdbError = qdb.iterator_close(this.iterator);
-            
+
             // Handle errors
             if (qdbError != qdb_error_t.error_ok) {
                 throw new QuasardbException(qdbError);
             }
-            
+
             // Reset variables
             iteratorStarted = false;
             nextEntry = null;
             lastEntry = null;
             iterator = null;
         }
-        
+
         @SuppressWarnings({ "unchecked" })
         private final void fetch() throws QuasardbException {
             // Checks params
             checkSession();
-            
+
             // Get next qdb entry
             final qdb_error_t qdbError = qdb.iterator_next(iterator);
-            
+
             // Handle errors
-            if (qdbError == qdb_error_t.error_ok) {        
+            if (qdbError == qdb_error_t.error_ok) {
                 // Get alias value
                 final ByteBuffer buffer = qdb.iterator_content(iterator);
-                
+
                 // Prepare ByteBuffer
                 if (buffer != null) {
                     buffer.rewind();
                 }
-        
+
                 // De-serialize
                 V value = null;
                 try {
@@ -2010,7 +2039,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     qdb.free_buffer(session, buffer);
                     //buffer = null;
                 }
-                
+
                 // Prepare entry
                 nextEntry = new QuasardbEntry<V>(iterator.getAlias(), value);
             } else if (qdbError == qdb_error_t.error_alias_not_found) {
@@ -2020,7 +2049,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 throw new QuasardbException(qdbError);
             }
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -2037,7 +2066,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 return false;
             }
         }
-    
+
         /**
          * {@inheritDoc}
          */
@@ -2045,7 +2074,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             if (hasNext()) {
                 // Remember the lastEntry
                 lastEntry = nextEntry;
-    
+
                 // Reset nextEntry to force fetching the next available entry
                 nextEntry = null;
                 return lastEntry;
@@ -2053,7 +2082,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 throw new NoSuchElementException();
             }
         }
-    
+
         /**
          * {@inheritDoc}
          */

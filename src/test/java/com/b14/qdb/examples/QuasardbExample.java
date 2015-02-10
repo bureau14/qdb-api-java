@@ -32,13 +32,14 @@ import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbConfig;
 import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbNode;
+import com.b14.qdb.jni.RemoteNode;
 
 public class QuasardbExample {
-    
+
     public static void main(String argv[]) {
         // Object needed to access your database
         Quasardb cache = null;
-        
+
         // You need to configure your qdb instance thanks to a QuasardbConfig object.
         // It will tell the client API where the daemon is
         QuasardbConfig config = new QuasardbConfig();
@@ -48,26 +49,29 @@ public class QuasardbExample {
         // the key has to be a string
         String keyName = "myKey";
         // note that the value can be any Java object
-        String keyValue = "myValue";  
-                  
+        String keyValue = "myValue";
+
         try {
             // Try to connect to your Quasardb instance
             System.out.println("Creating qdb instance...");
             cache = new Quasardb(config);
-            
+
             if (cache != null) {
                 // Adding some object
                 System.out.println("Adding (" + keyName + ", " + keyValue + ")");
                 cache.put(keyName, keyValue);
-                
+
                 // Check if a value has been stored at key
                 System.out.println("Getting value for key " + keyName + "...");
                 String value = cache.get(keyName);
                 System.out.println("Result: " + value);
 
+                // Get entry's location
+                RemoteNode loc = cache.getLocation(keyName);
+
                 // Removing your object
                 System.out.println("Removing entry for " + keyName);
-                cache.remove(keyName);               
+                cache.remove(keyName);
             }
         } catch (Exception e) {
             System.err.println("Quasardb error for [" + keyName + "] ->" + e.getMessage());
@@ -81,6 +85,6 @@ public class QuasardbExample {
             } catch (QuasardbException e) {
                 System.err.println("Quasardb error: " + e.getMessage());
             }
-        } 
+        }
     }
 }
