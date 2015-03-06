@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -399,7 +401,10 @@ public class QuasardbInputSplitTest {
     @Test
     public void testGetLocations() {
         QuasardbNode[] qdbNodes = new QuasardbNode[] { new QuasardbNode("127.0.0.1", 2836), new QuasardbNode("127.0.0.1", 2837), new QuasardbNode("127.0.0.1", 2838) };
-        List<String> locationsExpected = Arrays.asList("127.0.0.1", "127.0.0.1", "127.0.0.1");
+        List<String> locationsExpected = Arrays.asList("127.0.0.1");
+        try {
+            locationsExpected = Arrays.asList(InetAddress.getByName("127.0.0.1").getHostName(), InetAddress.getByName("127.0.0.1").getHostName(), InetAddress.getByName("127.0.0.1").getHostName());
+        } catch (UnknownHostException e) { }
         QuasardbInputSplit qdbInputSplit = new QuasardbInputSplit(null, qdbNodes);
         assertEquals("getLocations should return 3 locations.", 3, qdbInputSplit.getLocations().length);
         assertTrue("Both locations should be equals.", locationsExpected.containsAll(Arrays.asList(qdbInputSplit.getLocations())));
