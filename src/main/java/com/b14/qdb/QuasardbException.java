@@ -39,7 +39,6 @@ import com.b14.qdb.jni.qdb_error_t;
  * @since 0.5.2
  */
 public class QuasardbException extends Exception {
-
     // Id for serialization
     private static final long serialVersionUID = 2196126450147576611L;
 
@@ -136,16 +135,6 @@ public class QuasardbException extends Exception {
         this.code = jniError.toString();
     }
 
-    @Override
-    public String toString() {
-        return this.code + " : " + this.message;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
-    
     /**
      * Get error code of Exception
      * 
@@ -153,5 +142,73 @@ public class QuasardbException extends Exception {
      */
     public String getCode() {
         return this.code;
+    }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @see Throwable
+     */
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return this.code + " : " + this.message;
+    }   
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((code == null) ? 0 : code.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        QuasardbException other = (QuasardbException) obj;
+        if (code == null) {
+            if (other.code != null) {
+                return false;
+            }
+        } else if (!code.equals(other.code)) {
+            return false;
+        }
+        if (message == null) {
+            if (other.message != null) {
+                return false;
+            }
+        } else if (!message.equals(other.message)) {
+            return false;
+        }
+        return true;
     }
 }

@@ -50,7 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Feeder.class)
-public class QuasardbParallelTest {
+public class QuasardbParallelIT {
     private static final int NB_LOOPS = 10;
     private static final int NB_THREADS = 5;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
@@ -62,14 +62,15 @@ public class QuasardbParallelTest {
     private static final Quasardb qdb = new Quasardb();
     private final AtomicInteger counter = new AtomicInteger();
     
-    @Rule public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule(), new CSVSummaryReportModule(), new CSVInvocationReportModule(), new CSVLatencyReportModule());
+    @Rule 
+    public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule(), new CSVSummaryReportModule(), new CSVInvocationReportModule(), new CSVLatencyReportModule());
    
-    public QuasardbParallelTest() {
+    public QuasardbParallelIT() {
     }
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbIT.HOST, QuasardbIT.PORT);
         config.addNode(node);
         try {
             qdb.setConfig(config); 
@@ -204,3 +205,4 @@ public class QuasardbParallelTest {
         } 
     }
 }
+ 

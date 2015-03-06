@@ -105,4 +105,56 @@ public class QuasardbConfig {
     public boolean removeNode(QuasardbNode node) {
         return nodes.remove(node);
     }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     * @since 1.3.0
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (expiryTimeInSeconds ^ (expiryTimeInSeconds >>> 32));
+        result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @since 1.3.0
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        QuasardbConfig other = (QuasardbConfig) obj;
+        if (expiryTimeInSeconds != other.expiryTimeInSeconds)
+            return false;
+        if (nodes == null) {
+            if (other.nodes != null)
+                return false;
+        } else if (!nodes.equals(other.nodes))
+            return false;
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     * @since 1.3.0
+     */
+    @Override
+    public String toString() {
+        return "QuasardbConfig [expiryTimeInSeconds=" + expiryTimeInSeconds + ", nodes=<" + nodes.toString() + ">]";
+    }
+    
 }

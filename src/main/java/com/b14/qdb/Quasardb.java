@@ -44,6 +44,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
+import org.apache.hadoop.io.ByteWritable;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.ShortWritable;
+import org.apache.hadoop.io.Text;
+
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
@@ -51,6 +60,15 @@ import com.b14.qdb.batch.Operation;
 import com.b14.qdb.batch.Result;
 import com.b14.qdb.batch.Results;
 import com.b14.qdb.batch.TypeOperation;
+import com.b14.qdb.hadoop.mahout.QuasardbPreference;
+import com.b14.qdb.hadoop.mapreduce.tools.ByteWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.BytesWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.DoubleWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.FloatWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.IntWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.LongWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.ShortWritableSerializer;
+import com.b14.qdb.hadoop.mapreduce.tools.TextSerializer;
 import com.b14.qdb.jni.BatchOpsVec;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.StringVec;
@@ -65,6 +83,7 @@ import com.b14.qdb.jni.RemoteNode;
 import com.b14.qdb.jni.remoteNodeArray;
 import com.b14.qdb.jni.run_batch_result;
 import com.b14.qdb.tools.LibraryHelper;
+import com.b14.qdb.tools.QuasardbPreferenceSerializer;
 import com.b14.qdb.tools.profiler.Introspector;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -121,6 +140,7 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *     <li><u>set/getExpiryTimeInSeconds:</u> set or retrieve expiry time in seconds for a provided alias.</li>
  *     <li><u>set/getExpiryTimeInDate:</u> set or retrieve expiry time in {@link java.util.Date} for a provided alias.</li>
  *     <li><u>isConnected:</u> ask if client is connected to current node instance.</li>
+ *     <li><u>getNodeLocationFor:</u> retrieve the node location of an entry.</li>
  * </ul>
  *
  * <p>
@@ -203,10 +223,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
 
     private final KryoFactory factory = new KryoFactory() {
         public Kryo create () {
-            // Initialize serializer
+            // Initialize serializer :
             Kryo serializer = new Kryo();
             serializer.setRegistrationRequired(false);
             serializer.setReferences(false);
+            //  -> add some serializers
             serializer.register(Arrays.asList("").getClass(), new ArraysAsListSerializer());
             serializer.register(Collections.EMPTY_LIST.getClass(), new CollectionsEmptyListSerializer());
             serializer.register(Collections.EMPTY_MAP.getClass(), new CollectionsEmptyMapSerializer());
@@ -218,6 +239,19 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             serializer.register(InvocationHandler.class, new JdkProxySerializer());
             UnmodifiableCollectionsSerializer.registerSerializers(serializer);
             SynchronizedCollectionsSerializer.registerSerializers(serializer);
+            
+            //  -> add quasardb 'Mahout helper'
+            serializer.register(QuasardbPreference.class, new QuasardbPreferenceSerializer());
+            
+            //  -> add Hadoop's Object Serializers
+            serializer.register(BytesWritable.class, new BytesWritableSerializer());
+            serializer.register(ByteWritable.class, new ByteWritableSerializer());
+            serializer.register(DoubleWritable.class, new DoubleWritableSerializer());
+            serializer.register(FloatWritable.class, new FloatWritableSerializer());
+            serializer.register(IntWritable.class, new IntWritableSerializer());
+            serializer.register(LongWritable.class, new LongWritableSerializer());
+            serializer.register(ShortWritable.class, new ShortWritableSerializer());
+            serializer.register(Text.class, new TextSerializer());
             return serializer;
         }
     };
@@ -862,31 +896,30 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Retrieve the location for a provided alias
+     * Retrieve the location for a provided alias.
      *
      * @param alias the object's unique key/alias.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
      * @throws QuasardbException if the connection with current instance fail or provided alias doesn't exist or provided alias is reserved.
      * @since 2.0.0
      */
-    public RemoteNode getLocation(final String alias) throws QuasardbException {
+    public QuasardbNode getLocation(final String alias) throws QuasardbException {
         // Checks params
         this.checkSession();
         this.checkAlias(alias);
 
         // Init
-        RemoteNode location;
         error_carrier error = new error_carrier();
 
         // Get value associated with alias
-        location = qdb.get_location(session, alias, error);
+        RemoteNode location = qdb.get_location(session, alias, error);
 
         // Handle errors
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QuasardbException(error.getError());
         }
 
-        return location;
+        return new QuasardbNode(location.getAddress(), location.getPort());
     }
 
     /**
@@ -1664,7 +1697,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             throw new QuasardbException(error.getError());
         }
 
-        // Build result
+        // Build results
         List<String> resultat = new ArrayList<String>();
         if (aliases != null && !aliases.empty()) {
             for (int i = 0; i < aliases.size(); i++) {
@@ -1672,6 +1705,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             }
         }
 
+        // Return results
         return resultat;
     }
 
@@ -1718,14 +1752,19 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * Check if the provided alias is valid
      *
      * @param alias to store object
-     * @throws QuasardbException if the connection to the quasardb instance cannot be closed
+     * @throws QuasardbException if the tested alias was null, empty or reserved (aka starts with qdb)
      * @since 0.5.2
      */
     private final void checkAlias(final String alias) throws QuasardbException {
-         // Testing parameters
+        // Testing parameters
         //  -> A null or empty key is forbidden
         if ((alias == null) || (alias.length() == 0)) {
             throw new QuasardbException(WRONG_ALIAS);
+        }
+        
+        //  -> A key starting with qdb is forbidden
+        if (alias.startsWith("qdb")) {
+            throw new QuasardbException("error_reserved_alias", "Provided alias is reserved => " + alias);
         }
     }
 

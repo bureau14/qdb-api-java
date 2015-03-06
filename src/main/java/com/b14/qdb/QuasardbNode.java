@@ -109,4 +109,62 @@ public class QuasardbNode {
     public void setPort(int port) {
         this.port = port;
     }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     * @since 1.3.0
+     */
+    @Override
+    public String toString() {
+        return this.hostName + ":" + this.port;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     * @since 1.3.0
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
+        result = prime * result + port;
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @since 1.3.0
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        QuasardbNode other = (QuasardbNode) obj;
+        if (hostName == null) {
+            if (other.hostName != null) {
+                return false;
+            }
+        } else if (!hostName.equals(other.hostName)) {
+            return false;
+        }
+        if (port != other.port) {
+            return false;
+        }
+        return true;
+    }
+    
 }

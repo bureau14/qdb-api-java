@@ -111,8 +111,6 @@ public class Introspector {
      * @param obj Object to introspect
      * @return Object info
      * @throws IllegalAccessException
-     * 
-     * @version master
      * @since 1.1.1
      */
     public ObjectInfo introspect(final Object obj) throws IllegalAccessException {

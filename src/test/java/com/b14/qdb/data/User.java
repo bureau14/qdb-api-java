@@ -32,8 +32,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Pojo class representing a user.<br>
+ * <br>
+ * This class contains a {@link HashSet} in order to test store/retrieve functions in quasardb.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
+ */
 public class User {
-
     private Integer userId;
     private String login;
     private String password;

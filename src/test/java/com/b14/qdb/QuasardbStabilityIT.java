@@ -71,7 +71,7 @@ import com.b14.qdb.data.Subscription;
 import com.b14.qdb.data.SubscriptionType;
 import com.b14.qdb.data.User;
 
-public class QuasardbStabilityTest {
+public class QuasardbStabilityIT {
     private static final QuasardbConfig config = new QuasardbConfig();
     private static final Quasardb qdb = new Quasardb();
     
@@ -84,12 +84,12 @@ public class QuasardbStabilityTest {
         return list;
     }
     
-    public QuasardbStabilityTest() {
+    public QuasardbStabilityIT() {
     }
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbIT.HOST, QuasardbIT.PORT);
         config.addNode(node);
         try {
             qdb.setConfig(config); 
@@ -119,6 +119,11 @@ public class QuasardbStabilityTest {
     public void cleanUp() {
     }
     
+    /**
+     * Remove provided entry if exists. 
+     * 
+     * @param key key to remove.
+     */
     private void cleanKeyIfExist(String key) {
         // Clean up stored value
         try {
@@ -127,6 +132,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with String objects
+     */
     @Test
     public void stringTest() {
         String key = "test_1";
@@ -195,6 +203,10 @@ public class QuasardbStabilityTest {
         } 
     }
     
+    /**
+     * Test {@link Quasardb} with Pojo objects
+     * @see Pojo
+     */
     @SuppressWarnings("unchecked")
     @Test
     public void pojoTest() {
@@ -255,6 +267,10 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with Pojo objects
+     * @see Skill
+     */
     @Test
     public void skillTest() {
         String key = "test_1";
@@ -285,6 +301,10 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with Pojo objects
+     * @see User
+     */
     @Test
     public void userTest() {
         String key = "test_1";
@@ -315,6 +335,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with date objects
+     */
     @Test
     public void dateTest() {
         String key = "test_1";
@@ -375,6 +398,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with number objects
+     */
     @Test
     public void numbersTest() {
         String key = "test_1";
@@ -447,6 +473,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with list/array objects
+     */
     @Test
     public void listsTest() {
         String key = "test_1";
@@ -643,6 +672,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with boolean objects
+     */
     @Test
     public void booleanTest() {
         String key = "test_1";
@@ -679,6 +711,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with Currency objects
+     */
     @Test
     public void currencyTest() {
         String key = "test_1";
@@ -709,6 +744,9 @@ public class QuasardbStabilityTest {
         }
     }
     
+    /**
+     * Test {@link Quasardb} with byte objects
+     */
     @Test
     public void byteTest() {
         String key = "test_1";
@@ -744,7 +782,14 @@ public class QuasardbStabilityTest {
             }
         }
     }
-       
+    
+    /**
+     * Check if 2 provided objects are equals. 
+     * 
+     * @param obj1 First objet to compare.
+     * @param obj2 Second object to compare
+     * @return true if obj1 and obj2 are equals. False otherwise.
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T> boolean checkIfEquals(final T obj1, final T obj2) {
         if (obj1 instanceof Object[]) {

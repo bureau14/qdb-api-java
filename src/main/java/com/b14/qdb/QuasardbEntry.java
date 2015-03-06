@@ -44,8 +44,9 @@ public class QuasardbEntry<V> {
     /**
      * Copy constructor.
      * 
-     * @param alias the alias which represent the quasardb entry
-     * @param value the value associated to the alias
+     * @param alias the alias which represent the quasardb entry.
+     * @param value the value associated to the alias.
+     * @since 1.0.0
      */
     public QuasardbEntry(String alias, V value) {
         this.alias = alias;
@@ -53,38 +54,104 @@ public class QuasardbEntry<V> {
     }
     
     /**
-     * Get alias for the Quasardb entry 
+     * Get alias for the Quasardb entry.
      * 
      * @return alias for the entry
+     * @since 1.0.0
      */
     public String getAlias() {
         return alias;
     }
     
     /**
-     * Set alias for the Quasardb entry  
+     * Set alias for the Quasardb entry.  
      * 
      * @param alias
+     * @since 1.0.0
      */
     public void setAlias(String alias) {
         this.alias = alias;
     }
     
     /**
-     * Get value for the Quasardb entry 
+     * Get value for the Quasardb entry.
      * 
-     * @return value for the Quasardb entry
+     * @return value for the Quasardb entry.
+     * @since 1.0.0
      */
     public V getValue() {
         return value;
     }
     
     /**
-     * Set value for the Quasardb entry 
+     * Set value for the Quasardb entry.
      * 
-     * @param value value for the Quasardb entry
+     * @param value value for the Quasardb entry.
+     * @since 1.0.0
      */
     public void setValue(V value) {
         this.value = value;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     * @since 1.0.0
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     * @since 1.0.0
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        @SuppressWarnings("unchecked")
+        QuasardbEntry<V> other = (QuasardbEntry<V>) obj;
+        if (alias == null) {
+            if (other.alias != null) {
+                return false;
+            }
+        } else if (!alias.equals(other.alias)) {
+            return false;
+        }
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     * @since 1.0.0
+     */
+    @Override
+    public String toString() {
+        return "QuasardbEntry [alias=" + alias + ", value=" + value + "]";
     }
 }

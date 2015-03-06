@@ -25,12 +25,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.b14.qdb.data;
 
-@SuppressWarnings("PMD")
+/**
+ * Pojo class representing a user.<br>
+ * <br>
+ * This class contains {@link Pojo} reference in order to test store/retrieve functions in quasardb.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
+ */
 public class Pojo {
-
     private String text = "something";
     private String nullField;
     private Pojo child;

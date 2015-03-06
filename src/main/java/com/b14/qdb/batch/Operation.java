@@ -100,7 +100,7 @@ public class Operation<V> {
      * Copy constructor : build a Quasardb batch operation with an operation type, an alias, a value and a compare value
      * 
      * @param type Operation type on alias. See {@link TypeOperation}
-     * @param entry alias associated with the given operation type
+     * @param alias alias associated with the given operation type
      * @param value Value associated with the given operation type and alias
      * @param compareValue Value to compare with the given value that is associated with the given operation type and alias. 
      */
@@ -182,5 +182,66 @@ public class Operation<V> {
     public void setCompareValue(V compareValue) {
         this.compareValue = compareValue;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Operation [type=" + type + ", alias=" + alias + ", value=" + value + ", compareValue=" + compareValue + "]";
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alias == null) ? 0 : alias.hashCode());
+        result = prime * result
+                + ((compareValue == null) ? 0 : compareValue.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        @SuppressWarnings("unchecked")
+        Operation<V> other = (Operation<V>) obj;
+        if (alias == null) {
+            if (other.alias != null)
+                return false;
+        } else if (!alias.equals(other.alias))
+            return false;
+        if (compareValue == null) {
+            if (other.compareValue != null)
+                return false;
+        } else if (!compareValue.equals(other.compareValue))
+            return false;
+        if (type != other.type)
+            return false;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!value.equals(other.value))
+            return false;
+        return true;
+    }
 }

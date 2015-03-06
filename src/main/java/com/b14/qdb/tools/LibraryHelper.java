@@ -94,7 +94,7 @@ public class LibraryHelper {
         URL urlTopJAR = cs.getLocation();  // URL.getFile() returns "/C:/my%20dir/MyApp.jar"
         String sUrlTopJAR;
         try {
-            sUrlTopJAR = URLDecoder.decode(urlTopJAR.getFile(), "UTF-8");       
+            sUrlTopJAR = URLDecoder.decode(urlTopJAR.getFile(), "UTF-8");
             File fileJAR = new File(sUrlTopJAR);
             loadJar(fileJAR.getName(), fileJAR, null); // throws if not JAR
         } catch (UnsupportedEncodingException e) {

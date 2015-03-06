@@ -4,7 +4,6 @@ import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
-import com.b14.qdb.jni.RemoteNode;
 import com.b14.qdb.tools.LibraryHelper;
 
 public class QuasardbRawExample {
@@ -18,7 +17,7 @@ public class QuasardbRawExample {
 
     public static void main(String argv[]) {
         SWIGTYPE_p_qdb_session session = null;
-
+        
         try {
             session = qdb.open();
             qdb_error_t r = qdb.connect(session, "127.0.0.1", 2836);
@@ -49,7 +48,7 @@ public class QuasardbRawExample {
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot add: " + r);
             }
-
+            
             r = qdb.update(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot update: " + r);
@@ -66,8 +65,6 @@ public class QuasardbRawExample {
                 content.get(localBuf, 0, contentLength[0]);
                 System.out.println("Content of " + key + ": " + new String(localBuf));
             }
-
-            RemoteNode loc = qdb.get_location(session, key, error);
 
             r = qdb.remove(session, key);
             if (r != qdb_error_t.error_ok) {

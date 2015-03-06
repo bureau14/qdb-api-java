@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.b14.tests.tools.benchs;
+package com.b14.qdb;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +51,6 @@ import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbConfig;
 import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbNode;
-import com.b14.qdb.QuasardbTest;
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
@@ -59,7 +58,7 @@ import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.tools.LibraryHelper;
 
 @RunWith(Feeder.class)
-public class QuasardbRawTest {
+public class QuasardbRawIT {
     private static final int NB_LOOPS = 1;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
@@ -89,7 +88,7 @@ public class QuasardbRawTest {
         session = qdb.open();
         
         // Try to connect to the qdb node
-        qdb_error_t qdbError = qdb.connect(session, QuasardbTest.HOST, QuasardbTest.PORT);
+        qdb_error_t qdbError = qdb.connect(session, QuasardbIT.HOST, QuasardbIT.PORT);
         
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
@@ -98,7 +97,7 @@ public class QuasardbRawTest {
         }
         
         // **** INIT QDB API ****
-        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbIT.HOST, QuasardbIT.PORT);
         config.addNode(node);
     }
     
@@ -255,7 +254,7 @@ public class QuasardbRawTest {
 //        }   
         
         QuasardbConfig config = new QuasardbConfig();
-        QuasardbNode node = new QuasardbNode(QuasardbTest.HOST, QuasardbTest.PORT);
+        QuasardbNode node = new QuasardbNode(QuasardbIT.HOST, QuasardbIT.PORT);
         config.addNode(node);
         Quasardb qdbDB = new Quasardb(config);
 
