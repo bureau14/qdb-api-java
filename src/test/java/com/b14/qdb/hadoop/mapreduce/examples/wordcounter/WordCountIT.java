@@ -190,7 +190,7 @@ public class WordCountIT {
         conf.set("fs.default.name", "file:///");
         conf.setInt("dfs.replication", 1);
         conf.set("mapreduce.jobtracker.address", "local");
-        conf.set("hadoop.tmp.dir", FixHadoopOnWindows.isWindows() ? "D:/tmp" : "/tmp");
+        conf.set("hadoop.tmp.dir", FixHadoopOnWindows.isWindows() ? System.getProperty("java.io.tmpdir") : "/tmp");
         conf.set(QuasardbJobConf.QDB_NODES, "127.0.0.1:2836");
         conf = QuasardbJobConf.addLocation(conf, new QuasardbNode("127.0.0.1", 2836));
         ProvidedKeysGenerator providedKeysGenerator = new ProvidedKeysGenerator();

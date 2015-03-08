@@ -134,7 +134,7 @@ public class MaxTemperatureIT extends Configured implements Tool {
         conf.set("fs.default.name", "file:///");
         conf.setInt("dfs.replication", 1);
         conf.set("mapreduce.jobtracker.address", "local");
-        conf.set("hadoop.tmp.dir", FixHadoopOnWindows.isWindows() ? "D:/tmp" : "/tmp");
+        conf.set("hadoop.tmp.dir", FixHadoopOnWindows.isWindows() ? System.getProperty("java.io.tmpdir") : "/tmp");
         conf = QuasardbJobConf.addLocation(conf, new QuasardbNode(HOST, PORT));
         ProvidedKeysGenerator providedKeysGenerator = new ProvidedKeysGenerator();
         providedKeysGenerator.init(keys);
