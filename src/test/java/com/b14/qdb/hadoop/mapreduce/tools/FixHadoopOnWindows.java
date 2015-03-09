@@ -1,5 +1,8 @@
 package com.b14.qdb.hadoop.mapreduce.tools;
 
+import java.io.File;
+import java.io.IOException;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -14,8 +17,7 @@ public class FixHadoopOnWindows {
      * 1) mapReduceLayer.Launcher: Backend error message during job submission java.io.IOException: Failed to set permissions of path: \tmp\hadoop-MyUsername\mapred\staging\
      * 2) java.io.IOException: Failed to set permissions of path: bla-bla-bla\.staging to 0700
      */
- 
-    public static void runFix() throws NotFoundException, CannotCompileException {
+    public static void runFix() throws NotFoundException, CannotCompileException, IOException {
         if (isWindows()) { // run fix only on Windows
             setUpSystemVariables();
             fixCheckReturnValueMethod();
@@ -23,8 +25,21 @@ public class FixHadoopOnWindows {
     }
  
     // set up correct temporary directory on windows
-    private static void setUpSystemVariables() {
-        System.getProperties().setProperty("java.io.tmpdir", "D:/TMP/");
+    private static void setUpSystemVariables() throws IOException {
+        File dir = new File(System.getProperty("java.io.tmpdir"), "mapred");
+        if (!dir.exists()) {
+            if (!dir.mkdir()) {
+                throw new IOException("Cannot create temp directory " + dir.getAbsolutePath());
+            }
+        }
+        
+        dir.setReadable(true, false);
+        dir.setWritable(true, false);
+        dir.setExecutable(true, false);
+        
+        if (!dir.exists() || !dir.isDirectory()) {
+            throw new IOException("Cannot create temp directory " + dir.getAbsolutePath());
+        }
     }
  
     /**

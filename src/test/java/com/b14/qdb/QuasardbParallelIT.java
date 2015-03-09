@@ -36,9 +36,6 @@ import org.databene.benerator.anno.Generator;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
 import org.databene.contiperf.junit.ContiPerfRule;
-import org.databene.contiperf.report.CSVInvocationReportModule;
-import org.databene.contiperf.report.CSVLatencyReportModule;
-import org.databene.contiperf.report.CSVSummaryReportModule;
 import org.databene.contiperf.report.HtmlReportModule;
 import org.databene.feed4junit.Feeder;
 import org.junit.After;
@@ -63,7 +60,7 @@ public class QuasardbParallelIT {
     private final AtomicInteger counter = new AtomicInteger();
     
     @Rule 
-    public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule(), new CSVSummaryReportModule(), new CSVInvocationReportModule(), new CSVLatencyReportModule());
+    public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule());
    
     public QuasardbParallelIT() {
     }

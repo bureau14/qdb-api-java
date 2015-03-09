@@ -49,7 +49,7 @@
 		<kryo.version>3.0.0</kryo.version>
 		<kryo.serializers.version>0.27</kryo.serializers.version>
 		<junit.version>4.11</junit.version>
-		<contiperf.version>2.1.0</contiperf.version>
+		<contiperf.version>2.3.4</contiperf.version>
 		<feed4junit.version>0.6.6</feed4junit.version>
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.7.7</slf4j.version>
