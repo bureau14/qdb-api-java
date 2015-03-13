@@ -42,7 +42,7 @@ import com.b14.qdb.hadoop.mahout.QuasardbDataModel;
 import com.b14.qdb.hadoop.mahout.QuasardbPreference;
 
 /**
- * A unit test case for {@link QuasardbDataModel} class.
+ * A integration test case for {@link QuasardbDataModel} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
  * @version master

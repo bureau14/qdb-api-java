@@ -56,6 +56,10 @@ import com.b14.qdb.hadoop.mapreduce.QuasardbOutputFormat;
 import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
+/**
+ * Hadoop MapReduce example computing standard deviation on a population and running on quasardb
+ * 
+ */
 public class StandardDeviationIT {
     public static final String HOST = "127.0.0.1";
     public static final int PORT = 2836;

@@ -31,6 +31,10 @@ import com.b14.qdb.hadoop.mapreduce.QuasardbOutputFormat;
 import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
+/**
+ * Hadoop MapReduce example computing max temperature from meteorological data running on quasardb
+ * 
+ */
 public class MaxTemperatureIT extends Configured implements Tool {
     public static final String HOST = "127.0.0.1";
     public static final int PORT = 2836;

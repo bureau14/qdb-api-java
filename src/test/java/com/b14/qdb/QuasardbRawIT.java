@@ -57,6 +57,13 @@ import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 import com.b14.qdb.tools.LibraryHelper;
 
+/**
+ * A integration RAW tests case for {@link Quasardb} class.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @version master
+ * @since 1.1.6
+ */
 @RunWith(Feeder.class)
 public class QuasardbRawIT {
     private static final int NB_LOOPS = 1;

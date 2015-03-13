@@ -48,7 +48,7 @@ import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbNode;
 
 /**
- * A unit tests case for {@link AllKeysGenerator} class.
+ * A integration tests case for {@link AllKeysGenerator} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
  * @version master

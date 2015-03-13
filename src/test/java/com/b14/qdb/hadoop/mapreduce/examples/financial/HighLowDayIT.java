@@ -32,7 +32,7 @@ import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
 /**
- * Hadoop MapReduce example showing high and low for a day across all stock symbols
+ * Hadoop MapReduce example showing high and low for a day across all stock symbols running on quasardb
  * 
  */
 public class HighLowDayIT extends Configured implements Tool {

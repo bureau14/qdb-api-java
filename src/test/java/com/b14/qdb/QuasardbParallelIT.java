@@ -46,6 +46,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * A integration parallel tests case for {@link Quasardb} class.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @version master
+ * @since 1.1.6
+ */
 @RunWith(Feeder.class)
 public class QuasardbParallelIT {
     private static final int NB_LOOPS = 10;

@@ -26,6 +26,10 @@ import com.b14.qdb.hadoop.mapreduce.QuasardbOutputFormat;
 import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
+/**
+ * Hadoop MapReduce example extracting all letters from hamlet text and running on quasardb
+ * 
+ */
 public class StartsWithCountIT extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         // Populate quasardb

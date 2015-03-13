@@ -71,6 +71,13 @@ import com.b14.qdb.data.Subscription;
 import com.b14.qdb.data.SubscriptionType;
 import com.b14.qdb.data.User;
 
+/**
+ * A integration tests case for {@link Quasardb} class.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @version master
+ * @since 1.1.6
+ */
 public class QuasardbStabilityIT {
     private static final QuasardbConfig config = new QuasardbConfig();
     private static final Quasardb qdb = new Quasardb();

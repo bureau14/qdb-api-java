@@ -51,7 +51,7 @@ import com.b14.qdb.QuasardbException;
 import com.b14.qdb.QuasardbNode;
 
 /**
- * A unit test case for {@link QuasardbRecordWriter} class.
+ * A integration tests case for {@link QuasardbRecordWriter} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
  * @version master

@@ -54,7 +54,7 @@ import com.b14.qdb.hadoop.mapreduce.keysgenerators.IKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.keysgenerators.PrefixedKeysGenerator;
 
 /**
- * A unit test case for {@link QuasardbInputFormat} class.
+ * A integration tests case for {@link QuasardbInputFormat} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
  * @version master

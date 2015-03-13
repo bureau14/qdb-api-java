@@ -3,6 +3,13 @@ package com.b14.qdb;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * A integration helper which can start or stop a qdb instance.
+ * 
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @version master
+ * @since 1.1.6
+ */
 public enum Qdb {
     DAEMON;
     
@@ -32,7 +39,6 @@ public enum Qdb {
             e.printStackTrace();
             return false;
         }
-        
         return true;
     }
     
@@ -50,7 +56,6 @@ public enum Qdb {
             e.printStackTrace();
             return false;
         }
-        
         return true;
     }
 }

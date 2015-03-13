@@ -64,7 +64,7 @@ import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.data.Pojo;
 
 /**
- * A unit test case for {@link Quasardb} class.
+ * A integration tests case for {@link Quasardb} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version master

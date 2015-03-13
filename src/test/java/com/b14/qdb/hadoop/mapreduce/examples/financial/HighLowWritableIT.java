@@ -31,7 +31,7 @@ import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
 /**
- * Hadoop MapReduce example showing a custom Writable
+ * Hadoop MapReduce example showing a custom Writable running on quasardb
  *
  */
 public class HighLowWritableIT extends Configured implements Tool {

@@ -32,7 +32,7 @@ import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
 import com.b14.qdb.hadoop.mapreduce.tools.FixHadoopOnWindows;
 
 /**
- * Hadoop MapReduce example showing high and low for a stock symbol
+ * Hadoop MapReduce example showing high and low for a stock symbol running on quasardb
  *
  */
 public class HighLowStockIT extends Configured implements Tool {
