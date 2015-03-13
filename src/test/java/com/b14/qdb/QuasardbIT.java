@@ -81,12 +81,14 @@ public class QuasardbIT {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        Qdb.DAEMON.start();
         QuasardbNode quasardbNode = new QuasardbNode(HOST, PORT);
         config.addNode(quasardbNode);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        Qdb.DAEMON.stop();
     }
 
     @Before

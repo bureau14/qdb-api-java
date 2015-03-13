@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.b14.qdb.Qdb;
 import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbConfig;
 import com.b14.qdb.QuasardbException;
@@ -62,10 +63,12 @@ public class QuasardbRecordWriterIT {
     
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        Qdb.DAEMON.start();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+        Qdb.DAEMON.stop();
     }
 
     @Before

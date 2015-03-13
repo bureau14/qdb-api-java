@@ -67,6 +67,7 @@ public class QuasardbParallelIT {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
+        Qdb.DAEMON.start();
         QuasardbNode node = new QuasardbNode(QuasardbIT.HOST, QuasardbIT.PORT);
         config.addNode(node);
         try {
@@ -89,6 +90,7 @@ public class QuasardbParallelIT {
             }
         } catch (QuasardbException e) {
         }
+        Qdb.DAEMON.stop();
     }
     
     @Before

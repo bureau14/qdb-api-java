@@ -51,6 +51,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.b14.qdb.Qdb;
 import com.b14.qdb.Quasardb;
 import com.b14.qdb.QuasardbConfig;
 import com.b14.qdb.QuasardbException;
@@ -91,12 +92,14 @@ public class WordCountIT {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
+        Qdb.DAEMON.start();
         QuasardbNode quasardbNode = new QuasardbNode(HOST, PORT);
         config.addNode(quasardbNode);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        Qdb.DAEMON.stop();
     }
 
     @Before

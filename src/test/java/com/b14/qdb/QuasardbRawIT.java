@@ -83,6 +83,8 @@ public class QuasardbRawIT {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        Qdb.DAEMON.start();
+        
         // **** INIT RAW API ****
         // Try to opening a qdb session
         session = qdb.open();
@@ -109,6 +111,8 @@ public class QuasardbRawIT {
             System.out.println(qdbError);
             System.exit(0);
         }
+        
+        Qdb.DAEMON.stop();
     }
     
     @Before
