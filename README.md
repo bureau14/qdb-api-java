@@ -22,4 +22,5 @@ Java API for [quasardb](http://www.quasardb.net/) with examples for Hadoop and M
 > 75002 Paris, France
 > 
 > +33 (0)1 55 34 92 30
+>
 > +33 (0)1 55 34 92 39
