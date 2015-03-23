@@ -32,7 +32,7 @@ import org.databene.benerator.util.SimpleGenerator;
 
 public class ParallelDataGenerator extends SimpleGenerator<Object[]> {
     private static final String DATA = "DATA_TEST";
-    private static final int NB_DATA = 1000;
+    private static final int NB_DATA = 100;
     public static final Object[][] data = new Object[NB_DATA][];
 
     int count = 0;

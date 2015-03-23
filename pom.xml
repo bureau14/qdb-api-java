@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>${api-version}</version>
+	<version>${qdb.version}</version>
 	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
@@ -57,15 +57,11 @@
 		
 		<!-- Hadoop part -->
 		<hadoop.version>1.2.1</hadoop.version>
-        <hadoop.common.version>2.6.0</hadoop.common.version>
+		<hadoop.common.version>2.6.0</hadoop.common.version>
 		<sqoop.version>1.99.4</sqoop.version>
 		<pig.version>0.14.0</pig.version>
 		<flume.version>1.5.2</flume.version>
 		<mahout.version>0.9</mahout.version>
-		
-		<!-- Directory to store code coverage results -->
-		<jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
-        <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
 	</properties>
 
 	<repositories>
@@ -80,14 +76,14 @@
 			<url>https://repository.sonatype.org/</url>
 		</repository>
 		<repository>
-            <id>cloudbees-snapshots</id>
-            <name>cloudbees-snapshots</name>
-            <url>https://repository-jsr107.forge.cloudbees.com/snapshot</url>
-        </repository>
-        <repository>
-            <id>cloudera</id>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
-        </repository>
+			<id>cloudbees-snapshots</id>
+			<name>cloudbees-snapshots</name>
+			<url>https://repository-jsr107.forge.cloudbees.com/snapshot</url>
+		</repository>
+		<repository>
+			<id>cloudera</id>
+			<url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -108,8 +104,8 @@
 				</exclusion>
 				<exclusion>
 					<groupId>org.objenesis</groupId>
-                	<artifactId>objenesis</artifactId>
-            	</exclusion>
+					<artifactId>objenesis</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -150,17 +146,17 @@
 		
 		<!-- Add dependency to the mock framework - TU -->
 	   <dependency>
-	      	<groupId>org.powermock</groupId>
-	      	<artifactId>powermock-module-junit4</artifactId>
-	      	<version>${powermock.version}</version>
-	   		<scope>test</scope>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
 	   </dependency>
 	   <dependency>
-      		<groupId>org.powermock</groupId>
-      		<artifactId>powermock-api-mockito</artifactId>
-      		<version>${powermock.version}</version>
-      		<scope>test</scope>
-   		</dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4-rule</artifactId>
@@ -190,47 +186,47 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- 	-> With slf4j, users choose a concrete logging implementation at deploy time-->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>${slf4j.version}</version>
-            <optional>true</optional>
-            <scope>runtime</scope>
-        </dependency>
-        
-        <!-- Add dependency to Hadoop Core framework -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--    -> With slf4j, users choose a concrete logging implementation at deploy time-->
 		<dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-core</artifactId>
-            <version>${hadoop.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-           	<version>${hadoop.common.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Ugly bug fix : thank you hadoop -->
-        <dependency>
-    		<groupId>jdk.tools</groupId>
-    		<artifactId>jdk.tools</artifactId>
-    		<version>1.7.0_05</version>
-    		<scope>system</scope>
-    		<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>${slf4j.version}</version>
+			<optional>true</optional>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Add dependency to Hadoop Core framework -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>${hadoop.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>${hadoop.common.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Ugly bug fix : thank you hadoop -->
+		<dependency>
+			<groupId>jdk.tools</groupId>
+			<artifactId>jdk.tools</artifactId>
+			<version>1.7.0_05</version>
+			<scope>system</scope>
+			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
 		</dependency>
 		
 		<!-- Add dependency to Apache Mahout framework -->
 		<dependency>
-            <groupId>org.apache.mahout</groupId>
-            <artifactId>mahout-core</artifactId>
-            <version>${mahout.version}</version>
+			<groupId>org.apache.mahout</groupId>
+			<artifactId>mahout-core</artifactId>
+			<version>${mahout.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -239,7 +235,7 @@
 			<version>3.4.1</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>	
+	</dependencies> 
 	
 	<reporting>
 		<plugins>
@@ -252,7 +248,7 @@
 					<xmlOutput>true</xmlOutput>
 					<!-- Optional derectory to put findbugs xdoc xml report -->
 					<xmlOutputDirectory>target/site</xmlOutputDirectory>
-                    <effort>Max</effort>
+					<effort>Max</effort>
 				</configuration>
 			</plugin>
 			
@@ -302,7 +298,7 @@
 					<docfilessubdirs>true</docfilessubdirs>
 					<links>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
-      					<link>http://plexus.codehaus.org/ref/1.0-alpha-9/apidocs</link>
+						<link>http://plexus.codehaus.org/ref/1.0-alpha-9/apidocs</link>
 					</links>
 					<source>1.5</source>
 					<sourcepath>${basedir}/src/main/java/com/b14/qdb</sourcepath>
@@ -346,10 +342,10 @@
 				<version>2.5</version>
 				<inherited>true</inherited>
 				<configuration>
-          			<parallel>methods</parallel>
-          			<threadCount>25</threadCount>
-          			<argLine>${tests-argsline}</argLine>
-        		</configuration>
+					<parallel>methods</parallel>
+					<threadCount>25</threadCount>
+					<argLine>${tests-argsline}</argLine>
+				</configuration>
 			</plugin>
 			
 			<!-- Source code linker -->
@@ -393,10 +389,10 @@
 						</license>
 					</licenses>
 					<licenseFamilies>
-            			<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-              				<familyName>quasardb License (QDBWML) 1.0</familyName>
-            			</licenseFamily>
-          			</licenseFamilies>
+						<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+							<familyName>quasardb License (QDBWML) 1.0</familyName>
+						</licenseFamily>
+					</licenseFamilies>
 				</configuration>
 			</plugin>
 			
@@ -462,12 +458,12 @@
 
 			<!-- Analyze testability of the project -->
 			<plugin>
-           		<groupId>com.google.testability-explorer</groupId>
-           		<artifactId>maven-testability-plugin</artifactId>
-           		<version>1.3.3</version>
-        	</plugin>
+				<groupId>com.google.testability-explorer</groupId>
+				<artifactId>maven-testability-plugin</artifactId>
+				<version>1.3.3</version>
+			</plugin>
 		</plugins>
-	</reporting>	
+	</reporting>    
 	
 	<build>
 		<pluginManagement>
@@ -529,50 +525,50 @@
 			</plugins>
 		</pluginManagement>
 		
-        <plugins>
-        	<!-- Read project properties -->
+		<plugins>
+			<!-- Read project properties -->
 			<plugin>
-	        	<groupId>org.codehaus.mojo</groupId>
+				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
 				<version>1.0-alpha-2</version>
-	        	<executions>
-	         		<execution>
-	            		<phase>initialize</phase>
-	            		<goals>
-	              			<goal>read-project-properties</goal>
-	            		</goals>
-	            		<configuration>
-	              			<files>
-	                			<file>${basedir}/src/etc/project.properties</file>
-	              			</files>
-	            		</configuration>
-	          		</execution>
-	        	</executions>
-	      	</plugin>
-	      	
-	      	<!-- Replace version tag in source code -->
-	      	<plugin>
-	            <groupId>com.google.code.maven-replacer-plugin</groupId>
-	            <artifactId>replacer</artifactId>
-	            <version>1.5.2</version>
-	            <executions>                
-	                <execution>
-	                    <phase>prepare-package</phase>
-	                    <goals>
-	                        <goal>replace</goal>
-	                    </goals>
-	                </execution>
-	            </executions>
-	            <configuration>
-	                <includes>
-	                    <include>**/*.java</include>
-	                </includes>
-	                <token>\@version.*</token>
-	                <value>@version ${project.version}</value>
-	            </configuration>
-	        </plugin>
-	      	
-	      	<!-- Packaging API in one jar without dependencies -->
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${basedir}/src/etc/project.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Replace version tag in source code -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.2</version>
+				<executions>                
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+					<token>\@version.*</token>
+					<value>@version ${project.version}</value>
+				</configuration>
+			</plugin>
+			
+			<!-- Packaging API in one jar without dependencies -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -591,10 +587,10 @@
 			
 			<!-- Packaging a jar containing tests -->
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
 					<archive>
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -605,16 +601,16 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <!-- Add resources for integration tests cases -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Add resources for integration tests cases -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -636,135 +632,59 @@
 					</execution>
 				</executions>
 			</plugin>
-            
-	      	<!-- Compiling project -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <inherited>true</inherited>
-                <configuration>
-                   	<showDeprecation>true</showDeprecation>
+			
+			<!-- Compiling project -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<inherited>true</inherited>
+				<configuration>
+					<showDeprecation>true</showDeprecation>
 					<showWarnings>true</showWarnings>
 					<optimize>true</optimize>
 					<source>1.5</source>
 					<target>1.5</target>
-                </configuration>
-            </plugin>
+				</configuration>
+			</plugin>
 
 			<!-- Build a Jar with sources and javadocs -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.0.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <!-- Handle resources for tests and sqoop -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            
-            <!-- Code coverage tools -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.4.201502262128</version>
-                <executions>
-                    <!--
-                        Prepares the property pointing to the JaCoCo runtime agent which is passed as VM argument when Maven the Surefire plugin is executed.
-                    -->
-                    <execution>
-                        <id>pre-unit-test</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${jacoco.ut.execution.data.file}</destFile>
-                            <!--
-                                Sets the name of the property containing the settings for JaCoCo runtime agent.
-                            -->
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <!--
-                        Ensures that the code coverage report for unit tests is created after unit tests have been run.
-                    -->
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <dataFile>${jacoco.ut.execution.data.file}</dataFile>
-                            <!-- Sets the output directory for the code coverage report. -->
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <!--
-                        Prepares the property pointing to the JaCoCo runtime agent which is passed as VM argument when Maven the Failsafe plugin is executed.
-                    -->
-                    <execution>
-                        <id>pre-integration-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${jacoco.it.execution.data.file}</destFile>
-                            <!--
-                                Sets the name of the property containing the settings for JaCoCo runtime agent.
-                            -->
-                            <propertyName>failsafeArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <!--
-                        Ensures that the code coverage report for integration tests after integration tests have been run.
-                    -->
-                    <execution>
-                        <id>post-integration-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <dataFile>${jacoco.it.execution.data.file}</dataFile>
-                            <!-- Sets the output directory for the code coverage report. -->
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.0.3</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Handle resources for tests and sqoop -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
 
 			<!-- Launching unit tests -->
 			<plugin>
@@ -772,40 +692,40 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.9</version>
 				<configuration>
-					<argLine>${surefireArgLine}</argLine>
+					<argLine>${tests-argsline}</argLine>
 					<skipTests>${skip.unit.tests}</skipTests>
 					
 					<!-- Excludes integration tests when unit tests are run. -->
-                    <excludes>
-                        <exclude>**/IT*.java</exclude>
-                    </excludes>
+					<excludes>
+						<exclude>**/IT*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			
 			<!-- Launching integration tests : -->
 			<!--   *** WARNING : a qdb instance must be launched listening on 127.0.0.1:2836 *** -->
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.18.1</version>
-                <executions>
-                    <!--
-                        Ensures that both integration-test and verify goals of the Failsafe Maven plugin are executed.
-                    -->
-                    <execution>
-                        <id>integration-tests</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the VM argument line used when integration tests are run. -->
-                            <argLine>${failsafeArgLine}</argLine>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.18.1</version>
+				<executions>
+					<!--
+						Ensures that both integration-test and verify goals of the Failsafe Maven plugin are executed.
+					-->
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the VM argument line used when integration tests are run. -->
+							<argLine>${tests-argsline}</argLine>
 
-                            <!--
-                                Skips integration tests if the value of skip.integration.tests property is true
-                            -->
-                            <skipTests>${skip.integration.tests}</skipTests>
+							<!--
+								Skips integration tests if the value of skip.integration.tests property is true
+							-->
+							<skipTests>${skip.integration.tests}</skipTests>
 
 							<!-- Don't tests classes but packaged jar -->
 							<classesDirectory>non-existing-directory</classesDirectory>
@@ -813,35 +733,35 @@
 								<additionalClasspathElements>${project.build.directory}/qdb-java-api-${version}.jar</additionalClasspathElements>
 								<additionalClasspathElement>${project.build.directory}/qdb-api-${version}-tests.jar</additionalClasspathElement>
 							</additionalClasspathElements>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			
 			<!-- Add a license header if not exists -->
 			<plugin>
-            	<groupId>com.mycila.maven-license-plugin</groupId>
-            	<artifactId>maven-license-plugin</artifactId>
-            	<version>2.9</version>
-            	<configuration>
-            		<strictChecking>true</strictChecking>
-            		<basedir>${basedir}</basedir>
-                	<header>${basedir}/src/etc/header.txt</header>
-                	<quiet>false</quiet>
-                	<encoding>UTF-8</encoding>
-                	<includes>
-                    	<include>src/**</include>
-                    	<include>**/test/**</include>
-                	</includes>
-                	<excludes>
-                    	<exclude>target/**</exclude>
-                    	<exclude>src/etc/**</exclude>
-                    	<exclude>src/site/**</exclude>
-                	</excludes>
-            	</configuration>
-        	</plugin>
-        	
-        	<!-- Draw dependencies graph of project -->
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<strictChecking>true</strictChecking>
+					<basedir>${basedir}</basedir>
+					<header>${basedir}/src/etc/header.txt</header>
+					<quiet>false</quiet>
+					<encoding>UTF-8</encoding>
+					<includes>
+						<include>src/**</include>
+						<include>**/test/**</include>
+					</includes>
+					<excludes>
+						<exclude>target/**</exclude>
+						<exclude>src/etc/**</exclude>
+						<exclude>src/site/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			
+			<!-- Draw dependencies graph of project -->
 			<plugin>
 				<groupId>org.fusesource.mvnplugins</groupId>
 				<artifactId>maven-graph-plugin</artifactId>
@@ -861,11 +781,11 @@
 						</goals>
 						<configuration>
 							<finalName>${uberjar-name}</finalName>
-              				<shadedArtifactAttached>true</shadedArtifactAttached>
-              				<shadedClassifierName>all</shadedClassifierName>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<shadedClassifierName>all</shadedClassifierName>
 							<!-- Copying native librairies : -->
 							<transformers>
-								<!-- 	-> Linux -->
+								<!--    -> Linux -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-linux-dir}/libgcc_s.so.1</resource>
 									<file>${lib-linux-dir}/libgcc_s.so.1</file>
@@ -886,7 +806,7 @@
 									<resource>${lib-linux-dir}/libqdb_java_api.so</resource>
 									<file>${lib-linux-dir}/libqdb_java_api.so</file>
 								</transformer>
-								<!-- 	-> BSD -->
+								<!--    -> BSD -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-bsd-dir}/libgcc_s.so.1</resource>
 									<file>${lib-bsd-dir}/libgcc_s.so.1</file>
@@ -907,7 +827,7 @@
 									<resource>${lib-bsd-dir}/libqdb_java_api.so</resource>
 									<file>${lib-bsd-dir}/libqdb_java_api.so</file>
 								</transformer>
-								<!-- 	-> Windows 64 bits -->
+									-> Windows 64 bits
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-win64-dir}/msvcp100.dll</resource>
 									<file>${lib-win64-dir}/msvcp100.dll</file>
@@ -932,7 +852,7 @@
 									<resource>${lib-win64-dir}/qdb_java_api.dll</resource>
 									<file>${lib-win64-dir}/qdb_java_api.dll</file>
 								</transformer>
-								<!-- 	-> Windows 32 bits -->
+								<!--    -> Windows 32 bits -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-win32-dir}/msvcp100.dll</resource>
 									<file>${lib-win32-dir}/msvcp100.dll</file>
@@ -964,59 +884,59 @@
 			</plugin>
 			
 			<!-- Copy packaged jar in another location in order to launch integration tests -->
-<!-- 			<plugin> -->
-<!-- 			    <groupId>com.github.goldin</groupId> -->
-<!-- 			    <artifactId>copy-maven-plugin</artifactId> -->
-<!-- 			    <version>0.2.5</version> -->
-<!-- 			    <executions> -->
-<!-- 			        <execution> -->
-<!-- 			            <id>deploy-to-local-directory</id> -->
-<!-- 			            <phase>pre-integration-test</phase> -->
-<!-- 			            <goals> -->
-<!-- 			                <goal>copy</goal> -->
-<!-- 			            </goals> -->
-<!-- 			            <configuration> -->
-<!-- 			                <skipIdentical>false</skipIdentical> -->
-<!-- 			                <failIfNotFound>false</failIfNotFound> -->
-<!-- 			                <resources> -->
-<!-- 			                    <resource> -->
-<!-- 			                        <description>Copy artifact to another directory</description> -->
-<!-- 			                        <targetPath>${project.build.directory}/jarToTest</targetPath> -->
-<!-- 			                        <directory>${project.build.directory}</directory> -->
-<!-- 			                        <includes> -->
-<!-- 			                            <include>qdb-java-api-${version}.jar</include> -->
-<!-- 			                        </includes> -->
-<!-- 			                    </resource> -->
-<!-- 			                </resources> -->
-<!-- 			            </configuration> -->
-<!-- 			        </execution> -->
-<!-- 			    </executions> -->
-<!-- 			</plugin> -->
+<!--            <plugin> -->
+<!--                <groupId>com.github.goldin</groupId> -->
+<!--                <artifactId>copy-maven-plugin</artifactId> -->
+<!--                <version>0.2.5</version> -->
+<!--                <executions> -->
+<!--                    <execution> -->
+<!--                        <id>deploy-to-local-directory</id> -->
+<!--                        <phase>pre-integration-test</phase> -->
+<!--                        <goals> -->
+<!--                            <goal>copy</goal> -->
+<!--                        </goals> -->
+<!--                        <configuration> -->
+<!--                            <skipIdentical>false</skipIdentical> -->
+<!--                            <failIfNotFound>false</failIfNotFound> -->
+<!--                            <resources> -->
+<!--                                <resource> -->
+<!--                                    <description>Copy artifact to another directory</description> -->
+<!--                                    <targetPath>${project.build.directory}/jarToTest</targetPath> -->
+<!--                                    <directory>${project.build.directory}</directory> -->
+<!--                                    <includes> -->
+<!--                                        <include>qdb-java-api-${version}.jar</include> -->
+<!--                                    </includes> -->
+<!--                                </resource> -->
+<!--                            </resources> -->
+<!--                        </configuration> -->
+<!--                    </execution> -->
+<!--                </executions> -->
+<!--            </plugin> -->
 		</plugins>
-    </build>
+	</build>
 
-    <profiles>
-        <profile>
-            <!--Only releases need to be signed. Use mvn -Prelease clean deploy to deploy releases -->
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<!--Only releases need to be signed. Use mvn -Prelease clean deploy to deploy releases -->
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

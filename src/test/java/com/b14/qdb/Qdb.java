@@ -6,9 +6,9 @@ import java.io.IOException;
 /**
  * A integration helper which can start or stop a qdb instance.
  * 
- * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
+ * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
  * @version master
- * @since 1.1.6
+ * @since 1.2.1
  */
 public enum Qdb {
     DAEMON;
@@ -20,16 +20,16 @@ public enum Qdb {
             this.stop();
         }
         
-        Runtime runtime = Runtime.getRuntime();
-        boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-        String qdbPath = System.getProperty("qdb.path");
-        if (qdbPath == null) {
-            qdbPath = "D:/qdb-master-windows-64bit/bin";
+        String qdbdExecutable = System.getProperty("qdbd.path");
+        if (qdbdExecutable == null) {
+            qdbdExecutable = "D:/qdb-master-windows-64bit/bin/qdbd.exe";
         }
+
+        Runtime runtime = Runtime.getRuntime();
         try {
-            daemon = runtime.exec(new String[] { isWindows ? qdbPath + File.separator + "qdbd.exe" : "qdbd"/*, "--transient"*/ } );
+            daemon = runtime.exec(new String[] { qdbdExecutable/*, "--transient"*/ } );
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to start " + qdbdExecutable + " -> " + e.getMessage());
             return false;
         }
         

@@ -57,7 +57,7 @@ import org.junit.runner.RunWith;
 public class QuasardbParallelIT {
     private static final int NB_LOOPS = 10;
     private static final int NB_THREADS = 5;
-    private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
+    private static final int REQ_AVERAGE_EXECUTION_TIME = 5000;
     private static final int REQ_MAX_LATENCY = 20000;
     private static final int REQ_MEDIAN_LATENCY = 5000;
     private static final int REQ_THROUGHPUT = 1;

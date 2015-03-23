@@ -1,4 +1,0 @@
-# Ignore generated classes with SWIG
-/*.java
-# except package-info.java which is mandatory for javadoc
-!package-info.java
