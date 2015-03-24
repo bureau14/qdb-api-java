@@ -33,11 +33,12 @@ public enum Qdb {
         }
         
         try {
-            Thread.sleep(5000);
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
         }
+        
         return true;
     }
     
@@ -50,7 +51,7 @@ public enum Qdb {
         }
         
         try {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;

@@ -1033,46 +1033,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     }
 
     /**
-     * Stop the current node with a given reason.
-     *
-     * @param reason the reason to stop the selected node.
-     * @since 0.7.4
-     */
-    public void stopCurrentNode(final String reason) throws QuasardbException {
-        qdb_error_t qdbError = null;
-        final qdb_remote_node_t remote_node = new qdb_remote_node_t();
-        remote_node.setAddress(config.getNodes().iterator().next().getHostName());
-        remote_node.setPort(config.getNodes().iterator().next().getPort());
-        qdbError = qdb.stop_node(session, remote_node, reason);
-
-        // Handle errors
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QuasardbException(qdbError);
-        }
-    }
-
-    /**
-     * Stop a specific node with a given reason.
-     *
-     * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.
-     * @param port the port of the quasardb node you want to stop.
-     * @param reason the reason to stop the selected node.
-     * @since 0.7.4
-     */
-    public void stopNode(final String node, final int port, final String reason) throws QuasardbException {
-        qdb_error_t qdbError = null;
-        final qdb_remote_node_t remote_node = new qdb_remote_node_t();
-        remote_node.setAddress(node);
-        remote_node.setPort(port);
-        qdbError = qdb.stop_node(session, remote_node, reason);
-
-        // Handle errors
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QuasardbException(qdbError);
-        }
-    }
-
-    /**
      * Utility method to retrieve information operations on the current qdb instance.<br>
      *
      * @param node the host of the quasardb node you want to stop - can be a IP address or a hostname.

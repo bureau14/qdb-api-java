@@ -123,7 +123,7 @@ public class QuasardbRecordReader<V> extends RecordReader<Text, V> {
         if (size == 0) {
             return 0;
         } else {
-            return (float) size / initialSize;
+            return (float) (size / initialSize);
         }
     }
 

@@ -188,9 +188,9 @@ public class QuasardbRecordReaderIT {
             qdbRecordReader.initialize(qdbInputSplit, null);
             assertTrue("No Keys means progress = 1.", 1 == qdbRecordReader.getProgress());
             qdbRecordReader.getCurrentValue();
-            assertTrue("No Keys means progress = 2/3.", (2/3) == qdbRecordReader.getProgress());
+            assertTrue("No Keys means progress = 2/3.", (float) (2/3) == qdbRecordReader.getProgress());
             qdbRecordReader.getCurrentValue();
-            assertTrue("No Keys means progress = 1/3.", (1/3) == qdbRecordReader.getProgress());
+            assertTrue("No Keys means progress = 1/3.", (float) (1/3) == qdbRecordReader.getProgress());
             qdbRecordReader.getCurrentValue();
             assertTrue("No Keys means progress = 0.", 0 == qdbRecordReader.getProgress());
         } catch (Exception e) {
