@@ -55,6 +55,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.b14.qdb.QuasardbNode;
+import com.b14.qdb.hadoop.mahout.QuasardbPreference;
 
 /**
  * A unit test case for {@link QuasardbInputSplit} class.
@@ -423,6 +424,21 @@ public class QuasardbInputSplitTest {
      * Test method for {@link QuasardbInputSplit#getQdbLocations()}.
      */
     @Test
+    public void testGetQdbLocationsIPV6() {
+        QuasardbNode[] qdbNodes = new QuasardbNode[] { new QuasardbNode("2607:f0d0:1002:0051:0000:0000:0000:0004", 2836), new QuasardbNode("fe80:0:0:0:200:f8ff:fe21:67cf", 2837) };
+        List<String> locationsExpected = Arrays.asList("127.0.0.1");
+        try {
+            locationsExpected = Arrays.asList(InetAddress.getByName("2607:f0d0:1002:0051:0000:0000:0000:0004").getHostName(), InetAddress.getByName("fe80:0:0:0:200:f8ff:fe21:67cf").getHostName());
+        } catch (UnknownHostException e) { }
+        QuasardbInputSplit qdbInputSplit = new QuasardbInputSplit(null, qdbNodes);
+        assertEquals("getLocations should return 2 locations.", 2, qdbInputSplit.getLocations().length);
+        assertTrue("Both locations should be equals.", locationsExpected.containsAll(Arrays.asList(qdbInputSplit.getLocations())));
+    }
+    
+    /**
+     * Test method for {@link QuasardbInputSplit#getQdbLocations()}.
+     */
+    @Test
     public void testGetQdbLocations() {
         QuasardbNode[] qdbNodes = new QuasardbNode[] { new QuasardbNode("127.0.0.1", 2836), new QuasardbNode("127.0.0.1", 2837), new QuasardbNode("127.0.0.1", 2838) };
         List<String> locationsExpected = Arrays.asList("127.0.0.1:2836", "127.0.0.1:2837", "127.0.0.1:2838");
@@ -433,5 +449,27 @@ public class QuasardbInputSplitTest {
             locationsResult.add(qdbNode.toString());
         }
         assertTrue("Both locations should be equals.", locationsExpected.containsAll(locationsResult));
+    }
+    
+    /**
+     * Test method for {@link QuasardbPreference#equals(Object)}.
+     */
+    @Test
+    public void testEquals() {
+        QuasardbNode[] qdbNodes = new QuasardbNode[] { new QuasardbNode("127.0.0.1", 2836), new QuasardbNode("127.0.0.1", 2837), new QuasardbNode("127.0.0.1", 2838) };
+        QuasardbInputSplit qdbInputSplit1 = new QuasardbInputSplit(Arrays.asList("key1", "key2", "key3"), qdbNodes);
+        QuasardbInputSplit qdbInputSplit2 = new QuasardbInputSplit(Arrays.asList("key1", "key2", "key3"), qdbNodes.clone());
+        assertTrue(qdbInputSplit1.equals(qdbInputSplit2));
+    }
+    
+    /**
+     * Test method for {@link QuasardbPreference#equals(Object)}.
+     */
+    @Test
+    public void testHashCode() {
+        QuasardbNode[] qdbNodes = new QuasardbNode[] { new QuasardbNode("127.0.0.1", 2836), new QuasardbNode("127.0.0.1", 2837), new QuasardbNode("127.0.0.1", 2838) };
+        QuasardbInputSplit qdbInputSplit1 = new QuasardbInputSplit(Arrays.asList("key1", "key2", "key3"), qdbNodes);
+        QuasardbInputSplit qdbInputSplit2 = new QuasardbInputSplit(Arrays.asList("key1", "key2", "key3"), qdbNodes.clone());
+        assertTrue(qdbInputSplit1.hashCode() == qdbInputSplit2.hashCode());
     }
 }

@@ -118,4 +118,24 @@ public class QuasardbPreferenceTest {
             assertTrue(e instanceof IllegalArgumentException);
         }
     }
+    
+    /**
+     * Test method for {@link QuasardbPreference#equals(Object)}.
+     */
+    @Test
+    public void testEquals() {
+        QuasardbPreference qdbPref1 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
+        QuasardbPreference qdbPref2 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
+        assertTrue(qdbPref1.equals(qdbPref2));
+    }
+    
+    /**
+     * Test method for {@link QuasardbPreference#equals(Object)}.
+     */
+    @Test
+    public void testHashCode() {
+        QuasardbPreference qdbPref1 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
+        QuasardbPreference qdbPref2 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
+        assertTrue(qdbPref1.hashCode() == qdbPref2.hashCode());
+    }
 }
