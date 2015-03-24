@@ -134,7 +134,7 @@ public class QuasardbInputFormat<V> extends InputFormat<Text, V> {
             while (startIndex < numberOfKeys) {
                 int endIndex = Math.min(numberOfKeys, getSplitSize(nodesMap.get(qdbNode).size(), QuasardbJobConf.getHadoopClusterSize(conf, 3)) + startIndex);
                 final List<String> split = nodesMap.get(qdbNode).subList(startIndex, endIndex);
-                splits.add(new QuasardbInputSplit(split, new QuasardbNode[]{qdbNode}));
+                splits.add(new QuasardbInputSplit(split, new QuasardbNode[] { qdbNode }));
                 startIndex = endIndex;
             }
         }

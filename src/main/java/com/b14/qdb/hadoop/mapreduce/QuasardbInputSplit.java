@@ -93,7 +93,7 @@ public class QuasardbInputSplit extends InputSplit implements Writable {
            this.inputs = split.toArray(new String[split.size()]);
        }
        if (nodes != null) {
-           this.nodes = nodes;
+           this.nodes = nodes.clone();
        }
     }
 
@@ -214,7 +214,7 @@ public class QuasardbInputSplit extends InputSplit implements Writable {
      */
     public QuasardbNode[] getQdbLocations() {
         if (this.nodes != null) {
-            return this.nodes;
+            return this.nodes.clone();
         } else {
             return new QuasardbNode[] {};
         }

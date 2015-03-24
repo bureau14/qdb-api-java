@@ -64,8 +64,8 @@ public class QuasardbDataModel implements DataModel {
     private static final int DEFAULT_QDB_PORT = 2836;
     
     private DataModel delegate;
-    private QuasardbConfig qdbConfig = new QuasardbConfig();
-    private Quasardb qdb = null;
+    private transient QuasardbConfig qdbConfig = new QuasardbConfig();
+    private transient Quasardb qdb = null;
     private String preferencesPrefix = null;
     
     public QuasardbDataModel() throws IOException {

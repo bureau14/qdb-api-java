@@ -104,7 +104,7 @@ public class QuasardbIT {
     @After
     public void tearDown() {
     }
-
+    
     /**
      * Test of method {@link Quasardb#close()}.
      * @throws QuasardbException
@@ -115,6 +115,7 @@ public class QuasardbIT {
         qdbInstance.close();
         assertTrue("Close shouldn't raise an Exception", true);
 
+        // Try an operation
         try {
             qdbInstance.put("test_close", "test_close");
             fail("Should raise an Exception because session is closed => no more operations are allowed.");
@@ -124,6 +125,28 @@ public class QuasardbIT {
 
         // re-initialize qdb session
         setUpClass();
+    }
+    
+    /**
+     * Test of method {@link Quasardb#close()}.
+     * @throws QuasardbException
+     */
+    @Test
+    public void testCloseAnAlreadyClosedSessionMeansAnException() throws Exception {
+        // Close qdb session
+        qdbInstance.close();
+        assertTrue("Close shouldn't raise an Exception", true);
+
+        // Try to close twice
+        try {
+            qdbInstance.close();
+            fail("Should raise an Exception because session is already closed.");
+        } catch (Exception e) {
+            assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
+        } finally {
+            // re-initialize qdb session
+            setUpClass();
+        }
     }
 
     /**
@@ -1871,6 +1894,32 @@ public class QuasardbIT {
         assertFalse("hasNext() response should be equals to false.", qdbInstance.iterator().hasNext());
     }
 
+    /**
+     * Test of method {@link Quasardb#iterator()}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testIteratorRemoveMeansAnException() throws QuasardbException {
+        int nbIterations = 10;
+        try {
+            // Populate quasardb instance
+            for (int i = 0; i < nbIterations; i++) {
+                Pojo p = new Pojo();
+                p.setText("test iterator " + i);
+                qdbInstance.put("test_iterator_" + i, p);
+            }
+            
+            // Iterate quasardb instance
+            qdbInstance.iterator().remove();
+            fail("Should raise an Exception.");
+        } catch (Exception e) {
+            assertTrue(e instanceof UnsupportedOperationException);
+        } finally {
+            qdbInstance.purgeAll();
+        }
+    }
+    
     /**
      * Test of method {@link Quasardb#iterator()}.
      * 

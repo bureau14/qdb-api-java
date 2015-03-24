@@ -209,7 +209,6 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
     private static final String BAD_SIZE = "Object size is invalid.";
     private static final String WRONG_ALIAS = "Alias name is invalid.";
     private static final String WRONG_DATE = "Date is invalid.";
-    private static final String BAD_SERIALIZATION = "Bad serialization.";
     private static final String NEGATIVE_VALUE = "Value is negative. This is not allowed";
     private static final int BUFFER_SIZE = 4096;
     private static final int PUT = 1;
@@ -1431,11 +1430,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             // Return result
             return (qdbError == qdb_error_t.error_ok);
         } catch (Exception e) {
-            if (!(e instanceof QuasardbException)) {
-                throw new QuasardbException(BAD_SERIALIZATION, e);
-            } else {
-                throw (QuasardbException) e;
-            }
+            throw new QuasardbException(e);
         } finally {
             // Cleanup
             try {
@@ -1544,7 +1539,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         req.setContent(buffer);
 
                         buffers.add(buffer);
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException e) {
                         req.setContent_size(0);
                         req.setContent(null);
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
@@ -1573,7 +1568,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         req.setComparand(buffer);
 
                         buffers.add(buffer);
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException e) {
                         req.setComparand_size(0);
                         req.setComparand(null);
                         req.setType(qdb_operation_type_t.optionp_uninitialized);
@@ -1887,12 +1882,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                 }
             }
             return result;
-        } catch (Exception e) {
-            if (!(e instanceof QuasardbException)) {
-                throw new QuasardbException(BAD_SERIALIZATION, e);
-            } else {
-                throw (QuasardbException) e;
-            }
+        } catch (IllegalArgumentException e) {
+            throw new QuasardbException(e);
         } finally {
             // Cleanup
             try {

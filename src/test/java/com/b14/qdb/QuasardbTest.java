@@ -117,10 +117,49 @@ public class QuasardbTest {
             fail("Should raise an Exception because session is closed => no more operations are allowed.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
+        } finally {
+            // re-initialize qdb session
+            setUp();
         }
+    }
+    
+    /**
+     * Test of method {@link Quasardb#toString()}.
+     * @throws QuasardbException
+     */
+    @Test
+    public void testToStringANotConnectedInstanceMeansAnException() throws Exception {
+        // Test : close qdb session
+        qdbInstance.close();
+        String qdbString = qdbInstance.toString();
+        assertTrue(qdbString != null);
+        assertTrue(qdbString.indexOf("Version") == -1);
 
         // re-initialize qdb session
         setUp();
+    }
+    
+    /**
+     * Test of method {@link Quasardb#toString()}.
+     * @throws QuasardbException
+     */
+    @Test
+    public void testToString() throws Exception {
+        String qdbString = qdbInstance.toString();
+        assertTrue(qdbString != null);
+        assertTrue(qdbString.indexOf("Version") != -1);
+    }
+    
+    /**
+     * Test of method {@link Quasardb#getConfig()}.
+     * @throws QuasardbException
+     */
+    @Test
+    public void testGetConfig() throws Exception {
+        // Test : close qdb session
+        QuasardbConfig conf = qdbInstance.getConfig();
+        assertTrue("There should be a non-null configuration", conf != null);
+        assertTrue("Configs should be equals => conf[" + conf + "] - config[" + config + "]", conf == config);
     }
     
     /**
