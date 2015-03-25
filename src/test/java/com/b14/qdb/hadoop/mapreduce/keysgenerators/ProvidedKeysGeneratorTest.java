@@ -194,7 +194,28 @@ public class ProvidedKeysGeneratorTest {
         keys.add("key2");
         keys.add("key3");
         generator = new ProvidedKeysGenerator(keys);
+        assertTrue(!generator.equals(null));
+        assertTrue(!generator.equals(new String("test")));
+        
         ProvidedKeysGenerator generator2 = new ProvidedKeysGenerator(keys);
         assertEquals("Both generator should be equals.", generator, generator2);
+        
+        ProvidedKeysGenerator generator3 = new ProvidedKeysGenerator(Arrays.asList("Different_key"));
+        assertTrue(!generator2.equals(generator3));
+    }
+    
+    /**
+     * Test method for {@link ProvidedKeysGenerator#hashCode()}.
+     * 
+     * @since 1.1.6
+     */
+    @Test
+    public void testHashCode() {
+        ProvidedKeysGenerator generator1 = new ProvidedKeysGenerator(Arrays.asList("key1","key2"));
+        ProvidedKeysGenerator generator2 = new ProvidedKeysGenerator(Arrays.asList("key1","key2"));
+        assertTrue(generator1.hashCode() == generator2.hashCode());
+        
+        ProvidedKeysGenerator generator3 = new ProvidedKeysGenerator(Arrays.asList("Different_key"));
+        assertTrue(generator1.hashCode() != generator3.hashCode());
     }
 }

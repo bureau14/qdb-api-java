@@ -153,10 +153,6 @@ public class QuasardbRecordReader<V> extends RecordReader<Text, V> {
             this.client.connect();
         } catch (QuasardbException e) {
             throw new IOException("Cannot connect to provided node => " + e.getMessage());
-        } catch (NumberFormatException e) {
-            throw new IOException("Node port is invalid => " + e.getMessage());
-        } catch (IndexOutOfBoundsException e) {
-            throw new IOException("Node hostname is invalid => " + e.getMessage());
         }
     }
 

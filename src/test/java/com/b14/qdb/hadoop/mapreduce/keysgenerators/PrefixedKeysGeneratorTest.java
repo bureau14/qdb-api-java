@@ -122,7 +122,7 @@ public class PrefixedKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#init(java.util.String)}.
+     * Test method for {@link PrefixedKeysGenerator#init(java.util.String)}.
      * 
      * @since 1.1.6
      */
@@ -138,7 +138,7 @@ public class PrefixedKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#getInitString()}.
+     * Test method for {@link PrefixedKeysGenerator#getInitString()}.
      * 
      * @since 1.1.6
      */
@@ -168,7 +168,7 @@ public class PrefixedKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)()}.
+     * Test method for {@link PrefixedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)()}.
      * 
      * @since 1.1.6
      */
@@ -184,7 +184,7 @@ public class PrefixedKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)()}.
+     * Test method for {@link PrefixedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)()}.
      * 
      * @since 1.1.6
      */
@@ -197,5 +197,37 @@ public class PrefixedKeysGeneratorTest {
         generator.init(INIT_STRING);
         Collection<String> keys = generator.getKeys(qdbInstance);
         assertTrue("Both list should be equals.", keys.containsAll(expectedKeys));
+    }
+    
+    /**
+     * Test method for {@link PrefixedKeysGenerator#equals(Object)}.
+     * 
+     * @since 1.1.6
+     */
+    @Test
+    public void testEquals() {
+        PrefixedKeysGenerator generator1 = new PrefixedKeysGenerator(INIT_STRING);
+        assertTrue(!generator1.equals(null));
+        assertTrue(!generator1.equals(new String("test")));
+        PrefixedKeysGenerator generator2 = new PrefixedKeysGenerator(INIT_STRING);
+        assertTrue(generator1.equals(generator2));
+        
+        PrefixedKeysGenerator generator3 = new PrefixedKeysGenerator("Different_prefix");
+        assertTrue(!generator1.equals(generator3));
+    }
+    
+    /**
+     * Test method for {@link ProvidedKeysGenerator#hashCode()}.
+     * 
+     * @since 1.1.6
+     */
+    @Test
+    public void testHashCode() {
+        PrefixedKeysGenerator generator1 = new PrefixedKeysGenerator(INIT_STRING);
+        PrefixedKeysGenerator generator2 = new PrefixedKeysGenerator(INIT_STRING);
+        assertTrue(generator1.hashCode() == generator2.hashCode());
+        
+        PrefixedKeysGenerator generator3 = new PrefixedKeysGenerator("Different_prefix");
+        assertTrue(generator1.hashCode() != generator3.hashCode());
     }
 }

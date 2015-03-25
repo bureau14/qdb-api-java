@@ -56,7 +56,6 @@ import com.b14.qdb.hadoop.mapreduce.keysgenerators.ProvidedKeysGenerator;
  * @since 1.3.0
  */
 public class QuasardbJobConfTest {
-
     /**
      * @throws java.lang.Exception
      */
@@ -76,6 +75,8 @@ public class QuasardbJobConfTest {
      */
     @Before
     public void setUp() throws Exception {
+        QuasardbJobConf conf = new QuasardbJobConf();
+        conf.toString();
     }
 
     /**
@@ -264,5 +265,14 @@ public class QuasardbJobConfTest {
     @Test
     public void testGetMinSplitSize() {
         assertTrue("Minimum split size should be equals to 10.", QuasardbJobConf.getMinSplitSize() == 10);
+    }
+    
+    @Test
+    public void testSetKeysGeneratorWithNullConfMeansAnException() {
+        try {
+            QuasardbJobConf.setKeysGenerator(null, null);
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+        }
     }
 }

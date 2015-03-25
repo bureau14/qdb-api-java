@@ -125,8 +125,24 @@ public class QuasardbPreferenceTest {
     @Test
     public void testEquals() {
         QuasardbPreference qdbPref1 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
+        assertTrue(!qdbPref1.equals(null));
+        assertTrue(qdbPref1.equals(qdbPref1));
+        assertTrue(!qdbPref1.equals(new String("test")));
+        
         QuasardbPreference qdbPref2 = new QuasardbPreference(123L, 124L, 0.5F, (new Date()).getTime());
         assertTrue(qdbPref1.equals(qdbPref2));
+        
+        QuasardbPreference qdbPref3 = new QuasardbPreference(1123L, 124L, 0.5F, (new Date()).getTime());
+        assertTrue(!qdbPref1.equals(qdbPref3));
+        
+        qdbPref3 = new QuasardbPreference(123L, 1124L, 0.5F, (new Date()).getTime());
+        assertTrue(!qdbPref1.equals(qdbPref3));
+        
+        qdbPref3 = new QuasardbPreference(123L, 124L, 1.0F, (new Date()).getTime());
+        assertTrue(!qdbPref1.equals(qdbPref3));
+        
+        qdbPref3 = new QuasardbPreference(123L, 124L, 0.5F, (new Date(1427291844L)).getTime());
+        assertTrue(!qdbPref1.equals(qdbPref3));
     }
     
     /**

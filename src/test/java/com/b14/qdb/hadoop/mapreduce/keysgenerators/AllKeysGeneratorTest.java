@@ -102,7 +102,7 @@ public class AllKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#getInitString()}.
+     * Test method for {@link AllKeysGenerator#getInitString()}.
      * 
      * @since 1.1.6
      */
@@ -117,7 +117,7 @@ public class AllKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link PrefixedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)}.
+     * Test method for {@link AllKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)}.
      * 
      * @since 1.1.6
      */
@@ -133,7 +133,7 @@ public class AllKeysGeneratorTest {
     }
     
     /**
-     * Test method for {@link ProvidedKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)()}.
+     * Test method for {@link AllKeysGenerator#getKeys(com.qdb.quasardb.Quasardb)}.
      * 
      * @since 1.1.6
      */
@@ -149,5 +149,41 @@ public class AllKeysGeneratorTest {
         AllKeysGenerator generator = new AllKeysGenerator();
         Collection<String> keys = generator.getKeys(qdbInstance);
         assertTrue("Both list should be equals.", keys.containsAll(expectedKeys));
+    }
+    
+    /**
+     * Test method for {@link AllKeysGenerator#equals(Object)}.
+     * 
+     * @since 1.1.6
+     */
+    @Test
+    public void testEquals() {
+        AllKeysGenerator generator1 = new AllKeysGenerator();
+        generator1.init("init");
+        assertTrue(!generator1.equals(null));
+        assertTrue(!generator1.equals(new String("test")));
+        
+        AllKeysGenerator generator2 = new AllKeysGenerator();
+        generator2.init("init");
+        assertTrue(generator1.equals(generator2));
+        
+        AllKeysGenerator generator3 = new AllKeysGenerator();
+        generator3.init("init3");
+        assertTrue(!generator1.equals(generator3));
+    }
+    
+    /**
+     * Test method for {@link AllKeysGenerator#hashCode()}.
+     * 
+     * @since 1.1.6
+     */
+    @Test
+    public void testHashCode() {
+        AllKeysGenerator generator1 = new AllKeysGenerator("init");
+        AllKeysGenerator generator2 = new AllKeysGenerator("init");
+        assertTrue(generator1.hashCode() == generator2.hashCode());
+        
+        AllKeysGenerator generator3 = new AllKeysGenerator("different_init");
+        assertTrue(generator1.hashCode() != generator3.hashCode());
     }
 }
