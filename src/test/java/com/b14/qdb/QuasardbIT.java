@@ -2620,12 +2620,68 @@ public class QuasardbIT {
             assertTrue("Operations in batch should be a GET operation.", result.getTypeOperation() == TypeOperation.GET);
             assertTrue("Current operation should have no error.", result.getError() == null);
             assertTrue("POJO value for current GET operation should be equals to 'test_batch_get'.", ((Pojo) result.getValue()).getText().equals("test_batch_get"));
+            assertTrue("toString shouldn't be empty.", !result.toString().isEmpty());
+
         }
         operations = null;
         results = null;
         qdbInstance.purgeAll();
     }
     
+    /**
+     * Test of method {@link Quasardb#runBatch(List)}.
+     * 
+     * @throws QuasardbException
+     */
+    @Test
+    public void testRunBatchGetsResultsEqualsHashCode() throws QuasardbException {
+        Pojo testGet = new Pojo();
+        testGet.setText("test_batch_get");
+        qdbInstance.update("test_batch_get", testGet);
+        List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
+        Operation<Pojo> operationGet = new Operation<Pojo>(TypeOperation.GET, "test_batch_get");
+        operations.add(operationGet);
+        
+        qdbInstance.update(operationGet.toString(), testGet);
+        Operation<Pojo> operationGet2 = new Operation<Pojo>(TypeOperation.GET, operationGet.toString());
+        operations.add(operationGet2);
+        assertTrue(!operationGet.equals(operationGet2));
+        assertTrue(operationGet.hashCode() != operationGet2.hashCode());
+        
+        Operation<Pojo> operationGet3 = new Operation<Pojo>();
+        operationGet3.setAlias("test_batch_get");
+        operationGet3.setType(TypeOperation.GET);
+        assertTrue(operationGet.equals(operationGet3));
+        assertTrue(operationGet.hashCode() == operationGet3.hashCode());
+        operations.add(operationGet3);
+        
+        Results results = qdbInstance.runBatch(operations);
+        assertTrue("All batch operations should have been successfull.", results.isSuccess());
+        assertTrue("Results for batch operation shouldn't be empty", !results.getResults().isEmpty());
+        
+        final Result<Pojo> result2 = new Result<Pojo>();
+        result2.setAlias("test"); 
+        result2.setError("error");
+        result2.setTypeOperation(TypeOperation.GET);
+        result2.setValue(new Pojo());
+        
+        final Result<Pojo> result3 = new Result<Pojo>();
+        result3.setAlias("test_batch_get"); 
+        result3.setError(null);
+        result3.setTypeOperation(TypeOperation.GET);
+        result3.setValue(testGet);
+        
+        for (Result<?> result : results.getResults()) {
+            assertTrue(!result.equals(result2));
+            assertTrue(result.hashCode() != result2.hashCode());
+            
+            assertTrue(result.equals(result3));
+            assertTrue(result.hashCode() == result3.hashCode());
+        }
+        operations = null;
+        results = null;
+        qdbInstance.purgeAll();
+    }
     
     /**
      * Test of method {@link Quasardb#runBatch(List)}.
