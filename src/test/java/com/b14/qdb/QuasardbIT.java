@@ -2670,6 +2670,7 @@ public class QuasardbIT {
         result3.setError(null);
         result3.setTypeOperation(TypeOperation.GET);
         result3.setValue(testGet);
+        result3.setSuccess(true);
         
         for (Result<?> result : results.getResults()) {
             assertTrue(!result.equals(result2));
