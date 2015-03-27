@@ -2666,16 +2666,16 @@ public class QuasardbIT {
         result2.setValue(new Pojo());
         
         final Result<Pojo> result3 = new Result<Pojo>();
-        result3.setAlias("test_batch_get"); 
-        result3.setError(null);
-        result3.setTypeOperation(TypeOperation.GET);
-        result3.setValue(testGet);
-        result3.setSuccess(true);
         
         for (Result<?> result : results.getResults()) {
             assertTrue(!result.equals(result2));
             assertTrue(result.hashCode() != result2.hashCode());
             
+            result3.setAlias(result.getAlias());
+            result3.setError(result.getError());
+            result3.setTypeOperation(result.getTypeOperation());
+            result3.setSuccess(result.isSuccess());
+            result3.setValue((Pojo) result.getValue());
             assertTrue(result.equals(result3));
             assertTrue(result.hashCode() == result3.hashCode());
         }
