@@ -117,12 +117,12 @@ import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
  *     <li><u>hasNext:</u> is there a next entry in the iteration ?</li>
  *     <li><u>put:</u> create an entry.</li>
  *     <li><u>update:</u> update the value of an existing entry.</li>
- *     <li><u>getAndReplace:</u> atomically update the value of an existing entry and return the old value.</li>
+ *     <li><u>getAndRemove:</u> atomically get the entry associated with the supplied key and remove it.</li>
+ *     <li><u>getAndUpdate:</u> atomically update the value of an existing entry and return the old value.</li>
  *     <li><u>compareAndSwap:</u> atomically compare a value with comparand and update if it matches. Always return the old value.</li>
  *     <li><u>remove:</u> delete an entry.</li>
  *     <li><u>removeAll:</u> delete all entries. Use with caution.</li>
  *     <li><u>removeIf:</u> delete the object associated whith a key if the object is equal to comparand.</li>
- *     <li><u>getRemove:</u> atomically get the entry associated with the supplied key and remove it.</li>
  *     <li><u>close:</u> close the connection.</li>
  *     <li><u>getVersion:</u> get API version.</li>
  *     <li><u>getBuild:</u> get API build number.</li>
@@ -1093,7 +1093,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         error_carrier error = new error_carrier();
 
         // Get value associated with alias
-        final ByteBuffer buffer = qdb.get_buffer(session, alias, error);
+        final ByteBuffer buffer = qdb.get(session, alias, error);
 
         // Prepare ByteBuffer
         if (buffer != null) {
@@ -1134,7 +1134,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @since 0.7.3
      */
     @SuppressWarnings("unchecked")
-    public <V> V getRemove(final String alias) throws QuasardbException {
+    public <V> V getAndRemove(final String alias) throws QuasardbException {
         // Checks params
         this.checkSession();
         this.checkAlias(alias);
@@ -1144,7 +1144,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
         error_carrier error = new error_carrier();
 
         // Get value associated with alias
-        final ByteBuffer buffer = qdb.get_remove(session, alias, error);
+        final ByteBuffer buffer = qdb.get_and_remove(session, alias, error);
 
         // Prepare ByteBuffer
         if (buffer != null) {
@@ -1244,8 +1244,8 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * @since 0.7.3
      */
-    public <V> V getAndReplace(final String alias, final V value) throws QuasardbException {
-        return this.getAndReplace(alias, value, defaultExpiryTime);
+    public <V> V getAndUpdate(final String alias, final V value) throws QuasardbException {
+        return this.getAndUpdate(alias, value, defaultExpiryTime);
     }
 
     /**
@@ -1260,7 +1260,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
      * @throws QuasardbException if an error occurs (for example : lost session) or provided alias is reserved (it starts with "qdb").
      * @since 1.1.3
      */
-    public <V> V getAndReplace(final String alias, final V value, final long expiryTime) throws QuasardbException {
+    public <V> V getAndUpdate(final String alias, final V value, final long expiryTime) throws QuasardbException {
         return this.writeOperation(alias, value, null, GETANDUPDATE, expiryTime);
     }
 
@@ -1457,11 +1457,11 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                         break;
 
                     case GET_UPDATE :
-                        req.setType(qdb_operation_type_t.optionp_get_update);
+                        req.setType(qdb_operation_type_t.optionp_get_and_update);
                         break;
 
                     case GET_REMOVE :
-                        req.setType(qdb_operation_type_t.optionp_get_remove);
+                        req.setType(qdb_operation_type_t.optionp_get_and_remove);
                         break;
 
                     case REMOVE_IF:
@@ -1573,10 +1573,10 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
             } else if (operation.getType() == qdb_operation_type_t.optionp_cas) { // COMPARE AND SWAP operation
                 result.setTypeOperation(TypeOperation.CAS);
                 hasValue = true && result.isSuccess();
-            } else if (operation.getType() == qdb_operation_type_t.optionp_get_update) { // GET AND UPDATE operation
+            } else if (operation.getType() == qdb_operation_type_t.optionp_get_and_update) { // GET AND UPDATE operation
                 result.setTypeOperation(TypeOperation.GET_UPDATE);
                 hasValue = true && result.isSuccess();
-            } else if (operation.getType() == qdb_operation_type_t.optionp_get_remove) { // GET AND REMOVE operation
+            } else if (operation.getType() == qdb_operation_type_t.optionp_get_and_remove) { // GET AND REMOVE operation
                 result.setTypeOperation(TypeOperation.GET_REMOVE);
                 hasValue = true && result.isSuccess();
             } else if (operation.getType() == qdb_operation_type_t.optionp_remove_if) { // REMOVE IF operation
@@ -1817,7 +1817,7 @@ public final class Quasardb implements Iterable<QuasardbEntry<?>> {
                     }
                     break;
                 case GETANDUPDATE :
-                    bufferResult = qdb.get_buffer_update(session, alias, buffer, buffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry, error);
+                    bufferResult = qdb.get_and_update(session, alias, buffer, buffer.limit(), (expiry == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiry, error);
                     qdbError = error.getError();
                     break;
                 default :

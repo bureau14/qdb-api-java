@@ -155,7 +155,7 @@ public class QuasardbParallelIT {
                 }
                 
                 // Get and replace
-                if (!qdb.getAndReplace(key, value).equals(value + "_UPDATED")) {
+                if (!qdb.getAndUpdate(key, value).equals(value + "_UPDATED")) {
                     fail("Previous stored value at key [" + key + "] shouldn't be equals to " + value + "_UPDATED");
                 }
                 if (!qdb.get(key).equals(value)) {
@@ -163,12 +163,12 @@ public class QuasardbParallelIT {
                 }
                 
                 // Get and remove
-                if (!qdb.getRemove(key).equals(value)) {
+                if (!qdb.getAndRemove(key).equals(value)) {
                     fail("Previous stored value at key [" + key + "] shouldn't be equals to " + value);
                 }
                 try {
                     qdb.get(key);
-                    fail("Key " + key + " should have been removed by getRemove().");
+                    fail("Key " + key + " should have been removed by getAndRemove().");
                 } catch (Exception e) {
                     if (! (e instanceof QuasardbException)) {
                         fail("Should raise a QuasardbException => " + e.toString());

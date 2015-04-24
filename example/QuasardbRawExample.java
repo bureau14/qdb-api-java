@@ -81,7 +81,7 @@ public class QuasardbRawExample {
             }
 
             error_carrier error = new error_carrier();
-            java.nio.ByteBuffer content = qdb.get_buffer(session, key, error);
+            java.nio.ByteBuffer content = qdb.get(session, key, error);
             int [] contentLength = { 0 };
             if (content == null) {
                 System.err.println("Cannot get: " + r + "(size = " + contentLength[0] + ")");

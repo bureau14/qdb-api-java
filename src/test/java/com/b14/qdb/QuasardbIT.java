@@ -342,13 +342,13 @@ public class QuasardbIT {
     }
 
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceANullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace(null, "test");
+            qdbInstance.getAndUpdate(null, "test");
             fail("Should raise an Exception because null key is forbidden");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -356,13 +356,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace(null, "test", 0);
+            qdbInstance.getAndUpdate(null, "test", 0);
             fail("Should raise an Exception because null key is forbidden");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -370,13 +370,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceANullValueMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test1", null);
+            qdbInstance.getAndUpdate("test1", null);
             fail("Should raise an Exception because null value are not allowed");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -384,13 +384,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANullValueMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test1", null, 0);
+            qdbInstance.getAndUpdate("test1", null, 0);
             fail("Should raise an Exception because null value are not allowed");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -398,13 +398,13 @@ public class QuasardbIT {
     }
      
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceAnEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("", "test");
+            qdbInstance.getAndUpdate("", "test");
             fail("Should raise an Exception because empty key is forbidden.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -412,13 +412,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryAnEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("", "test", 0);
+            qdbInstance.getAndUpdate("", "test", 0);
             fail("Should raise an Exception because empty key is forbidden.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -426,13 +426,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceAReservedKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("qdb.test", "test");
+            qdbInstance.getAndUpdate("qdb.test", "test");
             fail("Should raise an Exception because qdb is a reserved namespace.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -441,13 +441,13 @@ public class QuasardbIT {
     }
         
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryAReservedKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("qdb.test", "test", 0);
+            qdbInstance.getAndUpdate("qdb.test", "test", 0);
             fail("Should raise an Exception because qdb is a reserved namespace.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -456,7 +456,7 @@ public class QuasardbIT {
     }
 
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
@@ -470,7 +470,7 @@ public class QuasardbIT {
             Pojo pojo2 = new Pojo();
             pojo2.setText("test2");
             qdbInstance.put(key, pojo);
-            Pojo pojoresult = qdbInstance.getAndReplace(key, pojo2);
+            Pojo pojoresult = qdbInstance.getAndUpdate(key, pojo2);
             assertTrue("Value getted should be equals to pojo " + pojo, pojo.getText().equals(pojoresult.getText()));
             Pojo pojoGet = qdbInstance.get(key);
             assertTrue("Value replaced should be equals to pojo2 " + pojo2, pojo2.getText().equals(pojoGet.getText()));
@@ -480,13 +480,13 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceAnUnknownAliasMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("alias_doesnt_exist", "test");
+            qdbInstance.getAndUpdate("alias_doesnt_exist", "test");
             fail("Should raise an Exception because alias is unknown.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -494,13 +494,13 @@ public class QuasardbIT {
     }
 
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANegativeExpiryTimeMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test", "test", -1);
+            qdbInstance.getAndUpdate("test", "test", -1);
             fail("Should raise an Exception because expiry time must be a positive value.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -508,7 +508,7 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
@@ -518,7 +518,7 @@ public class QuasardbIT {
         Pojo pojo2 = new Pojo();
         pojo2.setText("test2");
         qdbInstance.put("test_nominal", pojo);
-        Pojo pojoresult = qdbInstance.getAndReplace("test_nominal", pojo2, 0);
+        Pojo pojoresult = qdbInstance.getAndUpdate("test_nominal", pojo2, 0);
         assertTrue("Old value should be equals to initial pojo " + pojo, pojo.getText().equals(pojoresult.getText()));
         Pojo pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Replaced value should be equals to new pojo " + pojo2, pojo2.getText().equals(pojoGet.getText()));
@@ -526,13 +526,13 @@ public class QuasardbIT {
     
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryAUnknownAliasMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("alias_doesnt_exist", "test", 0);
+            qdbInstance.getAndUpdate("alias_doesnt_exist", "test", 0);
             fail("Should raise an Exception because the alias <alias_doesnt_exist> is unknown.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -540,7 +540,7 @@ public class QuasardbIT {
     }
      
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
@@ -551,7 +551,7 @@ public class QuasardbIT {
         pojo2.setText("test2");
         qdbInstance.remove("test_nominal");
         qdbInstance.put("test_nominal", pojo, 0);
-        Pojo pojoresult = qdbInstance.getAndReplace("test_nominal", pojo2, 2);
+        Pojo pojoresult = qdbInstance.getAndUpdate("test_nominal", pojo2, 2);
         assertTrue("Old value should be equals to initial pojo " + pojo, pojo.getText().equals(pojoresult.getText()));
         Pojo pojoGet = qdbInstance.get("test_nominal");
         assertTrue("Replaced value should be equals to new pojo " + pojo2, pojo2.getText().equals(pojoGet.getText()));
@@ -569,14 +569,14 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveWithNullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getRemove(null);
+            qdbInstance.getAndRemove(null);
             fail("Should raise an exception because null key.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -584,14 +584,14 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveWithEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getRemove("");
+            qdbInstance.getAndRemove("");
             fail("Should raise an exception because empty key.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -599,7 +599,7 @@ public class QuasardbIT {
     }
         
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
@@ -607,7 +607,7 @@ public class QuasardbIT {
     public void testGetRemoveAPojo() throws QuasardbException {
         Pojo pojo = new Pojo();
         qdbInstance.put("test_nominal", pojo);
-        Pojo pojoresult = qdbInstance.getRemove("test_nominal");
+        Pojo pojoresult = qdbInstance.getAndRemove("test_nominal");
         assertTrue("Pojo " + pojoresult + " should be equals to Pojo " + pojo, pojo.getText().equals(pojoresult.getText()));
         try {
             qdbInstance.get("test_nominal");
@@ -618,14 +618,14 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveAWrongAlias() throws QuasardbException {
         try {
-            qdbInstance.getRemove("alias_doesnt_exist");
+            qdbInstance.getAndRemove("alias_doesnt_exist");
             fail("Should raise an exception because alias doesn't exist.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -633,14 +633,14 @@ public class QuasardbIT {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveAReservedAlias() throws QuasardbException {
         try {
-            qdbInstance.getRemove("qdb.test");
+            qdbInstance.getAndRemove("qdb.test");
             fail("Should raise an exception because alias is reserved.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -2820,25 +2820,25 @@ public class QuasardbIT {
     public void testRunBatchGetRemoves() throws QuasardbException {
         //  -> Test 2.6 : nominal case -> GET REMOVE
         Pojo testGetRemove = new Pojo();
-        testGetRemove.setText("test_batch_get_remove");
-        qdbInstance.put("test_batch_get_remove", testGetRemove);
-        assertTrue(((Pojo) qdbInstance.get("test_batch_get_remove")).getText().equals("test_batch_get_remove"));
+        testGetRemove.setText("test_batch_get_and_remove");
+        qdbInstance.put("test_batch_get_and_remove", testGetRemove);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_get_and_remove")).getText().equals("test_batch_get_and_remove"));
 
-        Operation<Pojo> operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_remove");
+        Operation<Pojo> operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_and_remove");
         List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
         operations.add(operationGetRemove);
         Results results = qdbInstance.runBatch(operations);
         assertTrue(results.isSuccess());
         assertTrue(!results.getResults().isEmpty());
         for (Result<?> result : results.getResults()) {
-            assertTrue(result.getAlias().equals("test_batch_get_remove"));
+            assertTrue(result.getAlias().equals("test_batch_get_and_remove"));
             assertTrue(result.getTypeOperation() == TypeOperation.GET_REMOVE);
             assertTrue(result.getError() == null);
             assertTrue(result.getValue() != null);
-            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_remove"));
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_and_remove"));
         }
         try {
-            qdbInstance.get("test_batch_get_remove");
+            qdbInstance.get("test_batch_get_and_remove");
             fail("An exception must be thrown.");
         } catch (Exception e) {
             assertTrue(e instanceof QuasardbException);
@@ -2857,25 +2857,25 @@ public class QuasardbIT {
     public void testRunBatchGetUpdates() throws QuasardbException {
         //  -> Test 2.7 : nominal case -> GET UPDATE
         Pojo testGetUpdate = new Pojo();
-        testGetUpdate.setText("test_batch_get_update");
-        qdbInstance.update("test_batch_get_update", testGetUpdate);
-        assertTrue(((Pojo) qdbInstance.get("test_batch_get_update")).getText().equals("test_batch_get_update"));
+        testGetUpdate.setText("test_batch_get_and_update");
+        qdbInstance.update("test_batch_get_and_update", testGetUpdate);
+        assertTrue(((Pojo) qdbInstance.get("test_batch_get_and_update")).getText().equals("test_batch_get_and_update"));
         Pojo testGetUpdate2 = new Pojo();
-        testGetUpdate2.setText("test_batch_get_update_2");
+        testGetUpdate2.setText("test_batch_get_and_update_2");
 
-        Operation<Pojo> operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_update", testGetUpdate2);
+        Operation<Pojo> operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_and_update", testGetUpdate2);
         List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
         operations.add(operationGetUpdate);
         Results results = qdbInstance.runBatch(operations);
         assertTrue(results.isSuccess());
         assertTrue(!results.getResults().isEmpty());
         for (Result<?> result : results.getResults()) {
-            assertTrue(result.getAlias().equals("test_batch_get_update"));
+            assertTrue(result.getAlias().equals("test_batch_get_and_update"));
             assertTrue(result.getTypeOperation() == TypeOperation.GET_UPDATE);
             assertTrue(result.getError() == null);
             assertTrue(result.getValue() != null);
-            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_update"));
-            assertTrue(((Pojo) qdbInstance.get("test_batch_get_update")).getText().equals("test_batch_get_update_2"));
+            assertTrue(((Pojo) result.getValue()).getText().equals("test_batch_get_and_update"));
+            assertTrue(((Pojo) qdbInstance.get("test_batch_get_and_update")).getText().equals("test_batch_get_and_update_2"));
         }
         operations = null;
         results = null;
@@ -3069,14 +3069,14 @@ public class QuasardbIT {
      */
     @Test
     public void testRunBatchGetRemovesWithFailedOperations() throws QuasardbException {
-        Operation<Pojo> operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_remove");
+        Operation<Pojo> operationGetRemove = new Operation<Pojo>(TypeOperation.GET_REMOVE, "test_batch_get_and_remove");
         List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
         operations.add(operationGetRemove);
         Results results = qdbInstance.runBatch(operations);
         assertTrue(!results.isSuccess());
         assertTrue(!results.getResults().isEmpty());
         for (Result<?> result : results.getResults()) {
-            assertTrue(result.getAlias().equals("test_batch_get_remove"));
+            assertTrue(result.getAlias().equals("test_batch_get_and_remove"));
             assertTrue(result.getTypeOperation() == TypeOperation.GET_REMOVE);
             assertTrue(result.getError() != null);
             assertTrue(result.getValue() == null);
@@ -3094,15 +3094,15 @@ public class QuasardbIT {
     @Test
     public void testRunBatchGetUpdatesWithFailedOperations() throws QuasardbException {
         Pojo testGetUpdate2 = new Pojo();
-        testGetUpdate2.setText("test_batch_get_update_2");
-        Operation<Pojo> operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_update", testGetUpdate2);
+        testGetUpdate2.setText("test_batch_get_and_update_2");
+        Operation<Pojo> operationGetUpdate = new Operation<Pojo>(TypeOperation.GET_UPDATE, "test_batch_get_and_update", testGetUpdate2);
         List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
         operations.add(operationGetUpdate);
         Results results = qdbInstance.runBatch(operations);
         assertTrue(!results.isSuccess());
         assertTrue(!results.getResults().isEmpty());
         for (Result<?> result : results.getResults()) {
-            assertTrue(result.getAlias().equals("test_batch_get_update"));
+            assertTrue(result.getAlias().equals("test_batch_get_and_update"));
             assertTrue(result.getTypeOperation() == TypeOperation.GET_UPDATE);
             assertTrue(result.getError() != null);
             assertTrue(result.getValue() == null);
@@ -3181,7 +3181,7 @@ public class QuasardbIT {
         Pojo testPut = new Pojo();
         testPut.setText("test_batch_put");
         Pojo testGetUpdate = new Pojo();
-        testGetUpdate.setText("test_batch_get_update");
+        testGetUpdate.setText("test_batch_get_and_update");
         List<Operation<Pojo>> operations = new ArrayList<Operation<Pojo>>();
         for (int i = 0; i < 300; i++) {
             qdbInstance.update( "test_batch_" + i, test);
@@ -3217,7 +3217,7 @@ public class QuasardbIT {
                 assertTrue(((Pojo) result.getValue()).getText().equals("test_batch"));
             } else if (result.getTypeOperation() == TypeOperation.GET_UPDATE) {
                 assertTrue(((Pojo) result.getValue()).getText().equals("test_batch"));
-                assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_get_update"));
+                assertTrue(((Pojo) qdbInstance.get(result.getAlias())).getText().equals("test_batch_get_and_update"));
             } else if (result.getTypeOperation() == TypeOperation.REMOVE) {
                 assertTrue(result.getValue() == null);
                 try {

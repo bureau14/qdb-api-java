@@ -56,8 +56,8 @@ public class qdbJNI {
   public final static native int optionp_update_get();
   public final static native int optionp_remove_get();
   public final static native int optionp_cas_get();
-  public final static native int optionp_get_update_get();
-  public final static native int optionp_get_remove_get();
+  public final static native int optionp_get_and_update_get();
+  public final static native int optionp_get_and_remove_get();
   public final static native int optionp_remove_if_get();
   public final static native long qdb_const_iterator_t_handle_get(long jarg1, qdb_const_iterator_t jarg1_);
   public final static native long qdb_const_iterator_t_token_get(long jarg1, qdb_const_iterator_t jarg1_);
@@ -165,7 +165,7 @@ public class qdbJNI {
   public final static native String StringVec_get(long jarg1, StringVec jarg1_, int jarg2);
   public final static native void StringVec_set(long jarg1, StringVec jarg1_, int jarg2, String jarg3);
   public final static native void delete_StringVec(long jarg1);
-  public final static native java.nio.ByteBuffer get_buffer(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
+  public final static native java.nio.ByteBuffer get(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
   public final static native long prefix_get(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
   public final static native void RemoteNode_address_set(long jarg1, RemoteNode jarg1_, String jarg2);
   public final static native String RemoteNode_address_get(long jarg1, RemoteNode jarg1_);
@@ -174,8 +174,8 @@ public class qdbJNI {
   public final static native long new_RemoteNode();
   public final static native void delete_RemoteNode(long jarg1);
   public final static native long get_location(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
-  public final static native java.nio.ByteBuffer get_remove(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
-  public final static native java.nio.ByteBuffer get_buffer_update(long jarg1, String jarg2, java.nio.ByteBuffer jarg3, long jarg4, long jarg5, long jarg6, error_carrier jarg6_);
+  public final static native java.nio.ByteBuffer get_and_remove(long jarg1, String jarg2, long jarg3, error_carrier jarg3_);
+  public final static native java.nio.ByteBuffer get_and_update(long jarg1, String jarg2, java.nio.ByteBuffer jarg3, long jarg4, long jarg5, long jarg6, error_carrier jarg6_);
   public final static native java.nio.ByteBuffer node_status(long jarg1, long jarg2, qdb_remote_node_t jarg2_, long jarg3, error_carrier jarg3_);
   public final static native java.nio.ByteBuffer node_config(long jarg1, long jarg2, qdb_remote_node_t jarg2_, long jarg3, error_carrier jarg3_);
   public final static native java.nio.ByteBuffer node_topology(long jarg1, long jarg2, qdb_remote_node_t jarg2_, long jarg3, error_carrier jarg3_);

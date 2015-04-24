@@ -263,13 +263,13 @@ public class QuasardbTest {
     }
 
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceANullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace(null, "test");
+            qdbInstance.getAndUpdate(null, "test");
             fail("Should raise an Exception because null key is forbidden");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -277,13 +277,13 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace(null, "test", 0);
+            qdbInstance.getAndUpdate(null, "test", 0);
             fail("Should raise an Exception because null key is forbidden");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -291,13 +291,13 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceANullValueMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test1", null);
+            qdbInstance.getAndUpdate("test1", null);
             fail("Should raise an Exception because null value are not allowed");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -305,13 +305,13 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANullValueMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test1", null, 0);
+            qdbInstance.getAndUpdate("test1", null, 0);
             fail("Should raise an Exception because null value are not allowed");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -319,13 +319,13 @@ public class QuasardbTest {
     }
      
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceAnEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("", "test");
+            qdbInstance.getAndUpdate("", "test");
             fail("Should raise an Exception because empty key is forbidden.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -333,13 +333,13 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryAnEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("", "test", 0);
+            qdbInstance.getAndUpdate("", "test", 0);
             fail("Should raise an Exception because empty key is forbidden.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -347,14 +347,14 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceAReservedKeyMeansException() throws QuasardbException {
         qdbInstance.connect();
         try {
-            qdbInstance.getAndReplace("qdb.test", "test");
+            qdbInstance.getAndUpdate("qdb.test", "test");
             fail("Should raise an Exception because qdb is a reserved namespace.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -363,14 +363,14 @@ public class QuasardbTest {
     }
         
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryAReservedKeyMeansException() throws QuasardbException {
         qdbInstance.connect();
         try {
-            qdbInstance.getAndReplace("qdb.test", "test", 0);
+            qdbInstance.getAndUpdate("qdb.test", "test", 0);
             fail("Should raise an Exception because qdb is a reserved namespace.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -379,13 +379,13 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getAndReplace(String, V, long)}.
+     * Test of method {@link Quasardb#getAndUpdate(String, V, long)}.
      * @throws QuasardbException
      */
     @Test
     public void testGetAndReplaceWithExpiryANegativeExpiryTimeMeansException() throws QuasardbException {
         try {
-            qdbInstance.getAndReplace("test", "test", -1);
+            qdbInstance.getAndUpdate("test", "test", -1);
             fail("Should raise an Exception because expiry time must be a positive value.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -393,14 +393,14 @@ public class QuasardbTest {
     }
 
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveWithNullKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getRemove(null);
+            qdbInstance.getAndRemove(null);
             fail("Should raise an exception because null key.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -408,14 +408,14 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveWithEmptyKeyMeansException() throws QuasardbException {
         try {
-            qdbInstance.getRemove("");
+            qdbInstance.getAndRemove("");
             fail("Should raise an exception because empty key.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -423,14 +423,14 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
     @Test
     public void testGetRemoveAWrongAlias() throws QuasardbException {
         try {
-            qdbInstance.getRemove("alias_doesnt_exist");
+            qdbInstance.getAndRemove("alias_doesnt_exist");
             fail("Should raise an exception because alias doesn't exist.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);
@@ -438,7 +438,7 @@ public class QuasardbTest {
     }
     
     /**
-     * Test of method {@link Quasardb#getRemove(String)}.
+     * Test of method {@link Quasardb#getAndRemove(String)}.
      * 
      * @throws QuasardbException
      */
@@ -446,7 +446,7 @@ public class QuasardbTest {
     public void testGetRemoveAReservedAlias() throws QuasardbException {
         qdbInstance.connect();
         try {
-            qdbInstance.getRemove("qdb.test");
+            qdbInstance.getAndRemove("qdb.test");
             fail("Should raise an exception because alias is reserved.");
         } catch (Exception e) {
             assertTrue("Exception should be a QuasardbException => " + e, e instanceof QuasardbException);

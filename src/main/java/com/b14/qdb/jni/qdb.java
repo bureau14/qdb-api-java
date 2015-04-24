@@ -42,7 +42,7 @@ public class qdb {
     return qdb_error_t.swigToEnum(qdbJNI.put(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length, expiry_time));
   }
 
-  public static java.nio.ByteBuffer get_buffer(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.get_buffer(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer get(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.get(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
 
   public static StringVec prefix_get(SWIGTYPE_p_qdb_session handle, String prefix, error_carrier err) {
     return new StringVec(qdbJNI.prefix_get(SWIGTYPE_p_qdb_session.getCPtr(handle), prefix, error_carrier.getCPtr(err), err), true);
@@ -52,9 +52,9 @@ public class qdb {
     return new RemoteNode(qdbJNI.get_location(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err), true);
   }
 
-  public static java.nio.ByteBuffer get_remove(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.get_remove(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer get_and_remove(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.get_and_remove(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
 
-  public static java.nio.ByteBuffer get_buffer_update(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length, long expiry_time, error_carrier err) { return qdbJNI.get_buffer_update(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length, expiry_time, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer get_and_update(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length, long expiry_time, error_carrier err) { return qdbJNI.get_and_update(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length, expiry_time, error_carrier.getCPtr(err), err); }
 
   public static java.nio.ByteBuffer node_status(SWIGTYPE_p_qdb_session handle, qdb_remote_node_t node, error_carrier err) { return qdbJNI.node_status(SWIGTYPE_p_qdb_session.getCPtr(handle), qdb_remote_node_t.getCPtr(node), node, error_carrier.getCPtr(err), err); }
 

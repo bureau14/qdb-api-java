@@ -162,7 +162,7 @@ public class QuasardbRawIT {
             
             buffer.clear();
             
-            bufferGet = qdb.get_buffer(session, key, error);
+            bufferGet = qdb.get(session, key, error);
             
             buffer.rewind();
             buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());

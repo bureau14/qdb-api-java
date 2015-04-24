@@ -15,8 +15,8 @@ public final class qdb_operation_type_t {
   public final static qdb_operation_type_t optionp_update = new qdb_operation_type_t("optionp_update", qdbJNI.optionp_update_get());
   public final static qdb_operation_type_t optionp_remove = new qdb_operation_type_t("optionp_remove", qdbJNI.optionp_remove_get());
   public final static qdb_operation_type_t optionp_cas = new qdb_operation_type_t("optionp_cas", qdbJNI.optionp_cas_get());
-  public final static qdb_operation_type_t optionp_get_update = new qdb_operation_type_t("optionp_get_update", qdbJNI.optionp_get_update_get());
-  public final static qdb_operation_type_t optionp_get_remove = new qdb_operation_type_t("optionp_get_remove", qdbJNI.optionp_get_remove_get());
+  public final static qdb_operation_type_t optionp_get_and_update = new qdb_operation_type_t("optionp_get_and_update", qdbJNI.optionp_get_and_update_get());
+  public final static qdb_operation_type_t optionp_get_and_remove = new qdb_operation_type_t("optionp_get_and_remove", qdbJNI.optionp_get_and_remove_get());
   public final static qdb_operation_type_t optionp_remove_if = new qdb_operation_type_t("optionp_remove_if", qdbJNI.optionp_remove_if_get());
 
   public final int swigValue() {
@@ -53,7 +53,7 @@ public final class qdb_operation_type_t {
     swigNext = this.swigValue+1;
   }
 
-  private static qdb_operation_type_t[] swigValues = { optionp_uninitialized, optionp_get_alloc, optionp_put, optionp_update, optionp_remove, optionp_cas, optionp_get_update, optionp_get_remove, optionp_remove_if };
+  private static qdb_operation_type_t[] swigValues = { optionp_uninitialized, optionp_get_alloc, optionp_put, optionp_update, optionp_remove, optionp_cas, optionp_get_and_update, optionp_get_and_remove, optionp_remove_if };
   private static int swigNext = 0;
   private final int swigValue;
   private final String swigName;
