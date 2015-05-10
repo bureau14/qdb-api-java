@@ -20,7 +20,7 @@ public class QuasardbRawExample {
         
         try {
             session = qdb.open();
-            qdb_error_t r = qdb.connect(session, "127.0.0.1", 2836);
+            qdb_error_t r = qdb.connect(session, "qdb://127.0.0.1:2836");
             String key = "myKey";
             if (r != qdb_error_t.error_ok) {
                 System.err.println("An error occured: " + r);

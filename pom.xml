@@ -46,8 +46,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<powermock.version>1.6.1</powermock.version>
 		<cglib.version>2.2.2</cglib.version>
-		<kryo.version>3.0.0</kryo.version>
-		<kryo.serializers.version>0.27</kryo.serializers.version>
 		<junit.version>4.11</junit.version>
 		<contiperf.version>2.3.4</contiperf.version>
 		<feed4junit.version>0.6.6</feed4junit.version>
@@ -87,35 +85,6 @@
 	</repositories>
 
 	<dependencies>
-		<!-- Add dependency to the kryo serialization framework -->
-		<dependency>
-			<groupId>com.esotericsoftware</groupId>
-			<artifactId>kryo-shaded</artifactId>
-			<version>${kryo.version}</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.esotericsoftware.reflectasm</groupId>
-					<artifactId>reflectasm</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.esotericsoftware.minlog</groupId>
-					<artifactId>minlog</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.objenesis</groupId>
-					<artifactId>objenesis</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!-- Provide some others serializers to the kryo serialization framework -->
-		<dependency>
-			<groupId>de.javakaffee</groupId>
-			<artifactId>kryo-serializers</artifactId>
-			<version>${kryo.serializers.version}</version>
-		</dependency>
-		
 		<!-- Add dependency to the junit framework - Unit Testing tools -->
 		<dependency>
 			<groupId>junit</groupId>

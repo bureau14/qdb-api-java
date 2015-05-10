@@ -28,19 +28,16 @@
 
 package com.b14.qdb.examples;
 
-import com.b14.qdb.*; 
+import java.nio.ByteBuffer;
+
+import com.b14.qdb.QdbCluster;
+import com.b14.qdb.QdbException;
 
 class QuasardbExample {
     
     public static void main(String argv[]) {
         // Object needed to access your database
-        Quasardb cache = null;
-        
-        // You need to configure your qdb instance thanks to a QuasardbConfig object.
-        // It will tell the client API where the daemon is
-        QuasardbConfig config = new QuasardbConfig();
-        QuasardbNode node = new QuasardbNode("127.0.0.1", 2836);
-        config.addNode(node);
+        QdbCluster cluster = null;
 
         // the key has to be a string
         String keyName = "myKey";
@@ -50,21 +47,24 @@ class QuasardbExample {
         try {
             // Try to connect to your Quasardb instance
             System.out.println("Creating qdb instance...");
-            cache = new Quasardb(config);
+            cluster = new QdbCluster("qdb://127.0.0.1:2836");
             
-            if (cache != null) {
-                // Adding some object
+            if (cluster != null) {
+                // Adding some blob object
                 System.out.println("Adding (" + keyName + ", " + keyValue + ")");
-                cache.put(keyName, keyValue);
+                cluster.getBlob(keyName).put(ByteBuffer.allocateDirect(keyValue.getBytes().length).put(keyValue.getBytes()));
                 
                 // Check if a value has been stored at key
                 System.out.println("Getting value for key " + keyName + "...");
-                String value = cache.get(keyName);
+                java.nio.ByteBuffer buffer = cluster.getBlob(keyName).get();
+                byte[] bytes = new byte[buffer.limit()];
+                buffer.get(bytes, 0, buffer.limit());
+                String value = new String(bytes);
                 System.out.println("Result: " + value);
 
                 // Removing your object
                 System.out.println("Removing entry for " + keyName);
-                cache.remove(keyName);               
+                cluster.getBlob(keyName).remove();            
             }
         } catch (Exception e) {
             System.err.println("Quasardb error for [" + keyName + "] ->" + e.getMessage());
@@ -72,10 +72,10 @@ class QuasardbExample {
         } finally {
             // Closing your connection
             try {
-                if (cache != null) {
-                    cache.close();
+                if (cluster != null) {
+                    cluster.disconnect();
                 }
-            } catch (QuasardbException e) {
+            } catch (QdbException e) {
                 System.err.println("Quasardb error: " + e.getMessage());
             }
         } 

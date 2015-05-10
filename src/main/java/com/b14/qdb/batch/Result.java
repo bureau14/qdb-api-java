@@ -27,6 +27,8 @@
  */
 package com.b14.qdb.batch;
 
+import java.nio.ByteBuffer;
+
 /**
  * A Quasardb batch operation result is :
  * <ul>
@@ -38,15 +40,14 @@ package com.b14.qdb.batch;
  * </ul>
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @param <V> Object type associated with the current operation.
  * @version master
  * @since 1.1.0
  */
-public class Result<V> {
+public class Result {
     private boolean success;
     private String alias;
     private TypeOperation typeOperation;
-    private V value;
+    private ByteBuffer value;
     private String error;
     
     public Result() {
@@ -111,7 +112,7 @@ public class Result<V> {
      * 
      * @return Result value for the current operation.
      */
-    public V getValue() {
+    public ByteBuffer getValue() {
         return value;
     }
     
@@ -120,7 +121,7 @@ public class Result<V> {
      * 
      * @param value Result value for the current operation.
      */
-    public void setValue(V value) {
+    public void setValue(ByteBuffer value) {
         this.value = value;
     }
 
@@ -185,8 +186,7 @@ public class Result<V> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        @SuppressWarnings("unchecked")
-        Result<V> other = (Result<V>) obj;
+        Result other = (Result) obj;
         if (alias == null) {
             if (other.alias != null) {
                 return false;
