@@ -51,14 +51,6 @@ public class qdb_remote_node_t {
     return qdbJNI.qdb_remote_node_t_port_get(swigCPtr, this);
   }
 
-  public void setError(qdb_error_t value) {
-    qdbJNI.qdb_remote_node_t_error_set(swigCPtr, this, value.swigValue());
-  }
-
-  public qdb_error_t getError() {
-    return qdb_error_t.swigToEnum(qdbJNI.qdb_remote_node_t_error_get(swigCPtr, this));
-  }
-
   public qdb_remote_node_t() {
     this(qdbJNI.new_qdb_remote_node_t(), true);
   }

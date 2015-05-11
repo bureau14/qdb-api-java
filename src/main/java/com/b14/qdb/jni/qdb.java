@@ -26,16 +26,12 @@ public class qdb {
     return qdb_error_t.swigToEnum(qdbJNI.close(SWIGTYPE_p_qdb_session.getCPtr(handle)));
   }
 
-  public static qdb_error_t connect(SWIGTYPE_p_qdb_session handle, String host, int port) {
-    return qdb_error_t.swigToEnum(qdbJNI.connect(SWIGTYPE_p_qdb_session.getCPtr(handle), host, port));
+  public static qdb_error_t connect(SWIGTYPE_p_qdb_session handle, String uri) {
+    return qdb_error_t.swigToEnum(qdbJNI.connect(SWIGTYPE_p_qdb_session.getCPtr(handle), uri));
   }
 
-  public static remoteNodeArray multi_connect(SWIGTYPE_p_qdb_session h, remoteNodeArray nodes) {
-    return new remoteNodeArray(qdbJNI.multi_connect(SWIGTYPE_p_qdb_session.getCPtr(h), remoteNodeArray.getCPtr(nodes), nodes), true);
-  }
-
-  public static qdb_error_t stop_node(SWIGTYPE_p_qdb_session handle, qdb_remote_node_t node, String reason) {
-    return qdb_error_t.swigToEnum(qdbJNI.stop_node(SWIGTYPE_p_qdb_session.getCPtr(handle), qdb_remote_node_t.getCPtr(node), node, reason));
+  public static qdb_error_t stop_node(SWIGTYPE_p_qdb_session handle, String uri, String reason) {
+    return qdb_error_t.swigToEnum(qdbJNI.stop_node(SWIGTYPE_p_qdb_session.getCPtr(handle), uri, reason));
   }
 
   public static qdb_error_t put(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length, long expiry_time) {
@@ -56,11 +52,11 @@ public class qdb {
 
   public static java.nio.ByteBuffer get_and_update(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length, long expiry_time, error_carrier err) { return qdbJNI.get_and_update(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length, expiry_time, error_carrier.getCPtr(err), err); }
 
-  public static java.nio.ByteBuffer node_status(SWIGTYPE_p_qdb_session handle, qdb_remote_node_t node, error_carrier err) { return qdbJNI.node_status(SWIGTYPE_p_qdb_session.getCPtr(handle), qdb_remote_node_t.getCPtr(node), node, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer node_status(SWIGTYPE_p_qdb_session handle, String uri, error_carrier err) { return qdbJNI.node_status(SWIGTYPE_p_qdb_session.getCPtr(handle), uri, error_carrier.getCPtr(err), err); }
 
-  public static java.nio.ByteBuffer node_config(SWIGTYPE_p_qdb_session handle, qdb_remote_node_t node, error_carrier err) { return qdbJNI.node_config(SWIGTYPE_p_qdb_session.getCPtr(handle), qdb_remote_node_t.getCPtr(node), node, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer node_config(SWIGTYPE_p_qdb_session handle, String uri, error_carrier err) { return qdbJNI.node_config(SWIGTYPE_p_qdb_session.getCPtr(handle), uri, error_carrier.getCPtr(err), err); }
 
-  public static java.nio.ByteBuffer node_topology(SWIGTYPE_p_qdb_session handle, qdb_remote_node_t node, error_carrier err) { return qdbJNI.node_topology(SWIGTYPE_p_qdb_session.getCPtr(handle), qdb_remote_node_t.getCPtr(node), node, error_carrier.getCPtr(err), err); }
+  public static java.nio.ByteBuffer node_topology(SWIGTYPE_p_qdb_session handle, String uri, error_carrier err) { return qdbJNI.node_topology(SWIGTYPE_p_qdb_session.getCPtr(handle), uri, error_carrier.getCPtr(err), err); }
 
   public static java.nio.ByteBuffer compare_and_swap(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length, java.nio.ByteBuffer comparand, long comparand_length, long expiry_time, error_carrier err) { return qdbJNI.compare_and_swap(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length, comparand, comparand_length, expiry_time, error_carrier.getCPtr(err), err); }
 
@@ -132,6 +128,46 @@ public class qdb {
 
   public static void release_batch_result(SWIGTYPE_p_qdb_session h, run_batch_result br) {
     qdbJNI.release_batch_result(SWIGTYPE_p_qdb_session.getCPtr(h), run_batch_result.getCPtr(br), br);
+  }
+
+  public static qdb_error_t int_put(SWIGTYPE_p_qdb_session handle, String alias, long integer, long expiry_time) {
+    return qdb_error_t.swigToEnum(qdbJNI.int_put(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, integer, expiry_time));
+  }
+
+  public static qdb_error_t int_update(SWIGTYPE_p_qdb_session handle, String alias, long integer, long expiry_time) {
+    return qdb_error_t.swigToEnum(qdbJNI.int_update(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, integer, expiry_time));
+  }
+
+  public static long int_get(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.int_get(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+
+  public static long int_add(SWIGTYPE_p_qdb_session handle, String alias, long addend, error_carrier err) { return qdbJNI.int_add(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, addend, error_carrier.getCPtr(err), err); }
+
+  public static qdb_error_t queue_push_front(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length) {
+    return qdb_error_t.swigToEnum(qdbJNI.queue_push_front(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length));
+  }
+
+  public static qdb_error_t queue_push_back(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length) {
+    return qdb_error_t.swigToEnum(qdbJNI.queue_push_back(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length));
+  }
+
+  public static java.nio.ByteBuffer queue_pop_front(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.queue_pop_front(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+
+  public static java.nio.ByteBuffer queue_pop_back(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.queue_pop_back(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+
+  public static java.nio.ByteBuffer queue_front(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.queue_front(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+
+  public static java.nio.ByteBuffer queue_back(SWIGTYPE_p_qdb_session handle, String alias, error_carrier err) { return qdbJNI.queue_back(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, error_carrier.getCPtr(err), err); }
+
+  public static qdb_error_t set_insert(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length) {
+    return qdb_error_t.swigToEnum(qdbJNI.set_insert(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length));
+  }
+
+  public static qdb_error_t set_erase(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length) {
+    return qdb_error_t.swigToEnum(qdbJNI.set_erase(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length));
+  }
+
+  public static qdb_error_t set_contains(SWIGTYPE_p_qdb_session handle, String alias, java.nio.ByteBuffer content, long content_length) {
+    return qdb_error_t.swigToEnum(qdbJNI.set_contains(SWIGTYPE_p_qdb_session.getCPtr(handle), alias, content, content_length));
   }
 
 }
