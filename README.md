@@ -1,16 +1,23 @@
 Quasardb Java API
 =================
 
-Java API for [quasardb](http://www.quasardb.net/) with examples for Hadoop and Mahout.
+Java API for [quasardb](http://www.quasardb.net/).
 
 ### Requirements
 
-1. quasardb daemon
-2. quasardb JNI API
+1. [quasardb daemon](https://download.quasardb.net/quasardb/)
+2. [quasardb JNI API](https://download.quasardb.net/quasardb/)
 3. Maven 3
 4. JDK 6 or above
 
 ### Build instructions:
+
+Step 1, unzip JNI package:
+
+- content of `lib/` should be copied to `/usr/local/lib/`
+- content of `jni/` must be copied to `src/main/jav/com/b14/qdb/jni/`
+
+Step 2, build:
 
     mvn clean install
 
