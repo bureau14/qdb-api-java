@@ -13,12 +13,12 @@ public class QdbHashSet implements Set<ByteBuffer> {
     private final transient SWIGTYPE_p_qdb_session session;
     private final String alias;
     
-	public QdbHashSet(SWIGTYPE_p_qdb_session session, String alias) {
-		this.session = session;
-		this.alias = alias;
-	}
-	
-	/**
+    public QdbHashSet(SWIGTYPE_p_qdb_session session, String alias) {
+        this.session = session;
+        this.alias = alias;
+    }
+
+    /**
      * Gets the alias (i.e. its "key") of the integer in the database.
      * 
      * @return The alias.
@@ -50,7 +50,7 @@ public class QdbHashSet implements Set<ByteBuffer> {
             return false;
         }
         if (e != null) {
-            final qdb_error_t qdbError = qdb.set_contains(session, alias, e, e.limit());
+            final qdb_error_t qdbError = qdb.hset_contains(session, alias, e, e.limit());
             if (qdbError != qdb_error_t.error_ok) {
                 return false;
             } else {
@@ -93,7 +93,7 @@ public class QdbHashSet implements Set<ByteBuffer> {
         if (e == null) {
             return false;
         }
-        final qdb_error_t qdbError = qdb.set_insert(session, alias, e, e.limit());
+        final qdb_error_t qdbError = qdb.hset_insert(session, alias, e, e.limit());
         if (qdbError != qdb_error_t.error_ok) {
             return false;
         } else {
@@ -116,7 +116,7 @@ public class QdbHashSet implements Set<ByteBuffer> {
             return false;
         }
         if (e != null) {
-            final qdb_error_t qdbError = qdb.set_erase(session, alias, e, e.limit());
+            final qdb_error_t qdbError = qdb.hset_erase(session, alias, e, e.limit());
             if (qdbError != qdb_error_t.error_ok) {
                 return false;
             } else {

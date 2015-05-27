@@ -47,7 +47,7 @@ public class QdbBatch {
      */
     public void get(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.optionp_get_alloc);
+        operation.setType(qdb_operation_type_t.optionp_get);
         operation.setAlias(alias);
         operations.push_back(operation);
     }
@@ -221,7 +221,7 @@ public class QdbBatch {
 
             // Set type
             boolean hasValue = false;
-            if (operation.getType() == qdb_operation_type_t.optionp_get_alloc) { // GET operation
+            if (operation.getType() == qdb_operation_type_t.optionp_get) { // GET operation
                 result.setTypeOperation(TypeOperation.GET);
                 hasValue = true && result.isSuccess();
             } else if (operation.getType() == qdb_operation_type_t.optionp_put) { // PUT operation
