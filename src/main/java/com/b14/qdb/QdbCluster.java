@@ -588,7 +588,7 @@ public final class QdbCluster {
      * 
      * @return
      */
-    public QdbBatch startBatch() {
+    public QdbBatch createBatch() {
         return new QdbBatch(session);
     }
     

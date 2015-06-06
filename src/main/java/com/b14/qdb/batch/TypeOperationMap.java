@@ -27,35 +27,27 @@
  */
 package com.b14.qdb.batch;
 
-/**
- * A Quasardb batch operation type. <br>
- * Available operations are :
- * 
- * <ul>
- * <li>GET : get an entry.</li>
- * <li>PUT : put an entry.</li>
- * <li>UPDATE : update an entry.</li>
- * <li>REMOVE : remove an entry.</li>
- * <li>CAS : atomically compare a value with comparand and update if it matches.</li>
- * <li>GET_UPDATE : atomically update the value of an existing entry and return the old value.</li>
- * <li>GET_REMOVE : atomically get the entry associated with the supplied key and remove it.</li>
- * <li>REMOVE_IF : delete the object associated whith a key if the object is equal to comparand.</li>
- * <li>NO_OP : no operation.</li>
- * </ul>
- * 
- * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
- * @since 1.1.0
- */
-public enum TypeOperation {
-    GET,
-    PUT,
-    UPDATE,
-    REMOVE,
-    CAS,
-    GET_UPDATE,
-    GET_REMOVE,
-    REMOVE_IF,
-    NO_OP
-}
+import com.b14.qdb.batch.TypeOperation;
+import com.b14.qdb.jni.qdb_operation_type_t;
 
+public class TypeOperationMap
+{
+
+    static private TypeOperation[] theMap = 
+    {
+        TypeOperation.GET, // qdb_op_get = 0,
+        TypeOperation.PUT, // qdb_op_put = 1,
+        TypeOperation.UPDATE, // qdb_op_update = 2,
+        TypeOperation.REMOVE, // qdb_op_remove = 3,
+        TypeOperation.CAS, // qdb_op_cas = 4,
+        TypeOperation.GET_UPDATE, // qdb_op_get_and_update = 5,
+        TypeOperation.GET_REMOVE, // qdb_op_get_and_remove = 6,
+        TypeOperation.REMOVE_IF, // qdb_op_remove_if = 7
+    };
+
+    static public TypeOperation map(qdb_operation_type_t v)
+    {
+        return theMap[v.swigValue()];
+    }
+
+};

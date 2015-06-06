@@ -29,6 +29,15 @@ package com.b14.qdb.batch;
 
 import java.nio.ByteBuffer;
 
+import com.b14.qdb.batch.TypeOperation;
+import com.b14.qdb.batch.TypeOperationMap;
+import com.b14.qdb.batch.OperationHasValue;
+
+import com.b14.qdb.jni.qdb_error_t;
+import com.b14.qdb.jni.qdb_operation_t;
+import com.b14.qdb.jni.qdb_operation_type_t;
+import com.b14.qdb.jni.run_batch_result;
+
 /**
  * A Quasardb batch operation result is :
  * <ul>
@@ -44,13 +53,33 @@ import java.nio.ByteBuffer;
  * @since 1.1.0
  */
 public class Result {
-    private boolean success;
     private String alias;
     private TypeOperation typeOperation;
     private ByteBuffer value;
-    private String error;
+    private qdb_error_t error = qdb_error_t.error_uninitialized;
     
     public Result() {
+    }
+
+    public Result(qdb_operation_t operation) {
+        this.alias = operation.getAlias();
+        this.error = operation.getError();
+
+        qdb_operation_type_t op_type = operation.getType();
+
+        this.typeOperation = TypeOperationMap.map(op_type);
+
+        // Set value
+        if (OperationHasValue.map(op_type) && this.isSuccess()) {
+            final ByteBuffer buffer = operation.getResult();
+            if (buffer != null) {
+                buffer.rewind();
+                this.value = buffer;
+            } else {
+                this.value = null;
+                this.error =  qdb_error_t.error_no_memory;
+            }
+        }
     }
     
     /**
@@ -59,16 +88,7 @@ public class Result {
      * @return true if current operation is successful. false in all other cases.
      */
     public boolean isSuccess() {
-        return success;
-    }
-    
-    /**
-     * Set if current operation is successful or not.
-     * 
-     * @param success Success status for current operation.
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
+        return error == qdb_error_t.error_ok;
     }
     
     /**
@@ -79,16 +99,7 @@ public class Result {
     public String getAlias() {
         return alias;
     }
-    
-    /**
-     * Set alias associated with the current operation.
-     * 
-     * @param alias Alias associated with the current operation.
-     */
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-    
+
     /**
      * Get operation type associated with the current operation.
      * 
@@ -97,16 +108,7 @@ public class Result {
     public TypeOperation getTypeOperation() {
         return typeOperation;
     }
-    
-    /**
-     * Set operation type associated with the current operation.
-     * 
-     * @param typeOperation Operation type associated with the current operation.
-     */
-    public void setTypeOperation(TypeOperation typeOperation) {
-        this.typeOperation = typeOperation;
-    }
-    
+
     /**
      * Get result value for the current operation.
      * 
@@ -115,32 +117,14 @@ public class Result {
     public ByteBuffer getValue() {
         return value;
     }
-    
-    /**
-     * Set result value for the current operation.
-     * 
-     * @param value Result value for the current operation.
-     */
-    public void setValue(ByteBuffer value) {
-        this.value = value;
-    }
 
     /**
      * Get result error for the current operation.
      * 
      * @return Result error for the current operation.
      */
-    public String getError() {
+    public qdb_error_t getError() {
         return error;
-    }
-
-    /**
-     * Set result error for the current operation.
-     * 
-     * @param error Result error for the current operation.
-     */
-    public void setError(String error) {
-        this.error = error;
     }
 
     /**
@@ -150,7 +134,7 @@ public class Result {
      */
     @Override
     public String toString() {
-        return "Result [success=" + success + ", alias=" + alias + ", typeOperation=" + typeOperation + ", value=" + value + ", error=" + error + "]";
+        return "Result [alias=" + alias + ", typeOperation=" + typeOperation + ", value=" + value + ", error=" + error.toString() + "]";
     }
 
     /**
@@ -163,8 +147,7 @@ public class Result {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-        result = prime * result + ((error == null) ? 0 : error.hashCode());
-        result = prime * result + (success ? 1231 : 1237);
+        result = prime * result + error.swigValue();
         result = prime * result + ((typeOperation == null) ? 0 : typeOperation.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
@@ -199,9 +182,6 @@ public class Result {
                 return false;
             }
         } else if (!error.equals(other.error)) {
-            return false;
-        }
-        if (success != other.success) {
             return false;
         }
         if (typeOperation != other.typeOperation) {

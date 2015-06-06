@@ -1,70 +1,110 @@
 package com.b14.qdb.batch;
 
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.b14.qdb.batch.Result;
+
+import com.b14.qdb.jni.BatchOpsVec;
+import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
+import com.b14.qdb.jni.qdb;
+import com.b14.qdb.jni.qdb_error_t;
+import com.b14.qdb.jni.qdb_operation_t;
+import com.b14.qdb.jni.qdb_operation_type_t;
+import com.b14.qdb.jni.run_batch_result;
+
 public class QdbBatchResult {
-    private boolean success;
-    private long nbOperations;
-    private long nbSuccess;
-    private List<Result> results = new ArrayList<Result>();
-    
+    private long nbOperations = 0;
+    private long nbSuccess = 0;
+    private Result [] results = null;
+    private SWIGTYPE_p_qdb_session session = null;
+    private run_batch_result batchResults = null;
+
+
+    private void updateResults(BatchOpsVec operations)
+    {
+        results = new Result[(int)this.nbOperations];
+
+        for (int i = 0; i < this.nbOperations; i++) {
+            results[i] = new Result(batchResults.getResults().get(i));
+        }
+    }
+
+    public QdbBatchResult() {}
+
+    public QdbBatchResult(SWIGTYPE_p_qdb_session sess, BatchOpsVec operations, run_batch_result batch_res) {
+        this.session = sess;
+        this.nbOperations = operations.size();
+
+        this.batchResults = batch_res;
+
+        this.nbSuccess = batchResults.getSuccesses();
+
+        this.updateResults(operations);
+    }
+
+    /** 
+     * If you forgot to call release() we have you covered.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        this.release();
+        super.finalize();
+    }
+
+    /**
+     * Explicit release of quasardb allocated memory.
+     * Use this function when finalize() is called to late for your taste.
+     *
+     * Be sure to not call release when you are still working on the results object.
+     *
+     * If you are not sure, just let finalize() call release()
+     *
+     */
+    public void release() {
+        if (batchResults != null) {
+            // reset values to avoid dangling access in case of resurection
+            this.nbOperations = this.nbSuccess = 0;
+
+            results = null;
+
+            // release quasardb allocated memory for the result
+            qdb.release_batch_result(session, batchResults);
+
+            batchResults = null;
+        }
+    }
+
     /**
      * @return the success
      */
     public boolean isSuccess() {
-        return success;
+        return nbOperations == nbSuccess;
     }
-    
-    /**
-     * @param success the success to set
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-    
+
     /**
      * @return the nbOperations
      */
-    public long getNbOperations() {
+    public long getOperationsCount() {
         return nbOperations;
     }
-    
-    /**
-     * @param nbOperations the nbOperations to set
-     */
-    public void setNbOperations(long nbOperations) {
-        this.nbOperations = nbOperations;
-    }
-    
+
     /**
      * @return the nbSuccess
      */
-    public long getNbSuccess() {
+    public long getSuccessesCount() {
         return nbSuccess;
     }
-    /**
-     * @param nbSuccess the nbSuccess to set
-     */
-    public void setNbSuccess(long nbSuccess) {
-        this.nbSuccess = nbSuccess;
+
+    public Result get(int i) {
+        return results[i];
     }
-    
-    /**
-     * 
-     * @return
-     */
-    public Collection<Result> getResults() {
-        return Collections.unmodifiableCollection(results);
+
+    public int getResultsLength() {
+        return results.length;
     }
-    
-    /**
-     * 
-     * @param result
-     */
-    public void addResult(Result result) {
-        results.add(result);
-    }
+
 }

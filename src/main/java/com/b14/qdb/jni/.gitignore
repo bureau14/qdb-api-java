@@ -1,0 +1,6 @@
+# ignore all java
+
+*.java
+
+# but not this
+!package-info.java
