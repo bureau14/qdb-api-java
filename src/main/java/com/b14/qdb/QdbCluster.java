@@ -488,44 +488,9 @@ public final class QdbCluster {
             throw new QdbException(qdbError);
         }
     }
-    
-    /**
-     * Perform a search prefix based operation on all quasardb entries.<br>
-     * Pay attention that :
-     * <ul>
-     * <li>search operation is based on aliases, not on values.</li>
-     * <li>search operation is case sensitive.</li>
-     * <li>searching on reserved aliases (starts with "qdb") is not allowed.</li>
-     * </ul>
-     *
-     * @param prefix prefix
-     * @return all entries matching specified prefix
-     * @throws QdbException if an error occurs (for example : lost session) or provided prefix is reserved.
-     * @since 1.1.0
-     */
-    public Collection<String> getKeysStartingWith(String prefix) throws QdbException {
-        final error_carrier error = new error_carrier();
-        StringVec aliases = qdb.prefix_get(session, prefix, error);
-        
-        // Handle errors
-        if (error.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(error.getError());
-        }
 
-        // Build results
-        List<String> resultat = new ArrayList<String>();
-        if (aliases != null && !aliases.empty()) {
-            for (int i = 0; i < aliases.size(); i++) {
-                resultat.add(aliases.get(i));
-            }
-        }
 
-        // Return results
-        return Collections.unmodifiableCollection(resultat);
-    }
-    
-    /**
-     * Retrieve the location for a provided alias.
+    /* Retrieve the location for a provided alias.
      *
      * @param alias the object's unique key/alias.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
