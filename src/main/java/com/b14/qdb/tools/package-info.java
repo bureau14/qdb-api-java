@@ -30,7 +30,7 @@
  * Utility classes
  *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2015
- * @version master
+ * @version 2.0.0
  * @since 0.5.2
  */
 package com.b14.qdb.tools;

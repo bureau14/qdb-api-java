@@ -50,11 +50,11 @@ import org.junit.runner.RunWith;
  * A integration parallel tests case for {@link Quasardb} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 1.1.6
  */
 @RunWith(Feeder.class)
-public class QdbParallelIT {
+public class QdbParallelTest {
     private static final int NB_LOOPS = 10;
     private static final int NB_THREADS = 5;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 5000;
@@ -68,9 +68,6 @@ public class QdbParallelIT {
     @Rule 
     public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule());
    
-    public QdbParallelIT() {
-    }
-    
     @BeforeClass
     public static void setUpClass() throws Exception {
         Qdb.DAEMON.start();

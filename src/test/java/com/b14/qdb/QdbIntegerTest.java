@@ -16,10 +16,10 @@ import org.junit.Test;
  * A integration tests case for {@link QdbInteger} class.
  * 
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
- * @version master
+ * @version 2.0.0
  * @since 2.0.0
  */
-public class QdbIntegerIT {
+public class QdbIntegerTest {
     private static final String URI = "qdb://127.0.0.1:2836";
     private QdbCluster cluster = null;
     
@@ -126,7 +126,7 @@ public class QdbIntegerIT {
         qdbInt.put();
         try {
             assertEquals(0, qdbInt.get());
-            assertEquals(qdbInt.alias(), "testInteger");
+            assertEquals(qdbInt.getAlias(), "testInteger");
         } finally {
         	cleanUp(qdbInt);
         }
@@ -168,81 +168,20 @@ public class QdbIntegerIT {
         	cleanUp(qdbInt);
         }
     }
-    
+
     /**
-     * Test of method {@link QdbInteger#getAndIncrement()}.
+     * Test of method {@link QdbInteger#add(int)}.
      * 
      * @throws QdbException
      */
     @Test
-    public void testGetAndIncrement() throws QdbException {
+    public void testAdd() throws QdbException {
         QdbInteger qdbInt = cluster.getInteger("testInteger");
         qdbInt.put(1);
         try {
-            assertEquals(1,qdbInt.getAndIncrement());
-            assertEquals(2,qdbInt.get());
-            qdbInt.set(-2);
-            assertEquals(-2,qdbInt.getAndIncrement());
-            assertEquals(-1,qdbInt.getAndIncrement());
-            assertEquals(0,qdbInt.getAndIncrement());
-            assertEquals(1,qdbInt.get());
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
-    /**
-     * Test of method {@link QdbInteger#getAndAdd(int)}.
-     * 
-     * @throws QdbException
-     */
-    public void testGetAndAdd() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            assertEquals(1,qdbInt.getAndAdd(2));
+            assertEquals(3, qdbInt.add(2));
             assertEquals(3,qdbInt.get());
-            assertEquals(3,qdbInt.getAndAdd(-4));
-            assertEquals(-1,qdbInt.get());
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
-    /**
-     * Test of method {@link QdbInteger#incrementAndGet()}.
-     * 
-     * @throws QdbException
-     */
-    public void testIncrementAndGet() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            assertEquals(2,qdbInt.incrementAndGet());
-            assertEquals(2,qdbInt.get());
-            qdbInt.set(-2);
-            assertEquals(-1,qdbInt.incrementAndGet());
-            assertEquals(0,qdbInt.incrementAndGet());
-            assertEquals(1,qdbInt.incrementAndGet());
-            assertEquals(1,qdbInt.get());
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
-    /**
-     * Test of method {@link QdbInteger#addAndGet(int)}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testAddAndGet() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            assertEquals(3,qdbInt.addAndGet(2));
-            assertEquals(3,qdbInt.get());
-            assertEquals(-1,qdbInt.addAndGet(-4));
+            assertEquals(-1,qdbInt.add(-4));
             assertEquals(-1,qdbInt.get());
         } finally {
         	cleanUp(qdbInt);
@@ -303,7 +242,7 @@ public class QdbIntegerIT {
         QdbInteger qdbInt = cluster.getInteger("testInteger");
         qdbInt.put(1);
         assertTrue(qdbInt.get() == 1);
-        assertTrue(qdbInt.remove());
+        qdbInt.remove();
         try {
             qdbInt.get();
             fail("Entry should have been removed.");
@@ -311,134 +250,7 @@ public class QdbIntegerIT {
             assertTrue(e instanceof QdbException);
         }
     }
-    
-    /**
-     * Test of method {@link QdbInteger#toString()}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testToString() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            for (int i = -12; i < 6; ++i) {
-                qdbInt.set(i);
-                assertEquals(qdbInt.toString(), Integer.toString(i));
-            }
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
-    /**
-     * Test of method {@link QdbInteger#intValue()}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testIntValue() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            for (int i = -12; i < 6; ++i) {
-                qdbInt.set(i);
-                assertEquals(i, qdbInt.intValue());
-            }
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
 
-
-    /**
-     * Test of method {@link QdbInteger#longValue()}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testLongValue() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            for (int i = -12; i < 6; ++i) {
-                qdbInt.set(i);
-                assertEquals((long)i, qdbInt.longValue());
-            }
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-
-    /**
-     * Test of method {@link QdbInteger#floatValue()}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testFloatValue() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            for (int i = -12; i < 6; ++i) {
-                qdbInt.set(i);
-                assertEquals((float)i, qdbInt.floatValue(), 0);
-            }
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-
-    /**
-     * Test of method {@link QdbInteger#doubleValue()}.
-     * 
-     * @throws QdbException
-     */
-    @Test
-    public void testDoubleValue() throws QdbException {
-        QdbInteger qdbInt = cluster.getInteger("testInteger");
-        qdbInt.put(1);
-        try {
-            for (int i = -12; i < 6; ++i) {
-                qdbInt.set(i);
-                assertEquals((double)i, qdbInt.doubleValue(), 0);
-            }
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
-    @Test
-    public void testThreads() throws QdbException {
-        final QdbInteger qdbInt = cluster.getInteger("testThreads");
-        qdbInt.put(1);
-        
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    while (qdbInt.get() <= 2) {
-                        qdbInt.getAndIncrement();
-                        Thread.yield();
-                    }
-                } catch (QdbException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        
-        try {
-            t.start();
-            qdbInt.getAndIncrement();
-            t.join(50 * 200);
-            assertTrue(!t.isAlive());
-            assertEquals(qdbInt.get(), 3);
-        } catch (Exception e) {
-            fail("Shouldn't raise an Exception.");
-        } finally {
-        	cleanUp(qdbInt);
-        }
-    }
-    
     private void cleanUp(QdbInteger qdbInt) {
         try {
 			qdbInt.expiresFromNow(0);

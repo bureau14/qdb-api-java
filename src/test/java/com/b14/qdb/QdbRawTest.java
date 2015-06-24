@@ -57,11 +57,11 @@ import com.b14.qdb.tools.LibraryHelper;
  * A integration RAW tests case for {@link Quasardb} class.
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 1.1.6
  */
 @RunWith(Feeder.class)
-public class QdbRawIT {
+public class QdbRawTest {
     private static final int NB_LOOPS = 1;
     private static final int NB_THREADS = 10;
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;

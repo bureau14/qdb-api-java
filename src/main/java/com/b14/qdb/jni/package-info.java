@@ -30,7 +30,7 @@
  * Low-level Java API generated with <a href="http://www.swig.org/">SWIG</a>
  *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 0.5.2
  * @see <a href="http://www.swig.org/">SWIG</a>
  */

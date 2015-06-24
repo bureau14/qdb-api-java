@@ -49,7 +49,7 @@ import com.b14.qdb.jni.run_batch_result;
  * </ul>
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 1.1.0
  */
 public class Result {
@@ -127,73 +127,4 @@ public class Result {
         return error;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "Result [alias=" + alias + ", typeOperation=" + typeOperation + ", value=" + value + ", error=" + error.toString() + "]";
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-        result = prime * result + error.swigValue();
-        result = prime * result + ((typeOperation == null) ? 0 : typeOperation.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Result other = (Result) obj;
-        if (alias == null) {
-            if (other.alias != null) {
-                return false;
-            }
-        } else if (!alias.equals(other.alias)) {
-            return false;
-        }
-        if (error == null) {
-            if (other.error != null) {
-                return false;
-            }
-        } else if (!error.equals(other.error)) {
-            return false;
-        }
-        if (typeOperation != other.typeOperation) {
-            return false;
-        }
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
-            return false;
-        }
-        return true;
-    }
 }

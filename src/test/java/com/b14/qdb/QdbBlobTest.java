@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class QdbBlobIT {
+import java.util.List;
+
+public class QdbBlobTest {
 	private static final String URI = "qdb://127.0.0.1:2836";
 	private static final String DATA = "This is my data test";
     private QdbCluster cluster = null;
@@ -46,7 +48,7 @@ public class QdbBlobIT {
 	@Test
 	public void testAlias() throws QdbException {
 		QdbBlob blob = cluster.getBlob("testBlob");
-		assertTrue("testBlob".equals(blob.alias()));
+		assertTrue("testBlob".equals(blob.getAlias()));
 	}
 
 	/**
@@ -61,7 +63,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		java.nio.ByteBuffer buffer = blob.get();
 		byte[] bytes = new byte[buffer.limit()];
@@ -84,7 +86,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		java.nio.ByteBuffer buffer = blob.getAndRemove();
 		byte[] bytes = new byte[buffer.limit()];
@@ -114,7 +116,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		content.clear();
 		content = java.nio.ByteBuffer.allocateDirect((DATA + "UPDATE").getBytes().length);
@@ -147,7 +149,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		content.clear();
 		content = java.nio.ByteBuffer.allocateDirect((DATA + "UPDATE").getBytes().length);
@@ -245,7 +247,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		java.nio.ByteBuffer buffer = blob.get();
 		byte[] bytes = new byte[buffer.limit()];
@@ -313,32 +315,6 @@ public class QdbBlobIT {
 		
 		cleanUp(blob);
 	}
-	
-	@Test
-	public void testCompareAndSwapByteBufferByteBufferErr() throws QdbException {
-		QdbBlob blob = cluster.getBlob("testBlob");
-
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
-        content.put(DATA.getBytes());
-        content.flip();
-		blob.put(content);
-		
-		try {
-			blob.compareAndSwap(null, null);
-			fail("Should raise an exception.");
-		} catch (Exception e) {
-			assertTrue(e instanceof QdbException);
-		}
-		
-		try {
-			blob.compareAndSwap(java.nio.ByteBuffer.allocateDirect(0), null);
-			fail("Should raise an exception.");
-		} catch (Exception e) {
-			assertTrue(e instanceof QdbException);
-		}
-		
-		cleanUp(blob);
-	}
 
 	@Test
 	public void testCompareAndSwapByteBufferByteBufferLong() throws QdbException {
@@ -402,7 +378,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		java.nio.ByteBuffer buffer = blob.get();
 		byte[] bytes = new byte[buffer.limit()];
@@ -634,7 +610,7 @@ public class QdbBlobIT {
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
+		blob.update(content);
 		
 		java.nio.ByteBuffer buffer = blob.get();
 		byte[] bytes = new byte[buffer.limit()];
@@ -649,35 +625,55 @@ public class QdbBlobIT {
 		
 		cleanUp(blob);
 	}
-	
-	/**
-     * Test of method {@link QdbBlob#removeIf(java.nio.ByteBuffer)}.
-     * 
-     * @throws QdbException
-     */
-	@Test
-	public void testRemoveIfError() throws QdbException {
-		QdbBlob blob = cluster.getBlob("testBlob");
+
+    @Test
+    public void testTag() throws QdbException {
+
+        String myBlob = "taggedBlob";
+
+        QdbBlob blob = cluster.getBlob(myBlob);
 
         java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
-		blob.put(content);
-		
-		java.nio.ByteBuffer buffer = blob.get();
-		byte[] bytes = new byte[buffer.limit()];
-		buffer.rewind();
-		buffer.get(bytes, 0, buffer.limit());
-		assertTrue(DATA.equals(new String(bytes)));
-		
-		try {
-			blob.removeIf(null);
-		} catch (Exception e) {
-			assertTrue(e instanceof QdbException);
-		}
-		
-		cleanUp(blob);
-	}
+        blob.update(content);
+        
+        String myTag = "Boom";
+
+        assertFalse(blob.hasTag(myTag));
+
+        // cannot add the tag twice
+        assertTrue(blob.addTag(myTag));
+        assertFalse(blob.addTag(myTag));
+
+        // tag must be present
+        assertTrue(blob.hasTag(myTag));
+
+        // tag must be listed
+        List<String> tags = blob.getTags();
+
+        assertEquals(tags.size(), 1);
+        assertEquals(tags.get(0), myTag);
+
+        // reverse lookup must work
+        QdbTag tag = cluster.getTag(myTag);
+
+        List<String> entries = tag.getEntries();
+
+        assertEquals(entries.size(), 1);
+        assertEquals(entries.get(0), myBlob);
+
+        // cannot remove tag twice
+        assertTrue(blob.removeTag(myTag));
+        assertFalse(blob.removeTag(myTag));
+
+        assertFalse(blob.hasTag(myTag));
+
+        assertEquals(entries.size(), 1);
+        assertEquals(entries.get(0), myBlob); 
+
+        cleanUp(blob);
+    }
 	
 	private void cleanUp(QdbBlob blob) {
 		try {

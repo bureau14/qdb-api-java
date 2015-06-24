@@ -21,7 +21,7 @@ import com.b14.qdb.batch.TypeOperation;
 import com.b14.qdb.batch.TypeOperationMap;
 import com.b14.qdb.batch.OperationHasValue;
 
-public class QdbBatchIT {
+public class QdbBatchTest {
 	private static final String URI = "qdb://127.0.0.1:2836";
 	private static final String DATA = "This is my data test";
 	private static final String DATA_UPDATED = "This is my new data test";

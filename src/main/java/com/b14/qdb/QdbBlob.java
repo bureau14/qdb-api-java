@@ -1,28 +1,23 @@
 package com.b14.qdb;
 
 import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import com.b14.qdb.jni.SWIGTYPE_p_qdb_session;
 import com.b14.qdb.jni.error_carrier;
 import com.b14.qdb.jni.qdb;
 import com.b14.qdb.jni.qdb_error_t;
 
+import com.b14.qdb.QdbExpirableEntry;
+
 /**
  * Represents a blob in a quasardb database. Blob stands for Binary Large Object, meaning that you can store arbitrary data in this blob.
  * 
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
- * @version master
+ * @version 2.0.0
  * @since 2.0.0
  */
-public class QdbBlob {
+public class QdbBlob extends QdbExpirableEntry {
 	private static final String EMPTY_BUFFER = "ByteBuffer shouldn't be null or empty.";
-	
-    private final transient SWIGTYPE_p_qdb_session session;
-    private final String alias;
-    private long expiryTime;
     
     /**
      * Create an empty Blob associated with given alias.
@@ -31,17 +26,7 @@ public class QdbBlob {
      * @param alias
      */
     protected QdbBlob(final SWIGTYPE_p_qdb_session session, final String alias) {
-        this.session = session;
-        this.alias = alias;
-    }
-
-    /**
-     * Gets the alias (i.e. its "key") of the integer in the database.
-     * 
-     * @return The alias.
-     */
-    public final String alias() {
-        return this.alias;
+        super(session, alias);
     }
     
     /**
@@ -52,7 +37,7 @@ public class QdbBlob {
      */
     public final ByteBuffer get() throws QdbException {
     	final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.get(session, alias, error);
+        final ByteBuffer value = qdb.get(session, getAlias(), error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -67,7 +52,7 @@ public class QdbBlob {
      */
     public final ByteBuffer getAndRemove() throws QdbException {
     	final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.get_and_remove(session, alias, error);
+        final ByteBuffer value = qdb.get_and_remove(session, getAlias(), error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -95,7 +80,7 @@ public class QdbBlob {
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content, final long expiryTime) throws QdbException {
     	final error_carrier error = new error_carrier();
-    	final ByteBuffer value = qdb.get_and_update(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
+    	final ByteBuffer value = qdb.get_and_update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
     	if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -111,7 +96,7 @@ public class QdbBlob {
      * @see QdbBlob#update(ByteBuffer)
      */
     public final void put(ByteBuffer content) throws QdbException {
-        this.put(content, this.expiryTime);
+        this.put(content, 0);
     }
     
     /**
@@ -124,7 +109,7 @@ public class QdbBlob {
      * @see QdbBlob#update(ByteBuffer, long)
      */
     public final void put(final ByteBuffer content, final long expiryTime) throws QdbException {
-        final qdb_error_t qdbError = qdb.put(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+        final qdb_error_t qdbError = qdb.put(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
         if (qdbError != qdb_error_t.error_ok) {
             throw new QdbException(qdbError);
         }
@@ -152,10 +137,11 @@ public class QdbBlob {
      * @throws QdbException If the blob does not exist.
      */
     public final ByteBuffer compareAndSwap(final ByteBuffer newContent, final ByteBuffer comparand, final long expiryTime) throws QdbException {
-    	this.checkByteBuffer(newContent);
-    	this.checkByteBuffer(comparand);
     	final error_carrier error = new error_carrier();
-    	final ByteBuffer value = qdb.compare_and_swap(session, alias, newContent, newContent.limit(), comparand, comparand.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
+    	final ByteBuffer value = qdb.compare_and_swap(session, getAlias(), newContent, newContent.limit(), comparand, comparand.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
+        if (error.getError() != qdb_error_t.error_ok) {
+            throw new QdbException(error.getError());
+        }
     	return value;
     }
     
@@ -168,7 +154,7 @@ public class QdbBlob {
      * @see QdbBlob#put(ByteBuffer)
      */
     public final void update(final ByteBuffer content) throws QdbException {
-        this.update(content, this.expiryTime);
+        this.update(content, 0);
     }
     
     /**
@@ -181,68 +167,12 @@ public class QdbBlob {
      * @see QdbBlob#put(ByteBuffer, long)
      */
     public final void update(final ByteBuffer content, final long expiryTime) throws QdbException {
-    	this.checkByteBuffer(content);
-        final qdb_error_t qdbError = qdb.update(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+        final qdb_error_t qdbError = qdb.update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
         if (qdbError != qdb_error_t.error_ok) {
             throw new QdbException(qdbError);
         }
     }
-    
-    /**
-     * Sets the expiry time of an existing entry.
-     * 
-     * @param expiryDate absolute time after which the entry expires
-     * @throws QdbException if the entry does not exist or if the expiry time is in the past
-     */
-    public void expiresAt(final Date expiryDate) throws QdbException {
-        final GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(expiryDate);
-        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        final qdb_error_t qdbError = qdb.expires_at(session, alias, cal.getTimeInMillis() / 1000);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
-    }
-    
-    /**
-     * Sets the expiry time of an existing entry.<br>
-     * An expiry time of zero means the entry expires as soon as possible.
-     * 
-     * @param expiryTimeInSeconds time in seconds, relative to the call time, after which the entry expires.
-     * @throws QdbException if the entry does not exist or if the expiry time is in the past
-     */
-    public void expiresFromNow(final long expiryTimeInSeconds) throws QdbException {
-        final qdb_error_t qdbError = qdb.expires_from_now(session, alias, expiryTimeInSeconds);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
-    }
-    
-    /**
-     * Retrieves the expiry time of the blob. A value of zero means the blob never expires.
-     * 
-     * @return The absolute expiry time, in seconds since epoch.
-     * @throws QdbException If the blob does not exist.
-     */
-    public long getExpiryTime() throws QdbException {
-        final error_carrier error = new error_carrier();
-        final long result = qdb.get_expiry(session, alias, error);
-        if (error.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(error.getError());
-        }
-        return result;
-    }
-    
-    /**
-     * Removes the integer from the database.
-     * 
-     * @return true if integer was successfully removed, false if not.
-     */
-    public final boolean remove() {
-        final qdb_error_t qdbError = qdb.remove(session, alias);
-        return (qdbError == qdb_error_t.error_ok);
-    }
-    
+        
     /**
      * Removes the blob if it's content matches comparand.
      * 
@@ -251,8 +181,7 @@ public class QdbBlob {
      * @throws QdbException If provided comparand is null or empty or alias doesn't exists.
      */
     public final boolean removeIf(final ByteBuffer comparand) throws QdbException {
-    	this.checkByteBuffer(comparand);
-    	final qdb_error_t qdbError = qdb.remove_if(session, alias, comparand, comparand.limit());
+    	final qdb_error_t qdbError = qdb.remove_if(session, getAlias(), comparand, comparand.limit());
     	if (qdbError != qdb_error_t.error_ok) {
     		if (qdbError == qdb_error_t.error_unmatched_content) {
     			return false;
@@ -262,17 +191,5 @@ public class QdbBlob {
         } else {
         	return true;
         }
-    }
-    
-    /**
-     * Check if provided buffer is null or empty.
-     * 
-     * @param buffer {@link ByteBuffer} to check.
-     * @throws QdbException If provided buffer is null or empty.
-     */
-    private final void checkByteBuffer(final ByteBuffer buffer) throws QdbException {
-    	if ((buffer == null) || (buffer.limit() == 0)) {
-    		throw new QdbException(EMPTY_BUFFER);
-    	}
     }
 }

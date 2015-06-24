@@ -197,7 +197,7 @@ public class QdbBatch {
 
     /**
      *
-     * @return
+     * @return QdbBatchResult
      */
     public QdbBatchResult run() {
         return new QdbBatchResult(session, operations, qdb.run_batch(session, operations));

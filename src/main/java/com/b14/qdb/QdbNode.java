@@ -4,7 +4,7 @@ package com.b14.qdb;
  * A quasardb <a href="https://doc.quasardb.net/1.1.4/glossary.html#term-node">node</a> is a <i>{hostname, port}</i> tuple.
  *  
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 1.1.5
  */
 public class QdbNode {
@@ -68,60 +68,4 @@ public class QdbNode {
         this.port = port;
     }
     
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#toString()
-     * @since 1.3.0
-     */
-    @Override
-    public String toString() {
-        return this.hostName + ":" + this.port;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#hashCode()
-     * @since 1.3.0
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((hostName == null) ? 0 : hostName.hashCode());
-        result = prime * result + port;
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     * @since 1.3.0
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        QdbNode other = (QdbNode) obj;
-        if (hostName == null) {
-            if (other.hostName != null) {
-                return false;
-            }
-        } else if (!hostName.equals(other.hostName)) {
-            return false;
-        }
-        if (port != other.port) {
-            return false;
-        }
-        return true;
-    }
 }

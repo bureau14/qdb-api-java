@@ -24,7 +24,7 @@ import com.b14.qdb.tools.LibraryHelper;
  * Represents a connection to a quasardb cluster.
  * 
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
- * @version master
+ * @version 2.0.0
  * @since 2.0.0
  */
 public final class QdbCluster {
@@ -130,6 +130,16 @@ public final class QdbCluster {
         this.checkSession();
         return qdb.build();
     }
+
+    /**
+     *
+     * @return the low-level, underlying, session object
+     *
+     * @since 2.0.0
+     */
+    public SWIGTYPE_p_qdb_session getSession() {
+      return session;
+     }
     
     /**
      * 
@@ -488,9 +498,9 @@ public final class QdbCluster {
             throw new QdbException(qdbError);
         }
     }
-
-
-    /* Retrieve the location for a provided alias.
+        
+    /**
+     * Retrieve the location for a provided alias.
      *
      * @param alias the object's unique key/alias.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
@@ -508,74 +518,61 @@ public final class QdbCluster {
     
     /**
      * @param alias
-     * @return
+     * @return QdbInteger
      * @throws QdbException 
      */
     public QdbInteger getInteger(String alias) throws QdbException {
-    	this.checkAlias(alias);
         return new QdbInteger(session, alias);
     }
     
     /**
      * 
      * @param alias
-     * @return
+     * @return QdbBlob
      * @throws QdbException
      */
     public QdbBlob getBlob(String alias) throws QdbException {
-    	this.checkAlias(alias);
         return new QdbBlob(session, alias);
     }
     
     /**
      * 
      * @param alias
-     * @return
+     * @return QdbHashSet
      * @throws QdbException
      */
     public QdbHashSet getSet(String alias) throws QdbException {
-    	this.checkAlias(alias);
     	return new QdbHashSet(session, alias);
     }
     
     /**
      * 
      * @param alias
-     * @return
+     * @return QdbQueue
      * @throws QdbException
      */
     public QdbQueue getQueue(String alias) throws QdbException {
-    	this.checkAlias(alias);
     	return new QdbQueue(session, alias);
     }
     
     /**
      * 
-     * @return
+     * @param alias
+     * @return QdbTag
+     * @throws QdbException
+     */
+    public QdbTag getTag(String alias) throws QdbException {
+        return new QdbTag(session, alias);
+    }
+
+    /**
+     * 
+     * @return QdbBatch
      */
     public QdbBatch createBatch() {
         return new QdbBatch(session);
     }
-    
-    /**
-     * 
-     * @return
-     */
-    public QdbIterator getAllEntries() {
-       return new QdbIterator(session); 
-    }
-    
-    /**
-     * 
-     * @param alias
-     * @throws QdbException
-     */
-    private void checkAlias(final String alias) throws QdbException {
-    	if ((alias == null) || alias.isEmpty()) {
-    		throw new QdbException(EMPTY_ALIAS);
-    	}
-    }
-    
+        
     /**
      * {@inheritDoc}
      */

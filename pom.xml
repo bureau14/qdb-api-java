@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.b14.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
-	<version>${qdb.version}</version>
+	<version>2.0.0</version>
 	<name>quasardb Java API</name>
 	<description>High level java client API</description>
 
-	<url>https://www.quasardb.fr/</url>
+	<url>https://www.quasardb.net</url>
 
 	<licenses>
 		<license>
@@ -17,29 +17,9 @@
 		</license>
 	</licenses>
 
-	<mailingLists>
-		<mailingList>
-			<name>Information</name>
-			<post>contact@quasardb.net</post>
-		</mailingList>
-		<mailingList>
-			<name>Sales</name>
-			<post>sales@quasardb.net</post>
-		</mailingList>
-		<mailingList>
-			<name>Bugs</name>
-			<post>bugs@quasardb.net</post>
-		</mailingList>
-	</mailingLists>
-
-	<issueManagement>
-		<system>Fogbugz</system>
-		<url>https://bureau14.fogbugz.com/default.asp</url>
-	</issueManagement>
-
 	<organization>
-		<name>quasardb</name>
-		<url>http://www.quasardb.fr</url>
+		<name>quasardb SAS</name>
+		<url>https://www.quasardb.net</url>
 	</organization>
 
 	<properties>
@@ -49,8 +29,6 @@
 		<junit.version>4.11</junit.version>
 		<contiperf.version>2.3.4</contiperf.version>
 		<feed4junit.version>0.6.6</feed4junit.version>
-		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.7.7</slf4j.version>
 		<findbugs.version>3.0.0</findbugs.version>
 		
 		<!-- Hadoop part -->
@@ -77,10 +55,6 @@
 			<id>cloudbees-snapshots</id>
 			<name>cloudbees-snapshots</name>
 			<url>https://repository-jsr107.forge.cloudbees.com/snapshot</url>
-		</repository>
-		<repository>
-			<id>cloudera</id>
-			<url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
 		</repository>
 	</repositories>
 
@@ -146,80 +120,11 @@
 			<version>${cglib.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- Add dependency to the log framework -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<!--    -> With slf4j, users choose a concrete logging implementation at deploy time-->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>${slf4j.version}</version>
-			<optional>true</optional>
-			<scope>runtime</scope>
-		</dependency>
 		
-		<!-- Add dependency to Hadoop Core framework -->
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>${hadoop.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-common</artifactId>
-			<version>${hadoop.common.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- Ugly bug fix : thank you hadoop -->
-		<dependency>
-			<groupId>jdk.tools</groupId>
-			<artifactId>jdk.tools</artifactId>
-			<version>1.7.0_05</version>
-			<scope>system</scope>
-			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-		</dependency>
-		
-		<!-- Add dependency to Apache Mahout framework -->
-		<dependency>
-			<groupId>org.apache.mahout</groupId>
-			<artifactId>mahout-core</artifactId>
-			<version>${mahout.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.4.1</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies> 
 	
 	<reporting>
 		<plugins>
-			<!-- Static analysis with bad practices detection -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>${findbugs.version}</version>
-				<configuration>
-					<xmlOutput>true</xmlOutput>
-					<!-- Optional derectory to put findbugs xdoc xml report -->
-					<xmlOutputDirectory>target/site</xmlOutputDirectory>
-					<effort>Max</effort>
-				</configuration>
-			</plugin>
 			
 			<!-- Javadoc with UML diagramms -->
 			<plugin>
@@ -278,44 +183,7 @@
 					<nohelp>true</nohelp>
 				</configuration>
 			</plugin>
-			
-			<!-- Static code analysis and copy/paste detector -->
-			<plugin>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>pmd</report>
-							<report>cpd</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-				<configuration>
-					<targetJdk>1.5</targetJdk>
-					<linkXref>true</linkXref>
-					<sourceEncoding>utf-8</sourceEncoding>
-					<minimumTokens>20</minimumTokens>
-					<excludes>
-						<exclude>**/*Test.java</exclude>
-						<exclude>**/*IT.java</exclude>
-						<exclude>**/jni/*.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			
-			<!-- Unit tests rapport -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.5</version>
-				<inherited>true</inherited>
-				<configuration>
-					<parallel>methods</parallel>
-					<threadCount>25</threadCount>
-					<argLine>${tests-argsline}</argLine>
-				</configuration>
-			</plugin>
+
 			
 			<!-- Source code linker -->
 			<plugin>
@@ -337,34 +205,7 @@
 				</configuration>
 			</plugin>
 			
-			<!-- License analysis -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>rat-maven-plugin</artifactId>
-				<version>1.0-alpha-3</version>
-				<configuration>
-					<includes>
-						<include>pom.xml</include>
-						<include>src/main/**</include>
-					</includes>
-					<licenses>
-						<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-							<licenseFamilyCategory>QDBWL</licenseFamilyCategory>
-							<licenseFamilyName>quasardb License (QDBWML) 1.0</licenseFamilyName>
-							<notes></notes>
-							<patterns>
-								<pattern>Copyright (c) 2009-2015, quasardb SAS</pattern>
-							</patterns>
-						</license>
-					</licenses>
-					<licenseFamilies>
-						<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-							<familyName>quasardb License (QDBWML) 1.0</familyName>
-						</licenseFamily>
-					</licenseFamilies>
-				</configuration>
-			</plugin>
-			
+
 			<!-- Coding conventions checks -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -389,41 +230,7 @@
 				<artifactId>jdepend-maven-plugin</artifactId>
 				<version>2.0</version>
 			</plugin>
-			
-			<!-- Make TODO list -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<aggregate>true</aggregate>
-					<tags>
-						<tag>TODO</tag>
-						<tag>FIXME</tag>
-					</tags>
-				</configuration>
-			</plugin>
 
-			<!-- Localisation effort -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>l10n-maven-plugin</artifactId>
-				<version>1.0-alpha-2</version>
-				<configuration>
-					<locales>
-						<locale>en</locale>
-						<locale>fr</locale>
-						<locale>de</locale>
-					</locales>
-				</configuration>
-			</plugin>
-
-			<!-- Collect ckjm metrics -->
-			<plugin>
-				<groupId>net.sourceforge.ckjm</groupId>
-				<artifactId>maven-ckjm-plugin</artifactId>
-				<version>0.4</version>
-			</plugin>
 
 			<!-- Analyze testability of the project -->
 			<plugin>
@@ -457,40 +264,7 @@
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>2.2.1</version>
 				</plugin>
-				
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											properties-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.0-alpha-2,)
-										</versionRange>
-										<goals>
-											<goal>
-												read-project-properties
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
+
 			</plugins>
 		</pluginManagement>
 		
@@ -514,28 +288,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!-- Replace version tag in source code -->
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.2</version>
-				<executions>                
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includes>
-						<include>**/*.java</include>
-					</includes>
-					<token>\@version.*</token>
-					<value>@version ${project.version}</value>
-				</configuration>
-			</plugin>
+
 			
 			<!-- Packaging API in one jar without dependencies -->
 			<plugin>
@@ -578,30 +331,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!-- Add resources for integration tests cases -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.3</version>
-				<executions>
-					<execution>
-						<id>add-test-resource</id>
-						<phase>generate-test-sources</phase>
-						<goals>
-							<goal>add-test-resource</goal>
-						</goals>
-						<configuration>
-							<resources>
-								<resource>
-									<directory>${build}/src/test/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
+
 			<!-- Compiling project -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -655,81 +385,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Launching unit tests -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<argLine>${tests-argsline}</argLine>
-					<skipTests>${skip.unit.tests}</skipTests>
-					
-					<!-- Excludes integration tests when unit tests are run. -->
-					<excludes>
-						<exclude>**/IT*.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			
-			<!-- Launching integration tests : -->
-			<!--   *** WARNING : a qdb instance must be launched listening on 127.0.0.1:2836 *** -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.18.1</version>
-				<executions>
-					<!--
-						Ensures that both integration-test and verify goals of the Failsafe Maven plugin are executed.
-					-->
-					<execution>
-						<id>integration-tests</id>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the VM argument line used when integration tests are run. -->
-							<argLine>${tests-argsline}</argLine>
 
-							<!--
-								Skips integration tests if the value of skip.integration.tests property is true
-							-->
-							<skipTests>${skip.integration.tests}</skipTests>
-
-							<!-- Don't tests classes but packaged jar -->
-							<classesDirectory>non-existing-directory</classesDirectory>
-							<additionalClasspathElements>
-								<additionalClasspathElements>${project.build.directory}/qdb-java-api-${version}.jar</additionalClasspathElements>
-								<additionalClasspathElement>${project.build.directory}/qdb-api-${version}-tests.jar</additionalClasspathElement>
-							</additionalClasspathElements>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
-			<!-- Add a license header if not exists -->
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<strictChecking>true</strictChecking>
-					<basedir>${basedir}</basedir>
-					<header>${basedir}/src/etc/header.txt</header>
-					<quiet>false</quiet>
-					<encoding>UTF-8</encoding>
-					<includes>
-						<include>src/**</include>
-						<include>**/test/**</include>
-					</includes>
-					<excludes>
-						<exclude>target/**</exclude>
-						<exclude>src/etc/**</exclude>
-						<exclude>src/site/**</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			
 			<!-- Draw dependencies graph of project -->
 			<plugin>
 				<groupId>org.fusesource.mvnplugins</groupId>
@@ -756,18 +412,6 @@
 							<transformers>
 								<!--    -> Linux -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-linux-dir}/libgcc_s.so.1</resource>
-									<file>${lib-linux-dir}/libgcc_s.so.1</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-linux-dir}/libtbb.so.2</resource>
-									<file>${lib-linux-dir}/libtbb.so.2</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-linux-dir}/libtbbmalloc.so.2</resource>
-									<file>${lib-linux-dir}/libtbbmalloc.so.2</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-linux-dir}/libqdb_api.so</resource>
 									<file>${lib-linux-dir}/libqdb_api.so</file>
 								</transformer>
@@ -776,19 +420,7 @@
 									<file>${lib-linux-dir}/libqdb_java_api.so</file>
 								</transformer>
 								<!--    -> BSD -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-bsd-dir}/libgcc_s.so.1</resource>
-									<file>${lib-bsd-dir}/libgcc_s.so.1</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-bsd-dir}/libtbb.so</resource>
-									<file>${lib-bsd-dir}/libtbb.so</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-bsd-dir}/libtbbmalloc.so</resource>
-									<file>${lib-bsd-dir}/libtbbmalloc.so</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+							<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-bsd-dir}/libqdb_api.so</resource>
 									<file>${lib-bsd-dir}/libqdb_api.so</file>
 								</transformer>
@@ -796,23 +428,8 @@
 									<resource>${lib-bsd-dir}/libqdb_java_api.so</resource>
 									<file>${lib-bsd-dir}/libqdb_java_api.so</file>
 								</transformer>
-									-> Windows 64 bits
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win64-dir}/msvcp100.dll</resource>
-									<file>${lib-win64-dir}/msvcp100.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win64-dir}/msvcr100.dll</resource>
-									<file>${lib-win64-dir}/msvcr100.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win64-dir}/tbb.dll</resource>
-									<file>${lib-win64-dir}/tbb.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win64-dir}/tbbmalloc.dll</resource>
-									<file>${lib-win64-dir}/tbbmalloc.dll</file>
-								</transformer>
+								<!--    -> Windows 64 bits -->
+
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-win64-dir}/qdb_api.dll</resource>
 									<file>${lib-win64-dir}/qdb_api.dll</file>
@@ -822,22 +439,6 @@
 									<file>${lib-win64-dir}/qdb_java_api.dll</file>
 								</transformer>
 								<!--    -> Windows 32 bits -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win32-dir}/msvcp100.dll</resource>
-									<file>${lib-win32-dir}/msvcp100.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win32-dir}/msvcr100.dll</resource>
-									<file>${lib-win32-dir}/msvcr100.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win32-dir}/tbb.dll</resource>
-									<file>${lib-win32-dir}/tbb.dll</file>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-									<resource>${lib-win32-dir}/tbbmalloc.dll</resource>
-									<file>${lib-win32-dir}/tbbmalloc.dll</file>
-								</transformer>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
 									<resource>${lib-win32-dir}/qdb_api.dll</resource>
 									<file>${lib-win32-dir}/qdb_api.dll</file>
@@ -851,36 +452,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!-- Copy packaged jar in another location in order to launch integration tests -->
-<!--            <plugin> -->
-<!--                <groupId>com.github.goldin</groupId> -->
-<!--                <artifactId>copy-maven-plugin</artifactId> -->
-<!--                <version>0.2.5</version> -->
-<!--                <executions> -->
-<!--                    <execution> -->
-<!--                        <id>deploy-to-local-directory</id> -->
-<!--                        <phase>pre-integration-test</phase> -->
-<!--                        <goals> -->
-<!--                            <goal>copy</goal> -->
-<!--                        </goals> -->
-<!--                        <configuration> -->
-<!--                            <skipIdentical>false</skipIdentical> -->
-<!--                            <failIfNotFound>false</failIfNotFound> -->
-<!--                            <resources> -->
-<!--                                <resource> -->
-<!--                                    <description>Copy artifact to another directory</description> -->
-<!--                                    <targetPath>${project.build.directory}/jarToTest</targetPath> -->
-<!--                                    <directory>${project.build.directory}</directory> -->
-<!--                                    <includes> -->
-<!--                                        <include>qdb-java-api-${version}.jar</include> -->
-<!--                                    </includes> -->
-<!--                                </resource> -->
-<!--                            </resources> -->
-<!--                        </configuration> -->
-<!--                    </execution> -->
-<!--                </executions> -->
-<!--            </plugin> -->
+
 		</plugins>
 	</build>
 

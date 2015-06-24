@@ -44,7 +44,7 @@ package com.b14.qdb.batch;
  * </ul>
  * 
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version master
+ * @version 2.0.0
  * @since 1.1.0
  */
 public enum TypeOperation {
