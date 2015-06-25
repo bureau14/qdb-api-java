@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.b14.qdb</groupId>
+	<groupId>net.quasardb.qdb</groupId>
 	<artifactId>qdb-api</artifactId>
 	<version>2.0.0</version>
 	<name>quasardb Java API</name>
@@ -178,7 +178,7 @@
 					<sourcepath>${basedir}/src/main/java/com/b14/qdb</sourcepath>
 					<reportOutputDirectory>${project.reporting.outputDirectory}/javadocs</reportOutputDirectory>
 					<destDir>javadocs</destDir>
-					<excludePackageNames>com.b14.qdb.jni</excludePackageNames>
+					<excludePackageNames>net.quasardb.qdb.jni</excludePackageNames>
 					<show>private</show>
 					<nohelp>true</nohelp>
 				</configuration>
