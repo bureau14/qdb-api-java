@@ -15,7 +15,7 @@ Java API for [quasardb](http://www.quasardb.net/).
 Step 1, unzip JNI package:
 
 - content of `lib/` should be copied to `/usr/local/lib/`
-- content of `jni/` must be copied to `src/main/jav/com/b14/qdb/jni/`
+- content of `jni/` must be copied to `src/main/jav/net/quasardb/qdb/jni/`
 
 Step 2, build:
 

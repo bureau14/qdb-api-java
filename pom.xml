@@ -175,7 +175,7 @@
 						<link>http://plexus.codehaus.org/ref/1.0-alpha-9/apidocs</link>
 					</links>
 					<source>1.5</source>
-					<sourcepath>${basedir}/src/main/java/com/b14/qdb</sourcepath>
+					<sourcepath>${basedir}/src/main/java/net/quasardb/qdb</sourcepath>
 					<reportOutputDirectory>${project.reporting.outputDirectory}/javadocs</reportOutputDirectory>
 					<destDir>javadocs</destDir>
 					<excludePackageNames>net.quasardb.qdb.jni</excludePackageNames>
