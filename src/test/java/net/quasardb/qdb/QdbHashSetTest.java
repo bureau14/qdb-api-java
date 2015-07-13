@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package net.quasardb.qdb;
 
@@ -23,9 +23,9 @@ public class QdbHashSetTest {
     private static final String DATA1 = "This is my data test 1";
     private static final String DATA2 = "This is my data test 2";
     private static final String DATA3 = "This is my data test 3";
-    
+
     private QdbCluster cluster = null;
-    
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         Qdb.DAEMON.start();
@@ -56,7 +56,7 @@ public class QdbHashSetTest {
 
     /**
      * Test method for {@link net.quasardb.qdb.QdbHashSet#alias()}.
-     * @throws QdbException 
+     * @throws QdbException
      */
     @Test
     public void testAlias() throws QdbException {
@@ -66,7 +66,7 @@ public class QdbHashSetTest {
 
     /**
      * Test method for {@link net.quasardb.qdb.QdbHashSet#contains(java.lang.Object)}.
-     * @throws QdbException 
+     * @throws QdbException
      */
     @Test
     public void testContains() throws QdbException {
@@ -76,19 +76,19 @@ public class QdbHashSetTest {
         content.flip();
         assertTrue(set.insert(content));
         assertFalse(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
         assertTrue(set.insert(content));
         assertFalse(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
         content.put(DATA3.getBytes());
         content.flip();
         assertTrue(set.insert(content));
         assertFalse(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
@@ -109,7 +109,7 @@ public class QdbHashSetTest {
 
     /**
      * Test method for {@link net.quasardb.qdb.QdbHashSet#insert(java.nio.ByteBuffer)}.
-     * @throws QdbException 
+     * @throws QdbException
      */
     @Test
     public void testInsert() throws QdbException {
@@ -118,17 +118,17 @@ public class QdbHashSetTest {
         content.put(DATA1.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
         content.put(DATA3.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
@@ -137,7 +137,7 @@ public class QdbHashSetTest {
 
     /**
      * Test method for {@link net.quasardb.qdb.QdbHashSet#erase(java.lang.Object)}.
-     * @throws QdbException 
+     * @throws QdbException
      */
     @Test
     public void testErase() throws QdbException {
@@ -146,22 +146,22 @@ public class QdbHashSetTest {
         content.put(DATA1.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
         content.put(DATA3.getBytes());
         content.flip();
         assertTrue(set.insert(content));
-        
+
         content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
         content.put(DATA2.getBytes());
         content.flip();
         assertTrue(set.contains(content));
-        
+
         assertTrue(set.erase(content));
         assertFalse(set.erase(content));
         assertTrue(!set.contains(content));

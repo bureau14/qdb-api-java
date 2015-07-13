@@ -48,7 +48,7 @@ import org.junit.runner.RunWith;
 
 /**
  * A integration parallel tests case for {@link Quasardb} class.
- * 
+ *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version 2.0.0
  * @since 1.1.6
@@ -64,10 +64,10 @@ public class QdbParallelTest {
     private static final String GENERATOR_NAME = "net.quasardb.qdb.data.ParallelDataGenerator";
     private static QdbCluster cluster = null;
     private final AtomicInteger counter = new AtomicInteger();
-    
-    @Rule 
+
+    @Rule
     public ContiPerfRule rule = new ContiPerfRule(new HtmlReportModule());
-   
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         Qdb.DAEMON.start();
@@ -84,28 +84,28 @@ public class QdbParallelTest {
         }
         Qdb.DAEMON.stop();
     }
-    
+
     @Before
     public void init() throws Exception {
     }
-    
+
     @After
     public void cleanUp() {
     }
-    
+
     @Test
     @Generator(GENERATOR_NAME)
-    @PerfTest(invocations = NB_LOOPS, 
+    @PerfTest(invocations = NB_LOOPS,
               threads = NB_THREADS)
-    @Required(average = REQ_AVERAGE_EXECUTION_TIME, 
-              max = REQ_MAX_LATENCY, 
-              median = REQ_MEDIAN_LATENCY, 
+    @Required(average = REQ_AVERAGE_EXECUTION_TIME,
+              max = REQ_MAX_LATENCY,
+              median = REQ_MEDIAN_LATENCY,
               throughput = REQ_THROUGHPUT)
     public void quasardbParallelTest(String key, Object value) {
         synchronized(this) {
             key += "_" + this.counter.incrementAndGet();
         }
-        
+
         // Try to clean up stored value if exists
         try {
             if (cluster != null) {
@@ -117,7 +117,7 @@ public class QdbParallelTest {
             e.printStackTrace();
             fail("No exception allowed here => " + e.getMessage());
         }
-        
+
         try {
             if (cluster != null) {
                 // Insert the provided value at provided key
@@ -125,7 +125,7 @@ public class QdbParallelTest {
                 content.put(((String) value).getBytes());
                 content.flip();
                 cluster.getBlob(key).put(content);
-                
+
                 // Check if a value has been stored at key
                 java.nio.ByteBuffer buffer = cluster.getBlob(key).get();
                 byte[] bytes = new byte[buffer.limit()];
@@ -134,13 +134,13 @@ public class QdbParallelTest {
                 if (!new String(bytes).equals(value)) {
                     fail("Stored value at key [" + key + "] should be equals to " + value);
                 }
-                
+
                 // Update value
                 content = java.nio.ByteBuffer.allocateDirect(((String) value + "_UPDATED").getBytes().length);
                 content.put(((String) value + "_UPDATED").getBytes());
                 content.flip();
                 cluster.getBlob(key).update(content);
-                
+
                 // Check if a value has been updated at key
                 buffer = cluster.getBlob(key).get();
                 bytes = new byte[buffer.limit()];
@@ -152,7 +152,7 @@ public class QdbParallelTest {
                 if (!new String(bytes).equals(value + "_UPDATED")) {
                     fail("Stored value at key [" + key + "] should be equals to " + value + "_UPDATED");
                 }
-                
+
                 // Get and update
                 content = java.nio.ByteBuffer.allocateDirect(((String) value).getBytes().length);
                 content.put(((String) value).getBytes());
@@ -171,7 +171,7 @@ public class QdbParallelTest {
                 if (!new String(bytes).equals(value)) {
                     fail("New stored value at key [" + key + "] shouldn't be equals to " + value);
                 }
-                
+
                 // Get and remove
                 buffer = cluster.getBlob(key).getAndRemove();
                 bytes = new byte[buffer.limit()];
@@ -188,7 +188,7 @@ public class QdbParallelTest {
                         fail("Should raise a QuasardbException => " + e.toString());
                     }
                 }
-                
+
                 // Remove if
                 content = java.nio.ByteBuffer.allocateDirect(((String) value).getBytes().length);
                 content.put(((String) value).getBytes());
@@ -231,7 +231,7 @@ public class QdbParallelTest {
                 }
             } catch (QdbException e) {
             }
-        } 
+        }
     }
 }
- 
+

@@ -3,6 +3,8 @@ package net.quasardb.qdb;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -22,9 +24,9 @@ import net.quasardb.qdb.batch.TypeOperationMap;
 import net.quasardb.qdb.batch.OperationHasValue;
 
 public class QdbBatchTest {
-	private static final String URI = "qdb://127.0.0.1:2836";
-	private static final String DATA = "This is my data test";
-	private static final String DATA_UPDATED = "This is my new data test";
+    private static final String URI = "qdb://127.0.0.1:2836";
+    private static final String DATA = "This is my data test";
+    private static final String DATA_UPDATED = "This is my new data test";
     private QdbCluster cluster = null;
 
     @BeforeClass
@@ -134,42 +136,99 @@ public class QdbBatchTest {
         results.release();
     }
 
-	/**
+    /**
+     * Test of method {@link QdbCluster#createBatch()}, failure in {@link QdbBatch#compareAndSwap()}.
+     *
+     * @throws QdbException
+     */
+    @Test
+    public void testUnmatchedContentBatch() throws QdbException {
+        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
+        content.put(DATA.getBytes());
+        content.flip();
+        java.nio.ByteBuffer content_different = java.nio.ByteBuffer.allocateDirect(DATA_UPDATED.getBytes().length);
+        content_different.put(DATA_UPDATED.getBytes());
+        content_different.flip();
+
+        QdbBatch batch = cluster.createBatch();
+
+        String aliasName = "test_umb";
+        int operationsCount = 0;
+
+        batch.put(aliasName, content);
+        operationsCount++;
+
+        batch.compareAndSwap(aliasName, content, /*comparand=*/content_different);
+        operationsCount++;
+
+        QdbBatchResult results = batch.run();
+        assertFalse(results.isSuccess());
+        assertEquals(operationsCount, results.getOperationsCount());
+        assertEquals(1, results.getSuccessesCount());
+        assertEquals(operationsCount, results.getResultsLength());
+
+        // check each result one by one
+        int index = 0;
+
+        // put
+        assert(index < operationsCount);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
+        assertTrue(results.get(index).isSuccess());
+        index++;
+
+        // compare and swap
+        assert(index < operationsCount);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_unmatched_content, results.get(index).getError());
+        assertFalse(results.get(index).isSuccess());
+        java.nio.ByteBuffer unmatched_content = results.get(index).getValue();
+        assertNotNull(unmatched_content);
+        byte[] bytes = new byte[unmatched_content.limit()];
+        unmatched_content.rewind();
+        unmatched_content.get(bytes, 0, unmatched_content.limit());
+        assertTrue(DATA.equals(new String(bytes)));
+        index++;
+
+        results.release();
+    }
+
+    /**
      * Test of method {@link QdbCluster#createBatch()}.
      *
      * @throws QdbException
      */
-	@Test
-	public void testSuccessfulBatch() throws QdbException {
+    @Test
+    public void testSuccessfulBatch() throws QdbException {
 
-	    java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
+        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
         content.put(DATA.getBytes());
         content.flip();
         java.nio.ByteBuffer content_updated = java.nio.ByteBuffer.allocateDirect(DATA_UPDATED.getBytes().length);
         content_updated.put(DATA_UPDATED.getBytes());
         content_updated.flip();
 
-		QdbBatch batch = cluster.createBatch();
+        QdbBatch batch = cluster.createBatch();
 
         String aliasName = "test_sb";
         int operationsCount = 0;
 
-	    batch.put(aliasName, content);
+        batch.put(aliasName, content);
         operationsCount++;
 
-	    batch.get(aliasName);
+        batch.get(aliasName);
         operationsCount++;
 
-	    batch.update(aliasName, content_updated);
+        batch.update(aliasName, content_updated);
         operationsCount++;
 
-	    batch.get(aliasName);
+        batch.get(aliasName);
         operationsCount++;
 
         batch.getAndUpdate(aliasName, content);
         operationsCount++;
 
-	    batch.remove(aliasName);
+        batch.remove(aliasName);
         operationsCount++;
 
         batch.update(aliasName, content);
@@ -181,10 +240,10 @@ public class QdbBatchTest {
         batch.removeIf(aliasName, content_updated);
         operationsCount++;
 
-		QdbBatchResult results = batch.run();
-		assertTrue(results.isSuccess());
-		assertEquals(results.getOperationsCount(), operationsCount);
-		assertEquals(results.getSuccessesCount(), operationsCount);
+        QdbBatchResult results = batch.run();
+        assertTrue(results.isSuccess());
+        assertEquals(results.getOperationsCount(), operationsCount);
+        assertEquals(results.getSuccessesCount(), operationsCount);
         assertEquals(results.getResultsLength(), operationsCount);
 
         // check each result one by one
@@ -192,72 +251,72 @@ public class QdbBatchTest {
 
         // put
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         index++;
 
         // get
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         assertEquals(results.get(index).getValue(), content);
         index++;
 
         // update
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         index++;
 
         // get
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         assertEquals(results.get(index).getValue(), content_updated);
         index++;
 
         // get and update
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         assertEquals(results.get(index).getValue(), content_updated);
         index++;
 
         // remove
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         index++;
 
         // update
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         index++;
 
         // compare and swap
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(aliasName, results.get(index).getAlias());
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
-        assertEquals(results.get(index).getValue(), content);
+        assertNull(results.get(index).getValue());
         index++;
 
         // remove if
         assert(index < operationsCount);
-        assertEquals(results.get(index).getAlias(), aliasName);
+        assertEquals(aliasName, results.get(index).getAlias());
         assertTrue(results.get(index).isSuccess());
-        assertEquals(results.get(index).getError(), qdb_error_t.error_ok);
+        assertEquals(qdb_error_t.error_ok, results.get(index).getError());
         assertTrue(results.get(index).isSuccess());
         index++;
 
         results.release();
-	}
+    }
 }

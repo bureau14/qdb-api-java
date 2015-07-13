@@ -55,7 +55,7 @@ import net.quasardb.qdb.tools.LibraryHelper;
 
 /**
  * A integration RAW tests case for {@link Quasardb} class.
- * 
+ *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version 2.0.0
  * @since 1.1.6
@@ -67,10 +67,10 @@ public class QdbRawTest {
     private static final int REQ_AVERAGE_EXECUTION_TIME = 1000;
     private static final String GENERATOR_NAME = "net.quasardb.qdb.data.ParallelDataGenerator";
     private static final ByteBuffer buffer = ByteBuffer.allocateDirect(4096);
-    
+
     private static SWIGTYPE_p_qdb_session session;
     private QdbCluster cluster;
-    
+
     static {
         try {
             System.loadLibrary("qdb_java_api");
@@ -78,28 +78,28 @@ public class QdbRawTest {
             LibraryHelper.loadLibrairiesFromJar();
         }
     }
-    
-    @Rule 
+
+    @Rule
     public ContiPerfRule rule = new ContiPerfRule();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         Qdb.DAEMON.start();
-        
+
         // **** INIT RAW API ****
         // Try to opening a qdb session
         session = qdb.open();
-        
+
         // Try to connect to the qdb node
         qdb_error_t qdbError = qdb.connect(session, "qdb://127.0.0.1:2836");
-        
+
         // Handle errors
         if (qdbError != qdb_error_t.error_ok) {
             System.out.println(qdbError);
             System.exit(0);
         }
     }
-    
+
     @AfterClass
     public static void tearDownClass() throws Exception {
         // **** CLOSE RAW API ****
@@ -108,10 +108,10 @@ public class QdbRawTest {
             System.out.println(qdbError);
             System.exit(0);
         }
-        
+
         Qdb.DAEMON.stop();
     }
-    
+
     @Before
     public void init() {
         try {
@@ -122,7 +122,7 @@ public class QdbRawTest {
             return;
         }
     }
-    
+
     @After
     public void cleanUp() {
         try {
@@ -132,7 +132,7 @@ public class QdbRawTest {
         } catch (QdbException e) {
         }
     }
-    
+
     @Test
     @Generator(GENERATOR_NAME)
     @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
@@ -142,22 +142,22 @@ public class QdbRawTest {
         try {
             error_carrier error = new error_carrier();
             key += "_" + Thread.currentThread().getId();
-            
+
             buffer.put((value.toString()).getBytes());
             buffer.flip();
-            
+
             qdb.remove(session, key);
             qdb.put(session, key, buffer, buffer.limit(), 0);
-            
+
             buffer.clear();
-            
+
             bufferGet = qdb.get(session, key, error);
-            
+
             buffer.rewind();
             buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());
             qdb.update(session, key, buffer, buffer.limit(), 0);
             buffer.clear();
-            
+
             qdb.remove(session, key);
         } finally {
             if (bufferGet != null) {
@@ -165,40 +165,40 @@ public class QdbRawTest {
             }
         }
     }
-    
+
     @Test
     @Generator(GENERATOR_NAME)
     @PerfTest(invocations = NB_LOOPS, threads = NB_THREADS)
     @Required(average = REQ_AVERAGE_EXECUTION_TIME)
     public void putGetUpdateDeleteTest(String key, Object value) {
         key += "_" + Thread.currentThread().getId();
-        
+
         // Try to clean up stored value if exists
         try {
             cluster.removeEntry(key);
         } catch (QdbException e) {
         }
-        
+
         try {
             // Insert the provided value at provided key
             java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(((String) value).getBytes().length);
             content.put(((String) value).getBytes());
             content.flip();
             cluster.getBlob(key).put(content);
-            
+
             // Check if a value has been stored at key
             java.nio.ByteBuffer buffer = cluster.getBlob(key).get();
             byte[] bytes = new byte[buffer.limit()];
             buffer.rewind();
             buffer.get(bytes, 0, buffer.limit());
             assertTrue(new String(bytes).equals(value));
-            
+
             // Update value
             content = java.nio.ByteBuffer.allocateDirect(((String) value + "_UPDATED").getBytes().length);
             content.put(((String) value + "_UPDATED").getBytes());
             content.flip();
             cluster.getBlob(key).update(content);
-            
+
             // Check if a value has been updated at key
             buffer = cluster.getBlob(key).get();
             bytes = new byte[buffer.limit()];
@@ -220,6 +220,6 @@ public class QdbRawTest {
                 }
             } catch (QdbException e) {
             }
-        } 
+        }
     }
 }

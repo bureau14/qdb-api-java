@@ -33,16 +33,16 @@ import net.quasardb.qdb.jni.qdb_operation_type_t;
 public class TypeOperationMap
 {
 
-    static private TypeOperation[] theMap = 
+    static private TypeOperation[] theMap =
     {
-        TypeOperation.GET, // qdb_op_get = 0,
-        TypeOperation.PUT, // qdb_op_put = 1,
-        TypeOperation.UPDATE, // qdb_op_update = 2,
-        TypeOperation.REMOVE, // qdb_op_remove = 3,
-        TypeOperation.CAS, // qdb_op_cas = 4,
+        TypeOperation.GET,        // qdb_op_get = 0,
+        TypeOperation.PUT,        // qdb_op_put = 1,
+        TypeOperation.UPDATE,     // qdb_op_update = 2,
+        TypeOperation.REMOVE,     // qdb_op_remove = 3,
+        TypeOperation.CAS,        // qdb_op_cas = 4,
         TypeOperation.GET_UPDATE, // qdb_op_get_and_update = 5,
         TypeOperation.GET_REMOVE, // qdb_op_get_and_remove = 6,
-        TypeOperation.REMOVE_IF, // qdb_op_remove_if = 7
+        TypeOperation.REMOVE_IF,  // qdb_op_remove_if = 7
     };
 
     static public TypeOperation map(qdb_operation_type_t v)

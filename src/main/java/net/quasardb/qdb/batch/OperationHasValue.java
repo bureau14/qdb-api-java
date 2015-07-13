@@ -35,13 +35,13 @@ public class OperationHasValue
 
     static private boolean[] valueMap =
     {
-        true, // qdb_op_get = 0,
+        true,  // qdb_op_get = 0,
         false, // qdb_op_put = 1,
         false, // qdb_op_update = 2,
         false, // qdb_op_remove = 3,
-        true, // qdb_op_cas = 4,
-        true, // qdb_op_get_and_update = 5,
-        true, // qdb_op_get_and_remove = 6,
+        true,  // qdb_op_cas = 4,
+        true,  // qdb_op_get_and_update = 5,
+        true,  // qdb_op_get_and_remove = 6,
         false, // qdb_op_remove_if = 7
     };
 

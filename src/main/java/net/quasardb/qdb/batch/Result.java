@@ -47,7 +47,7 @@ import net.quasardb.qdb.jni.run_batch_result;
  * <li>A value which can be the result of the current operation.</li>
  * <li>An error which can be the result of the current operation.</li>
  * </ul>
- * 
+ *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version 2.0.0
  * @since 1.1.0
@@ -57,7 +57,7 @@ public class Result {
     private TypeOperation typeOperation;
     private ByteBuffer value;
     private qdb_error_t error = qdb_error_t.error_uninitialized;
-    
+
     public Result() {
     }
 
@@ -70,30 +70,29 @@ public class Result {
         this.typeOperation = TypeOperationMap.map(op_type);
 
         // Set value
-        if (OperationHasValue.map(op_type) && this.isSuccess()) {
+        if (OperationHasValue.map(op_type)) {
             final ByteBuffer buffer = operation.getResult();
             if (buffer != null) {
                 buffer.rewind();
                 this.value = buffer;
             } else {
                 this.value = null;
-                this.error =  qdb_error_t.error_no_memory;
             }
         }
     }
-    
+
     /**
      * Are this current operation successful ?
-     * 
+     *
      * @return true if current operation is successful. false in all other cases.
      */
     public boolean isSuccess() {
         return error == qdb_error_t.error_ok;
     }
-    
+
     /**
      * Get alias associated with the current operation.
-     * 
+     *
      * @return alias associated with the current operation.
      */
     public String getAlias() {
@@ -102,7 +101,7 @@ public class Result {
 
     /**
      * Get operation type associated with the current operation.
-     * 
+     *
      * @return Operation type associated with the current operation.
      */
     public TypeOperation getTypeOperation() {
@@ -111,7 +110,7 @@ public class Result {
 
     /**
      * Get result value for the current operation.
-     * 
+     *
      * @return Result value for the current operation.
      */
     public ByteBuffer getValue() {
@@ -120,7 +119,7 @@ public class Result {
 
     /**
      * Get result error for the current operation.
-     * 
+     *
      * @return Result error for the current operation.
      */
     public qdb_error_t getError() {

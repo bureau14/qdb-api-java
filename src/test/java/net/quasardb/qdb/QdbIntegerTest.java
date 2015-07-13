@@ -14,7 +14,7 @@ import org.junit.Test;
 
 /**
  * A integration tests case for {@link QdbInteger} class.
- * 
+ *
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
  * @version 2.0.0
  * @since 2.0.0
@@ -22,7 +22,7 @@ import org.junit.Test;
 public class QdbIntegerTest {
     private static final String URI = "qdb://127.0.0.1:2836";
     private QdbCluster cluster = null;
-    
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         Qdb.DAEMON.start();
@@ -50,10 +50,10 @@ public class QdbIntegerTest {
         } catch (Exception e) {
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#QdbInteger(net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session, String, int)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -68,10 +68,10 @@ public class QdbIntegerTest {
             qdbInt.expiresFromNow(0);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#QdbInteger(net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session, String, int)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -87,10 +87,10 @@ public class QdbIntegerTest {
             qdbInt.expiresFromNow(0);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#QdbInteger(net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session, String, int, long)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -101,12 +101,12 @@ public class QdbIntegerTest {
         qdbInt.put(initialValue, expiryTimeInSeconds);
         assertTrue("Initial value should be equals to " + initialValue, qdbInt.get() == initialValue);
         assertTrue("Expiry time shouldn't be equals to 0 (aka eternal).", qdbInt.getExpiryTime() != 0);
-        
+
         try {
             Thread.sleep((expiryTimeInSeconds + 1) * 1000);
         } catch (Exception e) {
         }
-        
+
         try {
             qdbInt.get();
             fail("Entry should have been expired");
@@ -114,10 +114,10 @@ public class QdbIntegerTest {
             assertTrue(e instanceof QdbException);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#alias()}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -128,13 +128,13 @@ public class QdbIntegerTest {
             assertEquals(0, qdbInt.get());
             assertEquals(qdbInt.getAlias(), "testInteger");
         } finally {
-        	cleanUp(qdbInt);
+            cleanUp(qdbInt);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#get()}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -148,13 +148,13 @@ public class QdbIntegerTest {
             qdbInt.set(-3);
             assertEquals(-3, qdbInt.get());
         } finally {
-        	cleanUp(qdbInt);
+            cleanUp(qdbInt);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#getAndSet(int)}.
-     * 
+     *
      * @throws QdbException
      */
     public void testGetAndSet() throws QdbException {
@@ -165,13 +165,13 @@ public class QdbIntegerTest {
             assertEquals(0,qdbInt.getAndSet(-10));
             assertEquals(-10,qdbInt.getAndSet(1));
         } finally {
-        	cleanUp(qdbInt);
+            cleanUp(qdbInt);
         }
     }
 
     /**
      * Test of method {@link QdbInteger#add(int)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -184,13 +184,13 @@ public class QdbIntegerTest {
             assertEquals(-1,qdbInt.add(-4));
             assertEquals(-1,qdbInt.get());
         } finally {
-        	cleanUp(qdbInt);
+            cleanUp(qdbInt);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#expiresAt(java.util.Date)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -201,17 +201,17 @@ public class QdbIntegerTest {
             long time = System.currentTimeMillis() + (1000 * 60 * 60);
             Date expiryDate = new Date(time);
             qdbInt.expiresAt(expiryDate);
-            
+
             String sTime = "" + time;
             assertTrue("Expiry time for entry[test_expiry_1] should be equals to computed date => " + sTime.substring(0, sTime.length() - 3), (qdbInt.getExpiryTime() + "").equals(sTime.substring(0, sTime.length() - 3)));
         } finally {
-        	cleanUp(qdbInt);
+            cleanUp(qdbInt);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#expiresFromNow(long)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -231,10 +231,10 @@ public class QdbIntegerTest {
             assertTrue(e instanceof QdbException);
         }
     }
-    
+
     /**
      * Test of method {@link QdbInteger#remove()}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -253,8 +253,8 @@ public class QdbIntegerTest {
 
     private void cleanUp(QdbInteger qdbInt) {
         try {
-			qdbInt.expiresFromNow(0);
-		} catch (QdbException e) {
-		}
+            qdbInt.expiresFromNow(0);
+        } catch (QdbException e) {
+        }
     }
 }

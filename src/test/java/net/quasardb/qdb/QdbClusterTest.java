@@ -32,7 +32,7 @@ import net.quasardb.qdb.tools.LibraryHelper;
 
 /**
  * A unit test case for {@link QdbCluster} class.
- * 
+ *
  * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
  * @version 2.0.0
  * @since 1.1.6
@@ -72,7 +72,7 @@ public class QdbClusterTest {
 
    /**
      * Test of method {@link QdbCluster#getNodeConfig(String)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -111,10 +111,10 @@ public class QdbClusterTest {
             fail("The only exception allowed here is JsonParseException.");
         }
     }
-    
+
     /**
      * Test of method {@link QdbCluster#getNodeStatus(String)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
@@ -176,10 +176,10 @@ public class QdbClusterTest {
             fail("The only exception allowed here is JsonParseException.");
         }
     }
-    
+
     /**
      * Test of method {@link QdbCluster#getCurrentNodeTopology(String)}.
-     * 
+     *
      * @throws QdbException
      */
     @Test
