@@ -140,7 +140,7 @@ public class QdbQueue extends QdbEntry {
      */
     public ByteBuffer get(long i) throws QdbException {
         final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.queue_at(session, getAlias(), i, error);
+        final ByteBuffer result = qdb.queue_get_at(session, getAlias(), i, error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
