@@ -22,8 +22,8 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Create an empty Blob associated with given alias.
      *
-     * @param session
-     * @param alias
+     * @param session TODO
+     * @param alias TODO
      */
     protected QdbBlob(final SWIGTYPE_p_qdb_session session, final String alias) {
         super(session, alias);
@@ -33,7 +33,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Gets the current value.
      *
      * @return the current value
-     * @throws QdbException
+     * @throws QdbException TODO
      */
     public final ByteBuffer get() throws QdbException {
         final error_carrier error = new error_carrier();
@@ -48,7 +48,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Atomically gets blob's content and removes it.
      *
      * @return A {@link ByteBuffer} representing the blob’s content, before the remove.
-     * @throws QdbException
+     * @throws QdbException TODO
      */
     public final ByteBuffer getAndRemove() throws QdbException {
         final error_carrier error = new error_carrier();
@@ -64,7 +64,7 @@ public class QdbBlob extends QdbExpirableEntry {
      *
      * @param content A {@link ByteBuffer} representing the blob’s content to be set.
      * @return A {@link ByteBuffer} representing the blob’s content, before the update.
-     * @throws QdbException
+     * @throws QdbException TODO
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content) throws QdbException {
         return this.getAndUpdate(content, 0L);
@@ -76,7 +76,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * @param content A {@link ByteBuffer} representing the blob’s content to be set.
      * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
      * @return A {@link ByteBuffer} representing the blob’s content, before the update.
-     * @throws QdbException
+     * @throws QdbException TODO
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content, final long expiryTime) throws QdbException {
         final error_carrier error = new error_carrier();
@@ -92,7 +92,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
      * @param content A {@link ByteBuffer} representing the blob’s content to be set.
-     * @throws QdbException
+     * @throws QdbException TODO
      * @see QdbBlob#update(ByteBuffer)
      */
     public final void put(ByteBuffer content) throws QdbException {

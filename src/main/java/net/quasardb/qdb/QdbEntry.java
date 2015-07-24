@@ -18,8 +18,8 @@ public class QdbEntry {
     /**
      * Create an empty entry associated with given alias.
      *
-     * @param session
-     * @param alias
+     * @param session TODO
+     * @param alias TODO
      */
     public QdbEntry(final SWIGTYPE_p_qdb_session session, final String alias) {
         this.session = session;
@@ -46,7 +46,7 @@ public class QdbEntry {
     /**
      * Removes the entry from the database.
      *
-     * @throws QdbException
+     * @throws QdbException TODO
      */
     public final void remove() throws QdbException {
         final qdb_error_t err = qdb.remove(session, alias);
@@ -58,8 +58,9 @@ public class QdbEntry {
     /**
      * Adds a tag to the entry
      *
+     * @param tag TODO
      * @return true if the tag has been set, false if it was already set
-     * @throws QdbException
+     * @throws QdbException TODO
      */
 
     public final boolean addTag(String tag) throws QdbException {
@@ -77,8 +78,9 @@ public class QdbEntry {
      *
      * Tests if an entry has the provided tag
      *
+     * @param tag TODO
      * @return true if the entry has the provided tag, false otherwise
-     * @throws QdbException
+     * @throws QdbException TODO
      *
      */
     public final boolean hasTag(String tag) throws QdbException {
@@ -97,8 +99,9 @@ public class QdbEntry {
      *
      * Removes the provided tag
      *
+     * @param tag TODO
      * @return true if the tag has been removed, false if the tag was not set
-     * @throws QdbException
+     * @throws QdbException TODO
      *
      */
     public final boolean removeTag(String tag) throws QdbException {
@@ -131,7 +134,8 @@ public class QdbEntry {
      *
      * Return the list of tags associated with the entry
      *
-     * @throws QdbException
+     * @return TODO
+     * @throws QdbException TODO
      */
     public List<String> getTags() throws QdbException {
         final results_list res = qdb.get_tags(this.session, this.alias);

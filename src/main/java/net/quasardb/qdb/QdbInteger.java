@@ -13,60 +13,60 @@ import net.quasardb.qdb.QdbExpirableEntry;
 
 /**
  * Represents an signed 64-bit integer in a quasardb database.
- * 
+ *
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
  * @version 2.0.0
  * @since 2.0.0
  */
 public class QdbInteger extends QdbExpirableEntry {
     private static final long serialVersionUID = 7669517081331110295L;
-        
+
     /**
      * Build a QdbInteger with an initial value and store it into quasardb cluster as provided alias.
-     * 
+     *
      * @param session quasardb session handler.
      * @param alias alias (i.e. its "key") of the integer in the database.
-     * @throws QdbException 
+     * @throws QdbException TODO
      */
     protected QdbInteger(final SWIGTYPE_p_qdb_session session, final String alias) throws QdbException {
-    	super(session, alias);
+        super(session, alias);
     }
 
     /**
-     * 
-     * @throws QdbException
+     *
+     * @throws QdbException TODO
      */
     public final void put() throws QdbException {
-    	this.put(0, 0L);
+        this.put(0, 0L);
     }
-    
+
     /**
-     * 
-     * @param initialValue
-     * @throws QdbException
+     *
+     * @param initialValue TODO
+     * @throws QdbException TODO
      */
     public final void put(final long initialValue) throws QdbException {
-    	this.put(initialValue, 0L);
+        this.put(initialValue, 0L);
     }
-    
+
     /**
-     * 
-     * @param initialValue
-     * @param expiryTimeInSeconds
-     * @throws QdbException
+     *
+     * @param initialValue TODO
+     * @param expiryTimeInSeconds TODO
+     * @throws QdbException TODO
      */
     public final void put(final long initialValue, final long expiryTimeInSeconds) throws QdbException {
-    	final qdb_error_t qdbError = qdb.int_put(session, getAlias(), initialValue, (expiryTimeInSeconds == 0L) ? expiryTimeInSeconds : (System.currentTimeMillis() / 1000) + expiryTimeInSeconds);
+        final qdb_error_t qdbError = qdb.int_put(session, getAlias(), initialValue, (expiryTimeInSeconds == 0L) ? expiryTimeInSeconds : (System.currentTimeMillis() / 1000) + expiryTimeInSeconds);
         if (qdbError != qdb_error_t.error_ok) {
             throw new QdbException(qdbError);
-        } 
+        }
     }
 
     /**
      * Gets the current value.
      *
      * @return the current value
-     * @throws QdbException 
+     * @throws QdbException TODO
      */
     public final long get() throws QdbException {
         final error_carrier error = new error_carrier();
@@ -81,7 +81,7 @@ public class QdbInteger extends QdbExpirableEntry {
      * Sets to the given value.
      *
      * @param newValue the new value
-     * @throws QdbException 
+     * @throws QdbException TODO
      */
     public final void set(long newValue) throws QdbException {
         final qdb_error_t qdbError = qdb.int_update(session, getAlias(), newValue, 0);
@@ -89,13 +89,13 @@ public class QdbInteger extends QdbExpirableEntry {
             throw new QdbException(qdbError);
         }
     }
-    
+
     /**
      * Atomically sets to the given value and returns the old value.
      *
      * @param newValue the new value
      * @return the previous value
-     * @throws QdbException 
+     * @throws QdbException TODO
      */
     public final long getAndSet(long newValue) throws QdbException {
         for (;;) {
@@ -105,13 +105,13 @@ public class QdbInteger extends QdbExpirableEntry {
             }
         }
     }
-        
+
     /**
      * Atomically adds the given value to the current value.
      *
      * @param delta the value to add
      * @return the resutling value
-     * @throws QdbException 
+     * @throws QdbException TODO
      */
     public final long add(long delta) throws QdbException {
         final error_carrier error = new error_carrier();
@@ -121,7 +121,4 @@ public class QdbInteger extends QdbExpirableEntry {
         }
         return res;
     }
-    
-
-
 }

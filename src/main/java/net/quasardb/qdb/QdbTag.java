@@ -17,8 +17,8 @@ import net.quasardb.qdb.jni.StringVec;
 import net.quasardb.qdb.QdbEntry;
 
 /**
- * Represents a tag in a quasardb database. 
- * 
+ * Represents a tag in a quasardb database.
+ *
  * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
  * @version 2.0.0
  * @since 2.0.0
@@ -26,9 +26,9 @@ import net.quasardb.qdb.QdbEntry;
 public class QdbTag extends QdbEntry {
     /**
      * Create an empty Blob associated with given alias.
-     * 
-     * @param session
-     * @param alias
+     *
+     * @param session TODO
+     * @param alias TODO
      */
     protected QdbTag(final SWIGTYPE_p_qdb_session session, final String alias) {
         super(session, alias);
@@ -38,6 +38,7 @@ public class QdbTag extends QdbEntry {
      * Retrieves the list of tags of the entry
      *
      * @return The entry's list of tags
+     * @throws QdbException TODO
      */
     public List<String> getEntries() throws QdbException {
         results_list res = qdb.get_tagged(this.session, this.getAlias());
@@ -47,6 +48,6 @@ public class QdbTag extends QdbEntry {
 
         return resultsToList(res.getResults());
     }
-    
+
 
 }

@@ -22,7 +22,7 @@ public class QdbBatch {
      * Batch operations can greatly increase performance when it is necessary to run many small operations. <br>
      * Operations in a QdbBatch are not executed until run() is called.
      *
-     * @param session
+     * @param session TODO
      */
     public QdbBatch(SWIGTYPE_p_qdb_session session) {
         this.session = session;
@@ -31,7 +31,7 @@ public class QdbBatch {
     /**
      * Adds a "get and remove" operation to the batch. When executed, the "get and remove" operation atomically gets an entry and removes it.
      *
-     * @param alias
+     * @param alias TODO
      */
     public void getAndRemove(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -43,7 +43,7 @@ public class QdbBatch {
     /**
      * Adds a "get" operation to the batch. When executed, the "get" operation retrieves an entry's content.
      *
-     * @param alias
+     * @param alias TODO
      */
     public void get(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -55,7 +55,7 @@ public class QdbBatch {
     /**
      * Adds a "remove" operation to the batch. When executed, the "remove" operation removes an entry.
      *
-     * @param alias
+     * @param alias TODO
      */
     public void remove(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -68,8 +68,8 @@ public class QdbBatch {
      * Adds a "put" operation to the batch. When executed, the "put" operation adds an entry.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param alias
-     * @param content
+     * @param alias TODO
+     * @param content TODO
      */
     public void put(String alias, ByteBuffer content) {
         this.put(alias, content, 0L);
@@ -79,9 +79,9 @@ public class QdbBatch {
      * Adds a "put" operation to the batch. When executed, the "put" operation adds an entry.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param alias
-     * @param content
-     * @param expiryTime
+     * @param alias TODO
+     * @param content TODO
+     * @param expiryTime TODO
      */
     public void put(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -98,8 +98,8 @@ public class QdbBatch {
      * If the entry already exists, the content will be updated. If the entry does not exist, it will be created.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param alias
-     * @param content
+     * @param alias TODO
+     * @param content TODO
      */
     public void update(String alias, ByteBuffer content) {
         this.update(alias, content, 0L);
@@ -110,9 +110,9 @@ public class QdbBatch {
      * If the entry already exists, the content will be updated. If the entry does not exist, it will be created.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param alias
-     * @param content
-     * @param expiryTime
+     * @param alias TODO
+     * @param content TODO
+     * @param expiryTime TODO
      */
     public void update(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -126,8 +126,8 @@ public class QdbBatch {
 
     /**
      * Adds a "get and update" operation to the batch. When executed, the "get and update" operation atomically gets and updates (in this order) the entry.
-     * @param alias
-     * @param content
+     * @param alias TODO
+     * @param content TODO
      */
     public void getAndUpdate(String alias, ByteBuffer content) {
         this.getAndUpdate(alias, content, 0L);
@@ -136,9 +136,9 @@ public class QdbBatch {
     /**
      * Adds a "get and update" operation to the batch. When executed, the "get and update" operation atomically gets and updates (in this order) the entry.
      *
-     * @param alias
-     * @param content
-     * @param expiryTime
+     * @param alias TODO
+     * @param content TODO
+     * @param expiryTime TODO
      */
     public void getAndUpdate(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -153,8 +153,8 @@ public class QdbBatch {
     /**
      * Adds a "remove if" operation to the batch. When executed, the "remove if" operation removes an entry if it matches $comparand. The operation is atomic.
      *
-     * @param alias
-     * @param comparand
+     * @param alias TODO
+     * @param comparand TODO
      */
     public void removeIf(String alias, ByteBuffer comparand) {
         qdb_operation_t operation = new qdb_operation_t();
@@ -168,9 +168,9 @@ public class QdbBatch {
     /**
      * Adds a "compare and swap" operation to the batch. When executed, the "compare and swap" operation atomically compares the entry with $comparand and updates it to $new_content if, and only if, they match.
      *
-     * @param alias
-     * @param content
-     * @param comparand
+     * @param alias TODO
+     * @param content TODO
+     * @param comparand TODO
      */
     public void compareAndSwap(String alias, ByteBuffer content, ByteBuffer comparand) {
         this.compareAndSwap(alias, content, comparand, 0L);
@@ -179,10 +179,10 @@ public class QdbBatch {
     /**
      * Adds a "compare and swap" operation to the batch. When executed, the "compare and swap" operation atomically compares the entry with $comparand and updates it to $new_content if, and only if, they match.
      *
-     * @param alias
-     * @param content
-     * @param comparand
-     * @param expiryTime
+     * @param alias TODO
+     * @param content TODO
+     * @param comparand TODO
+     * @param expiryTime TODO
      */
     public void compareAndSwap(String alias, ByteBuffer content, ByteBuffer comparand, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();

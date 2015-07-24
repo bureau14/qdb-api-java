@@ -20,7 +20,7 @@ public class QdbException extends Exception {
 
     /**
      *
-     * @param qdbError
+     * @param qdbError TODO
      */
     public QdbException(final qdb_error_t qdbError) {
         super();

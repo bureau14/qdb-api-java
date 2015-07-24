@@ -10,12 +10,21 @@ import net.quasardb.qdb.QdbEntry;
 
 public class QdbHashSet extends QdbEntry{
 
+    /**
+     *
+     * @param session TODO
+     * @param alias TODO
+     * @since 2.0.0
+     */
     public QdbHashSet(SWIGTYPE_p_qdb_session session, String alias) {
         super(session, alias);
     }
 
     /**
-     * 
+     *
+     * @param e TODO
+     * @return TODO
+     * @throws QdbException TODO
      * @since 2.0.0
      */
     public boolean contains(ByteBuffer e) throws QdbException {
@@ -33,7 +42,10 @@ public class QdbHashSet extends QdbEntry{
     }
 
     /**
-     * 
+     *
+     * @param e TODO
+     * @return TODO
+     * @throws QdbException TODO
      * @since 2.0.0
      */
     public boolean insert(ByteBuffer e) throws QdbException {
@@ -51,7 +63,10 @@ public class QdbHashSet extends QdbEntry{
     }
 
     /**
-     * 
+     *
+     * @param e TODO
+     * @return TODO
+     * @throws QdbException TODO
      * @since 2.0.0
      */
     public boolean erase(ByteBuffer e) throws QdbException {
