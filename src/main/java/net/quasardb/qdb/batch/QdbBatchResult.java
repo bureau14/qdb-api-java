@@ -46,7 +46,7 @@ public class QdbBatchResult {
         this.updateResults(operations);
     }
 
-    /** 
+    /**
      * If you forgot to call release() we have you covered.
      */
     @Override
