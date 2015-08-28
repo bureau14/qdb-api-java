@@ -548,11 +548,11 @@ public final class QdbCluster {
     /**
      *
      * @param alias TODO
-     * @return QdbQueue
+     * @return QdbDeque
      * @throws QdbException TODO
      */
-    public QdbQueue getQueue(String alias) throws QdbException {
-        return new QdbQueue(session, alias);
+    public QdbDeque getDeque(String alias) throws QdbException {
+        return new QdbDeque(session, alias);
     }
 
     /**

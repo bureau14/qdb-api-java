@@ -34,7 +34,7 @@ public class QuasardbRawExample {
             bb.put(data.getBytes());
             bb.flip();
 
-            r = qdb.put(session, key, bb, bb.limit(), 0);
+            r = qdb.blob_put(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot add: " + r);
             }
@@ -44,18 +44,18 @@ public class QuasardbRawExample {
             bb.put(myNewData.getBytes());
             bb.flip();
 
-            r = qdb.put(session, key, bb, bb.limit(), 0);
+            r = qdb.blob_put(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot add: " + r);
             }
             
-            r = qdb.update(session, key, bb, bb.limit(), 0);
+            r = qdb.blob_update(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot update: " + r);
             }
 
             error_carrier error = new error_carrier();
-            java.nio.ByteBuffer content = qdb.get(session, key, error);
+            java.nio.ByteBuffer content = qdb.blob_get(session, key, error);
             int [] contentLength = { 0 };
             if (content == null) {
                 System.err.println("Cannot get: " + r + "(size = " + contentLength[0] + ")");

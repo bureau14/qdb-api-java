@@ -35,7 +35,7 @@ public class QdbBatch {
      */
     public void getAndRemove(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_get_and_remove);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_get_and_remove);
         operation.setAlias(alias);
         operations.push_back(operation);
     }
@@ -47,7 +47,7 @@ public class QdbBatch {
      */
     public void get(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_get);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_get);
         operation.setAlias(alias);
         operations.push_back(operation);
     }
@@ -59,7 +59,7 @@ public class QdbBatch {
      */
     public void remove(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_remove);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_remove);
         operation.setAlias(alias);
         operations.push_back(operation);
     }
@@ -85,7 +85,7 @@ public class QdbBatch {
      */
     public void put(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_put);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_put);
         operation.setAlias(alias);
         operation.setContent(content);
         operation.setContent_size(content.limit());
@@ -116,7 +116,7 @@ public class QdbBatch {
      */
     public void update(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_update);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_update);
         operation.setAlias(alias);
         operation.setContent(content);
         operation.setContent_size(content.limit());
@@ -142,7 +142,7 @@ public class QdbBatch {
      */
     public void getAndUpdate(String alias, ByteBuffer content, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_get_and_update);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_get_and_update);
         operation.setAlias(alias);
         operation.setContent(content);
         operation.setContent_size(content.limit());
@@ -158,7 +158,7 @@ public class QdbBatch {
      */
     public void removeIf(String alias, ByteBuffer comparand) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_remove_if);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_remove_if);
         operation.setAlias(alias);
         operation.setComparand(comparand);
         operation.setComparand_size(comparand.limit());
@@ -186,7 +186,7 @@ public class QdbBatch {
      */
     public void compareAndSwap(String alias, ByteBuffer content, ByteBuffer comparand, long expiryTime) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_cas);
+        operation.setType(qdb_operation_type_t.qdb_op_blob_cas);
         operation.setAlias(alias);
         operation.setContent(content);
         operation.setContent_size(content.limit());

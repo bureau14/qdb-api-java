@@ -37,7 +37,7 @@ public class QdbBlob extends QdbExpirableEntry {
      */
     public final ByteBuffer get() throws QdbException {
         final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.get(session, getAlias(), error);
+        final ByteBuffer value = qdb.blob_get(session, getAlias(), error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -52,7 +52,7 @@ public class QdbBlob extends QdbExpirableEntry {
      */
     public final ByteBuffer getAndRemove() throws QdbException {
         final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.get_and_remove(session, getAlias(), error);
+        final ByteBuffer value = qdb.blob_get_and_remove(session, getAlias(), error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -80,7 +80,7 @@ public class QdbBlob extends QdbExpirableEntry {
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content, final long expiryTime) throws QdbException {
         final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.get_and_update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
+        final ByteBuffer value = qdb.blob_get_and_update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
         if (error.getError() != qdb_error_t.error_ok) {
             throw new QdbException(error.getError());
         }
@@ -109,7 +109,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * @see QdbBlob#update(ByteBuffer, long)
      */
     public final void put(final ByteBuffer content, final long expiryTime) throws QdbException {
-        final qdb_error_t qdbError = qdb.put(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+        final qdb_error_t qdbError = qdb.blob_put(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
         if (qdbError != qdb_error_t.error_ok) {
             throw new QdbException(qdbError);
         }
@@ -138,7 +138,7 @@ public class QdbBlob extends QdbExpirableEntry {
      */
     public final ByteBuffer compareAndSwap(final ByteBuffer newContent, final ByteBuffer comparand, final long expiryTime) throws QdbException {
         final error_carrier error = new error_carrier();
-        final ByteBuffer value = qdb.compare_and_swap(session, getAlias(), newContent, newContent.limit(), comparand, comparand.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
+        final ByteBuffer value = qdb.blob_compare_and_swap(session, getAlias(), newContent, newContent.limit(), comparand, comparand.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, error);
         if ((error.getError() != qdb_error_t.error_ok) && (error.getError() != qdb_error_t.error_unmatched_content)) {
             throw new QdbException(error.getError());
         }
@@ -167,7 +167,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * @see QdbBlob#put(ByteBuffer, long)
      */
     public final void update(final ByteBuffer content, final long expiryTime) throws QdbException {
-        final qdb_error_t qdbError = qdb.update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+        final qdb_error_t qdbError = qdb.blob_update(session, getAlias(), content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
         if (qdbError != qdb_error_t.error_ok) {
             throw new QdbException(qdbError);
         }
@@ -181,7 +181,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * @throws QdbException If provided comparand is null or empty or alias doesn't exists.
      */
     public final boolean removeIf(final ByteBuffer comparand) throws QdbException {
-        final qdb_error_t qdbError = qdb.remove_if(session, getAlias(), comparand, comparand.limit());
+        final qdb_error_t qdbError = qdb.blob_remove_if(session, getAlias(), comparand, comparand.limit());
         if (qdbError != qdb_error_t.error_ok) {
             if (qdbError == qdb_error_t.error_unmatched_content) {
                 return false;

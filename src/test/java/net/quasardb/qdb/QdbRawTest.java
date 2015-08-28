@@ -147,15 +147,15 @@ public class QdbRawTest {
             buffer.flip();
 
             qdb.remove(session, key);
-            qdb.put(session, key, buffer, buffer.limit(), 0);
+            qdb.blob_put(session, key, buffer, buffer.limit(), 0);
 
             buffer.clear();
 
-            bufferGet = qdb.get(session, key, error);
+            bufferGet = qdb.blob_get(session, key, error);
 
             buffer.rewind();
             buffer.put(("TEST_KEY_UPDATE_" + value).getBytes());
-            qdb.update(session, key, buffer, buffer.limit(), 0);
+            qdb.blob_update(session, key, buffer, buffer.limit(), 0);
             buffer.clear();
 
             qdb.remove(session, key);

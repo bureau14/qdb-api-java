@@ -60,7 +60,7 @@ public class QuasardbRawExample {
             bb.put(data.getBytes());
             bb.flip();
 
-            r = qdb.put(session, key, bb, bb.limit(), 0);
+            r = qdb.blob_(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot add: " + r);
             }
@@ -70,7 +70,7 @@ public class QuasardbRawExample {
             bb.put(myNewData.getBytes());
             bb.flip();
 
-            r = qdb.put(session, key, bb, bb.limit(), 0);
+            r = qdb.blob_put(session, key, bb, bb.limit(), 0);
             if (r != qdb_error_t.error_ok) {
                 System.err.println("Cannot add: " + r);
             }

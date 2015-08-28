@@ -79,23 +79,23 @@ public class QdbBatchTest {
 
     @Test
     public void testBatchMap() throws QdbException {
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_get), TypeOperation.GET);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_put), TypeOperation.PUT);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_update), TypeOperation.UPDATE);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_remove), TypeOperation.REMOVE);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_cas), TypeOperation.CAS);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_get_and_update), TypeOperation.GET_UPDATE);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_get_and_remove), TypeOperation.GET_REMOVE);
-        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_remove_if), TypeOperation.REMOVE_IF);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_get), TypeOperation.GET);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_put), TypeOperation.PUT);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_update), TypeOperation.UPDATE);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_remove), TypeOperation.REMOVE);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_cas), TypeOperation.CAS);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_get_and_update), TypeOperation.GET_UPDATE);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_get_and_remove), TypeOperation.GET_REMOVE);
+        assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_remove_if), TypeOperation.REMOVE_IF);
 
-        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_get));
-        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_put));
-        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_update));
-        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_remove));
-        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_cas));
-        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_get_and_update));
-        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_get_and_remove));
-        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_remove_if));
+        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_get));
+        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_put));
+        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_update));
+        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_remove));
+        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_cas));
+        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_get_and_update));
+        assertTrue(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_get_and_remove));
+        assertFalse(OperationHasValue.map(qdb_operation_type_t.qdb_op_blob_remove_if));
     }
 
     @Test
