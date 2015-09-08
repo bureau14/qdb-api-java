@@ -7,7 +7,7 @@ Java API for [quasardb](http://www.quasardb.net/).
 
 1. [quasardb daemon](https://download.quasardb.net/quasardb/)
 2. [quasardb JNI API](https://download.quasardb.net/quasardb/)
-3. Maven 3
+3. Gradle
 4. JDK 6 or above
 
 ### Build instructions:
@@ -15,7 +15,7 @@ Java API for [quasardb](http://www.quasardb.net/).
 Step 1, unzip JNI package:
 
 - content of `lib/` should be copied to `/usr/local/lib/`
-- content of `jni/` must be copied to `src/main/jav/net/quasardb/qdb/jni/`
+- content of `jni/` must be copied to `src/main/java/net/quasardb/qdb/jni/`
 
 Step 2, build:
 
