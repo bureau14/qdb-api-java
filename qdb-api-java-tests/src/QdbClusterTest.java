@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import net.quasardb.qdb.jni.qdb;
 import net.quasardb.qdb.jni.qdbJNI;
 import net.quasardb.qdb.jni.qdb_error_t;
-import net.quasardb.qdb.tools.LibraryHelper;
 
 /**
  * A unit test case for {@link QdbCluster} class.
@@ -33,23 +32,12 @@ import net.quasardb.qdb.tools.LibraryHelper;
  */
 
 public class QdbClusterTest {
-
-    private static final String URI = "qdb://127.0.0.1:2836";
     private QdbCluster cluster = null;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +52,7 @@ public class QdbClusterTest {
         }
     }
 
-   /**
+    /**
      * Test of method {@link QdbCluster#getNodeConfig(String)}.
      *
      * @throws QdbException
@@ -76,7 +64,7 @@ public class QdbClusterTest {
             final String NODE_PATTERN = "\\w{1,16}.\\w{1,16}.\\w{1,16}.\\w{1,16}";
             Pattern pattern = null;
 
-            String test = cluster.getNodeConfig(URI);
+            String test = cluster.getNodeConfig(DaemonRunner.getURI());
 
             JsonFactory f = new JsonFactory();
             JsonParser jp = f.createJsonParser(test);
@@ -120,7 +108,7 @@ public class QdbClusterTest {
             final String TIMESTAMP_PATTERN = "[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}";
             Pattern pattern = null;
 
-            String test = cluster.getNodeStatus(URI);
+            String test = cluster.getNodeStatus(DaemonRunner.getURI());
 
             JsonFactory f = new JsonFactory();
             JsonParser jp = f.createJsonParser(test);
@@ -182,7 +170,7 @@ public class QdbClusterTest {
             final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
             final Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
 
-            String test = cluster.getNodeTopology(URI);
+            String test = cluster.getNodeTopology(DaemonRunner.getURI());
 
             JsonFactory f = new JsonFactory();
             JsonParser jp = f.createJsonParser(test);
@@ -224,7 +212,6 @@ public class QdbClusterTest {
             fail("The only exception allowed here is JsonParseException.");
         }
     }
-
 
     /**
      * Test of method {@link QdbCluster#QdbCluster(String)}.

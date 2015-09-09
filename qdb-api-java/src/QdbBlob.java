@@ -47,7 +47,7 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Atomically gets blob's content and removes it.
      *
-     * @return A {@link ByteBuffer} representing the blob’s content, before the remove.
+     * @return A {@link ByteBuffer} representing the blob's content, before the remove.
      * @throws QdbException TODO
      */
     public final ByteBuffer getAndRemove() throws QdbException {
@@ -62,8 +62,8 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Atomically gets and updates (in this order) the blob.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be set.
-     * @return A {@link ByteBuffer} representing the blob’s content, before the update.
+     * @param content A {@link ByteBuffer} representing the blob's content to be set.
+     * @return A {@link ByteBuffer} representing the blob's content, before the update.
      * @throws QdbException TODO
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content) throws QdbException {
@@ -73,9 +73,9 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Atomically gets and updates (in this order) the blob.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be set.
+     * @param content A {@link ByteBuffer} representing the blob's content to be set.
      * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
-     * @return A {@link ByteBuffer} representing the blob’s content, before the update.
+     * @return A {@link ByteBuffer} representing the blob's content, before the update.
      * @throws QdbException TODO
      */
     public final ByteBuffer getAndUpdate(final ByteBuffer content, final long expiryTime) throws QdbException {
@@ -91,7 +91,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Sets blob's content but fails if the blob already exists.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be set.
+     * @param content A {@link ByteBuffer} representing the blob's content to be set.
      * @throws QdbException TODO
      * @see QdbBlob#update(ByteBuffer)
      */
@@ -103,7 +103,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Sets blob's content but fails if the blob already exists.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be set.
+     * @param content A {@link ByteBuffer} representing the blob's content to be set.
      * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
      * @throws QdbException If the blob already exists.
      * @see QdbBlob#update(ByteBuffer, long)
@@ -118,8 +118,8 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Atomically compares the blob's content with comparand and updates it to newContent if, and only if, they match.
      *
-     * @param newContent A {@link ByteBuffer} representing the blob’s content to be updated in case of match.
-     * @param comparand A {@link ByteBuffer} representing the blob’s content to be compared to.
+     * @param newContent A {@link ByteBuffer} representing the blob's content to be updated in case of match.
+     * @param comparand A {@link ByteBuffer} representing the blob's content to be compared to.
      * @return Always returns the original value of the blob.
      * @throws QdbException If the blob does not exist.
      */
@@ -130,8 +130,8 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Atomically compares the blob's content with comparand and updates it to newContent if, and only if, they match.
      *
-     * @param newContent A {@link ByteBuffer} representing the blob’s content to be updated in case of match.
-     * @param comparand A {@link ByteBuffer} representing the blob’s content to be compared to.
+     * @param newContent A {@link ByteBuffer} representing the blob's content to be updated in case of match.
+     * @param comparand A {@link ByteBuffer} representing the blob's content to be compared to.
      * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
      * @return Always returns the original value of the blob.
      * @throws QdbException If the blob does not exist.
@@ -149,7 +149,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Updates the content of the blob.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be updated.
+     * @param content A {@link ByteBuffer} representing the blob's content to be updated.
      * @throws QdbException If provided content is null or empty.
      * @see QdbBlob#put(ByteBuffer)
      */
@@ -161,7 +161,7 @@ public class QdbBlob extends QdbExpirableEntry {
      * Updates the content of the blob.<br>
      * Alias beginning with "qdb" are reserved and cannot be used.
      *
-     * @param content A {@link ByteBuffer} representing the blob’s content to be updated.
+     * @param content A {@link ByteBuffer} representing the blob's content to be updated.
      * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
      * @throws QdbException If provided content is null or empty.
      * @see QdbBlob#put(ByteBuffer, long)
@@ -176,7 +176,7 @@ public class QdbBlob extends QdbExpirableEntry {
     /**
      * Removes the blob if it's content matches comparand.
      *
-     * @param comparand A {@link ByteBuffer} representing the blob’s content to be compared to.
+     * @param comparand A {@link ByteBuffer} representing the blob's content to be compared to.
      * @return true if the blob was actually removed, false if not.
      * @throws QdbException If provided comparand is null or empty or alias doesn't exists.
      */

@@ -13,24 +13,13 @@ import org.junit.Test;
 import java.util.List;
 
 public class QdbBlobTest {
-    private static final String URI = "qdb://127.0.0.1:2836";
     private static final String DATA = "This is my data test";
     private QdbCluster cluster = null;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
 
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -18,26 +18,15 @@ import org.junit.Test;
  *
  */
 public class QdbDequeTest {
-    private static final String URI = "qdb://127.0.0.1:2836";
     private static final String DATA1 = "This is my data test 1";
     private static final String DATA2 = "This is my data test 2";
     private static final String DATA3 = "This is my data test 3";
     private QdbCluster cluster = null;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
-
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,7 +45,7 @@ public class QdbDequeTest {
      * Test method for {@link net.quasardb.qdb.QdbDeque#size()}.
      * @throws QdbException
      */
-/*    @Test
+    /*    @Test
     public void testSize() throws QdbException {
         QdbDeque deque = cluster.getDeque("testDeque");
 
@@ -86,7 +75,7 @@ public class QdbDequeTest {
         content.flip();
         deque.addFirst(content);
 
-   /*     assertEquals(deque.size(), 1);
+        /*     assertEquals(deque.size(), 1);
 
         java.nio.ByteBuffer got = deque.get(0);
         assertEquals(content, got);*/
@@ -96,7 +85,7 @@ public class QdbDequeTest {
         content.flip();
         deque.addFirst(content);
 
-    /*    assertEquals(deque.size(), 2);
+        /*    assertEquals(deque.size(), 2);
 
         got = deque.get(1);
         assertEquals(content, got);*/
@@ -106,7 +95,7 @@ public class QdbDequeTest {
         content.flip();
         deque.addFirst(content);
 
-   /*     assertEquals(deque.size(), 3);
+        /*     assertEquals(deque.size(), 3);
 
         got = deque.get(2);
         assertEquals(content, got);
@@ -264,7 +253,6 @@ public class QdbDequeTest {
         buffer.rewind();
         buffer.get(bytes, 0, buffer.limit());
         assertTrue(DATA1.equals(new String(bytes)));
-
     }
 
     /**
@@ -301,5 +289,4 @@ public class QdbDequeTest {
         buffer.get(bytes, 0, buffer.limit());
         assertTrue(DATA3.equals(new String(bytes)));
     }
-
 }

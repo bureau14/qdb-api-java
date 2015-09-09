@@ -14,12 +14,16 @@ Java API for [quasardb](http://www.quasardb.net/).
 
 Step 1, unzip JNI package:
 
-- content of `lib/` should be copied to `/usr/local/lib/`
-- content of `jni/` must be copied to `src/main/java/net/quasardb/qdb/jni/`
+- extract quasardb daemon archive to `qdb/`
+- extract quasardb JNI API archive to `qdb/`
 
 Step 2, build:
 
-    mvn clean install
+    gradle build -Pqdbd.path=qdb/qdbd
+
+or, on Windows:
+
+    gradle build -Pqdbd.path=qdb/qdbd.exe
 
 ### Contact information
 

@@ -1,0 +1,46 @@
+apply plugin: 'java'
+group = 'net.quasardb.qdb'
+version = '2.0.0'
+
+jar {
+    doFirst {
+        String osName = System.getProperty("os.name")
+        if (osName.startsWith("Windows"))
+            appendix = "win" + System.getProperty("sun.arch.data.model") 
+        else if (osName == "Mac OS X")
+            appendix = "darwin"
+        else if (osName == "FreeBSD")
+            appendix = "freebsd"
+        else if (osName == "Linux")
+            appendix = "linux"
+    }
+    from {[
+        // Windows
+        "../qdb/bin/qdb_api.dll",
+        "../qdb/bin/qdb_api_jni.dll",
+
+        // OS X
+        "../qdb/lib/libqdb_api.dylib",
+        "../qdb/lib/libqdb_api_jni.jnilib",
+
+        // FreeBSD and Linux
+        "../qdb/lib/libqdb_api.so",
+        "../qdb/lib/libqdb_api_jni.so"
+    ]}
+}
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+            srcDir '../qdb/jni'
+        }
+    }
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+}

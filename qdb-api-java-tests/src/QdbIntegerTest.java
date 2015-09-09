@@ -20,23 +20,12 @@ import org.junit.Test;
  * @since 2.0.0
  */
 public class QdbIntegerTest {
-    private static final String URI = "qdb://127.0.0.1:2836";
     private QdbCluster cluster = null;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
 
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
             cluster.purgeAll();
         } catch (Exception e) {
             e.printStackTrace();
@@ -161,9 +150,9 @@ public class QdbIntegerTest {
         QdbInteger qdbInt = cluster.getInteger("testInteger");
         qdbInt.put(1);
         try {
-            assertEquals(1,qdbInt.getAndSet(0));
-            assertEquals(0,qdbInt.getAndSet(-10));
-            assertEquals(-10,qdbInt.getAndSet(1));
+            assertEquals(1, qdbInt.getAndSet(0));
+            assertEquals(0, qdbInt.getAndSet(-10));
+            assertEquals(-10, qdbInt.getAndSet(1));
         } finally {
             cleanUp(qdbInt);
         }
@@ -180,9 +169,9 @@ public class QdbIntegerTest {
         qdbInt.put(1);
         try {
             assertEquals(3, qdbInt.add(2));
-            assertEquals(3,qdbInt.get());
-            assertEquals(-1,qdbInt.add(-4));
-            assertEquals(-1,qdbInt.get());
+            assertEquals(3, qdbInt.get());
+            assertEquals(-1, qdbInt.add(-4));
+            assertEquals(-1, qdbInt.get());
         } finally {
             cleanUp(qdbInt);
         }

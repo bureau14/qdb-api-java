@@ -24,7 +24,6 @@ import net.quasardb.qdb.batch.TypeOperationMap;
 import net.quasardb.qdb.batch.OperationHasValue;
 
 public class QdbBatchTest {
-    private static final String URI = "qdb://127.0.0.1:2836";
     private static final String DATA = "This is my data test";
     private static final String DATA_UPDATED = "This is my new data test";
 
@@ -39,20 +38,10 @@ public class QdbBatchTest {
         return "alias" + Integer.toString(++aliasCounter);
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
-
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
             cluster.purgeAll();
 
             content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);

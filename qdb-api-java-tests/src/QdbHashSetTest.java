@@ -19,27 +19,16 @@ import org.junit.Test;
  *
  */
 public class QdbHashSetTest {
-    private static final String URI = "qdb://127.0.0.1:2836";
     private static final String DATA1 = "This is my data test 1";
     private static final String DATA2 = "This is my data test 2";
     private static final String DATA3 = "This is my data test 3";
 
     private QdbCluster cluster = null;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Qdb.DAEMON.start();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        Qdb.DAEMON.stop();
-    }
-
     @Before
     public void setUp() {
         try {
-            cluster = new QdbCluster(URI);
+            cluster = new QdbCluster(DaemonRunner.getURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -170,5 +159,4 @@ public class QdbHashSetTest {
         content.flip();
         assertTrue(set.contains(content));
     }
-
 }
