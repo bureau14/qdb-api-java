@@ -42,7 +42,6 @@ public class QdbBatchTest {
     public void setUp() {
         try {
             cluster = new QdbCluster(DaemonRunner.getURI());
-            cluster.purgeAll();
 
             content = java.nio.ByteBuffer.allocateDirect(DATA.getBytes().length);
             content.put(DATA.getBytes());
@@ -60,10 +59,6 @@ public class QdbBatchTest {
 
     @After
     public void tearDown() {
-        try {
-            cluster.purgeAll();
-        } catch (Exception e) {
-        }
     }
 
     @Test

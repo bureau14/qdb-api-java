@@ -476,6 +476,19 @@ public final class QdbCluster {
     }
 
     /**
+     * Trim data from the cluster, that is, remove dead references and old versions.
+     *
+     * @throws QdbException TODO
+     * @since 2.0.0
+     */
+    public void trimAll() throws QdbException {
+        final qdb_error_t qdbError = qdb.trim_all(session);
+        if (qdbError != qdb_error_t.error_ok) {
+            throw new QdbException(qdbError);
+        }
+    }
+
+    /**
      *
      * @param alias TODO
      * @throws QdbException TODO
