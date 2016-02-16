@@ -1,162 +1,82 @@
-/**
- *
- */
-package net.quasardb.qdb;
+import java.nio.ByteBuffer;
+import net.quasardb.qdb.*;
+import org.junit.*;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-/**
- *
- */
 public class QdbHashSetTest {
-    private static final String DATA1 = "This is my data test 1";
-    private static final String DATA2 = "This is my data test 2";
-    private static final String DATA3 = "This is my data test 3";
-
-    private QdbCluster cluster = null;
-
-    @Before
-    public void setUp() {
-        try {
-            cluster = new QdbCluster(DaemonRunner.getURI());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @After
-    public void tearDown() {
-        try {
-            cluster.purgeAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbHashSet#alias()}.
-     * @throws QdbException
-     */
     @Test
-    public void testAlias() throws QdbException {
-        QdbHashSet set = cluster.getSet("testSet");
-        assertTrue("testSet".equals(set.getAlias()));
+    public void getAlias_returnsSameAlias() throws QdbException {
+        String alias = Helpers.createUniqueAlias();
+        QdbHashSet hset = Helpers.getHashSet(alias);
+
+        String result = hset.getAlias();
+
+        Assert.assertEquals(alias, result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbHashSet#contains(java.lang.Object)}.
-     * @throws QdbException
-     */
     @Test
-    public void testContains() throws QdbException {
-        QdbHashSet set = cluster.getSet("testSetContains");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
-        assertFalse(set.insert(content));
+    public void contains_returnTrue_afterCallingInsert() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
-        assertFalse(set.insert(content));
+        hset.insert(content);
+        boolean result = hset.contains(content);
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
-        assertFalse(set.insert(content));
-
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
-        content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
-        content = java.nio.ByteBuffer.allocateDirect("test".getBytes().length);
-        content.put("test".getBytes());
-        content.flip();
-        assertTrue(!set.contains(content));
+        Assert.assertTrue(result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbHashSet#insert(java.nio.ByteBuffer)}.
-     * @throws QdbException
-     */
     @Test
-    public void testInsert() throws QdbException {
-        QdbHashSet set = cluster.getSet("testSetAdd");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
+    public void contains_returnFalse_afterCallingErase() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
+        hset.insert(content);
+        hset.erase(content);
+        boolean result = hset.contains(content);
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
-
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
+        Assert.assertFalse(result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbHashSet#erase(java.lang.Object)}.
-     * @throws QdbException
-     */
     @Test
-    public void testErase() throws QdbException {
-        QdbHashSet set = cluster.getSet("testSetRemove");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
+    public void insert_returnTrue() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
+        boolean result = hset.insert(content);
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        assertTrue(set.insert(content));
+        Assert.assertTrue(result);
+    }
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
+    @Test
+    public void insert_returnFalse_whenCalledTwice() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
 
-        assertTrue(set.erase(content));
-        assertFalse(set.erase(content));
-        assertTrue(!set.contains(content));
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        assertTrue(set.contains(content));
+        hset.insert(content);
+        boolean result = hset.insert(content);
+
+        Assert.assertFalse(hset.insert(content));
+    }
+
+    @Test
+    public void erase_returnsFalse_whenCalledTwice() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
+
+        hset.insert(content);
+        hset.erase(content);
+        boolean result = hset.erase(content);
+
+        Assert.assertFalse(result);
+    }
+
+    @Test
+    public void erase_returnsFalse_afterCallingInsert() throws QdbException {
+        QdbHashSet hset = Helpers.createEmptyHashSet();
+        ByteBuffer content = Helpers.createSampleData();
+
+        hset.insert(content);
+        boolean result = hset.erase(content);
+
+        Assert.assertTrue(result);
     }
 }

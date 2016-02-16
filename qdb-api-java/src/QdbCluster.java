@@ -521,9 +521,8 @@ public final class QdbCluster {
     /**
      * @param alias TODO
      * @return QdbInteger
-     * @throws QdbException TODO
      */
-    public QdbInteger getInteger(String alias) throws QdbException {
+    public QdbInteger getInteger(String alias) {
         return new QdbInteger(session, alias);
     }
 
@@ -531,9 +530,8 @@ public final class QdbCluster {
      *
      * @param alias TODO
      * @return QdbBlob
-     * @throws QdbException TODO
      */
-    public QdbBlob getBlob(String alias) throws QdbException {
+    public QdbBlob getBlob(String alias) {
         return new QdbBlob(session, alias);
     }
 
@@ -541,9 +539,8 @@ public final class QdbCluster {
      *
      * @param alias TODO
      * @return QdbHashSet
-     * @throws QdbException TODO
      */
-    public QdbHashSet getSet(String alias) throws QdbException {
+    public QdbHashSet getSet(String alias) {
         return new QdbHashSet(session, alias);
     }
 
@@ -551,9 +548,8 @@ public final class QdbCluster {
      *
      * @param alias TODO
      * @return QdbDeque
-     * @throws QdbException TODO
      */
-    public QdbDeque getDeque(String alias) throws QdbException {
+    public QdbDeque getDeque(String alias) {
         return new QdbDeque(session, alias);
     }
 
@@ -561,9 +557,8 @@ public final class QdbCluster {
      *
      * @param alias TODO
      * @return QdbTag
-     * @throws QdbException TODO
      */
-    public QdbTag getTag(String alias) throws QdbException {
+    public QdbTag getTag(String alias) {
         return new QdbTag(session, alias);
     }
 

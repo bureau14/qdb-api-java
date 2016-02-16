@@ -26,9 +26,8 @@ public class QdbInteger extends QdbExpirableEntry {
      *
      * @param session quasardb session handler.
      * @param alias alias (i.e. its "key") of the integer in the database.
-     * @throws QdbException TODO
      */
-    protected QdbInteger(final SWIGTYPE_p_qdb_session session, final String alias) throws QdbException {
+    protected QdbInteger(final SWIGTYPE_p_qdb_session session, final String alias) {
         super(session, alias);
     }
 
@@ -117,7 +116,7 @@ public class QdbInteger extends QdbExpirableEntry {
         final error_carrier error = new error_carrier();
         long res = qdb.int_add(session, getAlias(), delta, error);
         if (error.getError() != qdb_error_t.error_ok) {
-                throw new QdbException(error.getError());
+            throw new QdbException(error.getError());
         }
         return res;
     }

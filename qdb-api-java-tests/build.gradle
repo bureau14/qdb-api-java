@@ -8,7 +8,6 @@ repositories {
 dependencies {
     compile project(':qdb-api-java')
     compile group: 'junit', name: 'junit', version: '4.+'
-    compile group: 'org.codehaus.jackson', name: 'jackson-jaxrs', version: '1.9.+'
 }
 sourceSets {
     test {
@@ -19,5 +18,5 @@ sourceSets {
 }
 
 test {
-    systemProperty "qdbd.path", project.getProperty("qdbd.path")   
+    systemProperty "qdbd.path", project.getProperty("qdbd.path")
 }

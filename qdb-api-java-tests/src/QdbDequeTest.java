@@ -1,292 +1,97 @@
-/**
- *
- */
-package net.quasardb.qdb;
+import java.nio.ByteBuffer;
+import net.quasardb.qdb.*;
+import org.junit.*;
 
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-/**
- *
- */
 public class QdbDequeTest {
-    private static final String DATA1 = "This is my data test 1";
-    private static final String DATA2 = "This is my data test 2";
-    private static final String DATA3 = "This is my data test 3";
-    private QdbCluster cluster = null;
-
-    @Before
-    public void setUp() {
-        try {
-            cluster = new QdbCluster(DaemonRunner.getURI());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @After
-    public void tearDown() {
-        try {
-            cluster.purgeAll();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#size()}.
-     * @throws QdbException
-     */
-    /*    @Test
-    public void testSize() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDeque");
-
-        assertEquals(deque.size(), 0);
-        assertTrue(deque.isEmpty());
-    }*/
-
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#alias()}.
-     * @throws QdbException
-     */
     @Test
-    public void testAlias() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDeque");
-        assertTrue("testDeque".equals(deque.getAlias()));
+    public void getAlias_returnsSameAlias() throws QdbException {
+        String alias = Helpers.createUniqueAlias();
+        QdbDeque deque = Helpers.getDeque(alias);
+
+        String result = deque.getAlias();
+
+        Assert.assertEquals(alias, result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#addFirst(java.nio.ByteBuffer)}.
-     * @throws QdbException
-     */
     @Test
-    public void testAddFirst() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequeAddFirst");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
+    public void size_returnsOne_afterCallingAddFirst() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content = Helpers.createSampleData();
+
         deque.addFirst(content);
+        long result = deque.size();
 
-        /*     assertEquals(deque.size(), 1);
-
-        java.nio.ByteBuffer got = deque.get(0);
-        assertEquals(content, got);*/
-
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        deque.addFirst(content);
-
-        /*    assertEquals(deque.size(), 2);
-
-        got = deque.get(1);
-        assertEquals(content, got);*/
-
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addFirst(content);
-
-        /*     assertEquals(deque.size(), 3);
-
-        got = deque.get(2);
-        assertEquals(content, got);
-
-        assertTrue(!deque.isEmpty()); */
-
-        java.nio.ByteBuffer buffer = deque.pollFirst();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
+        Assert.assertEquals(1, result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#addLast(java.nio.ByteBuffer)}.
-     * @throws QdbException
-     */
     @Test
-    public void testAddLast() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequeAddLast");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        deque.addLast(content);
+    public void size_returnsOne_afterCallingAddLast() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
         deque.addLast(content);
+        long result = deque.size();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addLast(content);
-
-        java.nio.ByteBuffer buffer = deque.pollLast();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
+        Assert.assertEquals(1, result);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#pollFirst()}.
-     * @throws QdbException
-     */
     @Test
-    public void testPollFirst() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequePollFirst");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        deque.addLast(content);
+    public void pollFirst_returnContentInOrder_afterCallingAddLast() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content1 = Helpers.createSampleData();
+        ByteBuffer content2 = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        deque.addLast(content);
+        deque.addLast(content1);
+        deque.addLast(content2);
+        ByteBuffer result1 = deque.pollFirst();
+        ByteBuffer result2 = deque.pollFirst();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addLast(content);
-
-        java.nio.ByteBuffer buffer = deque.pollFirst();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA1.equals(new String(bytes)));
-
-        buffer = deque.pollFirst();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA2.equals(new String(bytes)));
-
-        buffer = deque.pollFirst();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
+        Assert.assertEquals(content1, result1);
+        Assert.assertEquals(content2, result2);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#pollLast()}.
-     * @throws QdbException
-     */
     @Test
-    public void testPollLast() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequePollLast");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        deque.addLast(content);
+    public void pollLast_returnContentInReverseOrder_afterCallingAddLast() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content1 = Helpers.createSampleData();
+        ByteBuffer content2 = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        deque.addLast(content);
+        deque.addLast(content1);
+        deque.addLast(content2);
+        ByteBuffer result1 = deque.pollLast();
+        ByteBuffer result2 = deque.pollLast();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addLast(content);
-
-        java.nio.ByteBuffer buffer = deque.pollLast();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
-
-        buffer = deque.pollLast();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA2.equals(new String(bytes)));
-
-        buffer = deque.pollLast();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA1.equals(new String(bytes)));
+        Assert.assertEquals(content2, result1);
+        Assert.assertEquals(content1, result2);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#peekFirst()}.
-     * @throws QdbException
-     */
     @Test
-    public void testPeekFirst() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequePeekFirst");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        deque.addLast(content);
+    public void peekFirst_returnFirstContent_afterCallingAddLast() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content1 = Helpers.createSampleData();
+        ByteBuffer content2 = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        deque.addLast(content);
+        deque.addLast(content1);
+        deque.addLast(content2);
+        ByteBuffer result1 = deque.peekFirst();
+        ByteBuffer result2 = deque.peekFirst();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addLast(content);
-
-        java.nio.ByteBuffer buffer = deque.peekFirst();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA1.equals(new String(bytes)));
-
-        buffer = deque.peekFirst();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA1.equals(new String(bytes)));
+        Assert.assertEquals(content1, result1);
+        Assert.assertEquals(content1, result2);
     }
 
-    /**
-     * Test method for {@link net.quasardb.qdb.QdbDeque#peekLast()}.
-     * @throws QdbException
-     */
     @Test
-    public void testPeekLast() throws QdbException {
-        QdbDeque deque = cluster.getDeque("testDequePeekLast");
-        java.nio.ByteBuffer content = java.nio.ByteBuffer.allocateDirect(DATA1.getBytes().length);
-        content.put(DATA1.getBytes());
-        content.flip();
-        deque.addLast(content);
+    public void peekLast_returnLastContent_afterCallingAddLast() throws QdbException {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content1 = Helpers.createSampleData();
+        ByteBuffer content2 = Helpers.createSampleData();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA2.getBytes().length);
-        content.put(DATA2.getBytes());
-        content.flip();
-        deque.addLast(content);
+        deque.addLast(content1);
+        deque.addLast(content2);
+        ByteBuffer result1 = deque.peekLast();
+        ByteBuffer result2 = deque.peekLast();
 
-        content = java.nio.ByteBuffer.allocateDirect(DATA3.getBytes().length);
-        content.put(DATA3.getBytes());
-        content.flip();
-        deque.addLast(content);
-
-        java.nio.ByteBuffer buffer = deque.peekLast();
-        byte[] bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
-
-        buffer = deque.peekLast();
-        bytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(bytes, 0, buffer.limit());
-        assertTrue(DATA3.equals(new String(bytes)));
+        Assert.assertEquals(content2, result1);
+        Assert.assertEquals(content2, result2);
     }
 }
