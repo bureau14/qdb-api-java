@@ -59,7 +59,7 @@ public class QdbBatch {
      */
     public void remove(String alias) {
         qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_remove);
+        operation.setType(qdb_operation_type_t.qdb_op_remove);
         operation.setAlias(alias);
         operations.push_back(operation);
     }
