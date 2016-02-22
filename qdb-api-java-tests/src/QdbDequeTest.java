@@ -4,7 +4,7 @@ import org.junit.*;
 
 public class QdbDequeTest {
     @Test
-    public void getAlias_returnsSameAlias() throws QdbException {
+    public void getAlias_returnsSameAlias() {
         String alias = Helpers.createUniqueAlias();
         QdbDeque deque = Helpers.getDeque(alias);
 
@@ -14,7 +14,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void size_returnsOne_afterCallingAddFirst() throws QdbException {
+    public void size_returnsOne_afterCallingAddFirst() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content = Helpers.createSampleData();
 
@@ -25,7 +25,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void size_returnsOne_afterCallingAddLast() throws QdbException {
+    public void size_returnsOne_afterCallingAddLast() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content = Helpers.createSampleData();
 
@@ -36,7 +36,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void pollFirst_returnContentInOrder_afterCallingAddLast() throws QdbException {
+    public void pollFirst_returnContentInOrder_afterCallingAddLast() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();
@@ -51,7 +51,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void pollLast_returnContentInReverseOrder_afterCallingAddLast() throws QdbException {
+    public void pollLast_returnContentInReverseOrder_afterCallingAddLast() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();
@@ -66,7 +66,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void peekFirst_returnFirstContent_afterCallingAddLast() throws QdbException {
+    public void peekFirst_returnFirstContent_afterCallingAddLast() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();
@@ -81,7 +81,7 @@ public class QdbDequeTest {
     }
 
     @Test
-    public void peekLast_returnLastContent_afterCallingAddLast() throws QdbException {
+    public void peekLast_returnLastContent_afterCallingAddLast() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();

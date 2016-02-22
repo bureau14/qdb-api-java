@@ -15,7 +15,7 @@ public class QdbBatchTest {
     }
 
     @Test
-    public void testBatchMap() throws QdbException {
+    public void testBatchMap() {
         Assert.assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_get), TypeOperation.GET);
         Assert.assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_put), TypeOperation.PUT);
         Assert.assertEquals(TypeOperationMap.map(qdb_operation_type_t.qdb_op_blob_update), TypeOperation.UPDATE);
@@ -36,7 +36,7 @@ public class QdbBatchTest {
     }
 
     @Test
-    public void testPartialFailure() throws QdbException {
+    public void testPartialFailure() {
         String alias = Helpers.createUniqueAlias();
         String wrongAlias = Helpers.createUniqueAlias();
         int operationsCount = 0;
@@ -77,7 +77,7 @@ public class QdbBatchTest {
      * @throws QdbException
      */
     @Test
-    public void testUnmatchedContentBatch() throws QdbException {
+    public void testUnmatchedContentBatch() {
         String alias = Helpers.createUniqueAlias();
         int operationsCount = 0;
 
@@ -110,12 +110,12 @@ public class QdbBatchTest {
         results.release();
     }
 
-    private void createBlob(String alias, ByteBuffer content_to_put) throws QdbException {
+    private void createBlob(String alias, ByteBuffer content_to_put) {
         QdbBlob blob = Helpers.getBlob(alias);
         blob.put(content);
     }
 
-    private void checkBlob(String alias, ByteBuffer expected_content) throws QdbException {
+    private void checkBlob(String alias, ByteBuffer expected_content) {
         QdbBlob blob = Helpers.getBlob(alias);
         Assert.assertEquals(expected_content, blob.get());
     }
@@ -140,7 +140,7 @@ public class QdbBatchTest {
     }
 
     @Test
-    public void testSuccessfulBatchGet() throws QdbException {
+    public void testSuccessfulBatchGet() {
         String alias = Helpers.createUniqueAlias();
         createBlob(alias, content);
 
@@ -167,7 +167,7 @@ public class QdbBatchTest {
      * @throws QdbException
      */
     @Test
-    public void testSuccessfulBatchPut() throws QdbException {
+    public void testSuccessfulBatchPut() {
         String alias = Helpers.createUniqueAlias();
         int operationsCount = 0;
 
@@ -192,7 +192,7 @@ public class QdbBatchTest {
      * @throws QdbException
      */
     @Test
-    public void testSuccessfulBatchUpdateCreate() throws QdbException {
+    public void testSuccessfulBatchUpdateCreate() {
         String alias = Helpers.createUniqueAlias();
         int operationsCount = 0;
 
@@ -217,7 +217,7 @@ public class QdbBatchTest {
      * @throws QdbException
      */
     @Test
-    public void testSuccessfulBatchUpdate() throws QdbException {
+    public void testSuccessfulBatchUpdate() {
         String alias = Helpers.createUniqueAlias();
 
         createBlob(alias, content);
@@ -245,7 +245,7 @@ public class QdbBatchTest {
      * @throws QdbException
      */
     @Test
-    public void testSuccessfulBatch() throws QdbException {
+    public void testSuccessfulBatch() {
         String aliasGet = Helpers.createUniqueAlias();
         String aliasPut = Helpers.createUniqueAlias();
         String aliasUpdate = Helpers.createUniqueAlias();

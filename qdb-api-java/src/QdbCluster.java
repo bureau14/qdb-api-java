@@ -1,39 +1,20 @@
 package net.quasardb.qdb;
 
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.quasardb.qdb.jni.*;
+import java.nio.charset.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.jni.*;
 
 /**
- * Represents a connection to a quasardb cluster.
- *
- * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
- * @version 2.0.0
- * @since 2.0.0
+ * A connection to a quasardb cluser.
  */
 public final class QdbCluster {
-    private static final String QDB_URI_REGEXP = "^qdb://([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5]):\\d+";
-    private static final String EMPTY_ALIAS = "Alias shouldn't be null or empty.";
-    private static final Charset charset = Charset.forName("UTF-8");
-    private static final CharsetDecoder decoder = charset.newDecoder();
+    private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
+    private transient SWIGTYPE_p_qdb_session session;
 
     static {
         QdbNativeApi.load();
     }
-
-    private final Pattern qdbUriPattern = Pattern.compile(QDB_URI_REGEXP);
-    private transient SWIGTYPE_p_qdb_session session;
 
     /**
      * Connects to a quasardb cluster through the specified URI.
@@ -41,58 +22,18 @@ public final class QdbCluster {
      * Having more than one node in the URI allows to connect to the cluster even if the first node is down.
      *
      * @param uri a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
-     * @throws URISyntaxException TODO
-     * @throws QdbException TODO
+     * @throws QdbConnectionRefusedException If the connection to the cluster is refused.
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
-    public QdbCluster(String uri) throws URISyntaxException, QdbException {
-        if (this.validateURI(uri)) {
-            // Try to open a qdb session
-            session = qdb.open();
-
-            // Try to connect to quasardb cluster
-            final qdb_error_t qdbError = qdb.connect(session, uri);
-            if (qdbError != qdb_error_t.error_ok) {
-                throw new QdbException(qdbError);
-            }
-        } else {
-            throw new URISyntaxException(uri, "qdb uri should be in the form of qdb://<address1>:<port1>[,<address2>:<port2>...]");
-        }
+    public QdbCluster(String uri) {
+        session = qdb.open();
+        qdb_error_t err = qdb.connect(session, uri);
+        QdbExceptionThrower.throwIfError(err);
     }
 
-    /**
-     *
-     * @throws URISyntaxException TODO
-     * @throws QdbException TODO
-     */
-    public QdbCluster() throws URISyntaxException, QdbException {
-        this("qdb://127.0.0.1:2836");
-    }
-
-    /**
-     * Check the syntax of a provided qdb URI.<br>
-     * This doesn't validate if addresses/port are alive.
-     *
-     * @param uri a qdb uri to check
-     * @return true if provided uri is a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>. False in all other cases.
-     */
-    private final boolean validateURI(String uri) {
-        if ((uri == null) || uri.isEmpty()) {
-            return false;
-        } else {
-            final Matcher qdbUriMatcher = qdbUriPattern.matcher(uri);
-            return qdbUriMatcher.matches();
-        }
-    }
-
-    /**
-     * Check if the current qdb session is valid
-     *
-     * @throws QdbException if the connection to the qdb instance cannot be closed
-     * @since 0.5.2
-     */
-    private final void checkSession() throws QdbException {
+    private void checkSession() {
         if (session == null) {
-            throw new QdbException(qdb_error_t.error_not_connected);
+            throw new QdbMiscException(qdb_error_t.error_not_connected);
         }
     }
 
@@ -100,10 +41,8 @@ public final class QdbCluster {
      * Retrieve the version of the current quasardb instance.
      *
      * @return version of the current quasardb instance.
-     * @throws QdbException TODO
-     * @since 2.0.0
      */
-    public String getVersion() throws QdbException {
+    public String getVersion() {
         this.checkSession();
         return qdb.version();
     }
@@ -112,37 +51,29 @@ public final class QdbCluster {
      * Retrieve the build version of the current quasardb instance.
      *
      * @return build version of the current quasardb instance.
-     * @throws QdbException TODO
-     * @since 2.0.0
      */
-    public String getBuild() throws QdbException {
+    public String getBuild() {
         this.checkSession();
         return qdb.build();
     }
 
     /**
+     * Returns the low-level, underlying, session object.
+     * This is reserved for advanced user who want to use the JNI API.
      *
      * @return the low-level, underlying, session object
      *
-     * @since 2.0.0
      */
     public SWIGTYPE_p_qdb_session getSession() {
         return session;
     }
 
     /**
-     *
-     * @throws QdbException TODO
+     * Close connetion to the database.
      */
-    public void disconnect() throws QdbException {
-        // Try to close qdb session
-        final qdb_error_t qdbError = qdb.close(session);
-
-        // Handle errors
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
-
+    public void disconnect() {
+        qdb_error_t err = qdb.close(session);
+        QdbExceptionThrower.throwIfError(err);
         this.session = null;
     }
 
@@ -151,7 +82,7 @@ public final class QdbCluster {
      *
      * @return true if client is connected to quasardb instance
      */
-    public final boolean isConnected() {
+    public boolean isConnected() {
         try {
             return !this.getVersion().isEmpty();
         } catch (Exception e) {
@@ -289,31 +220,19 @@ public final class QdbCluster {
      * }
      * </pre>
      *
-     * @param uri TODO
+     * @param uri The address of the node
      * @return status of the current quasardb instance in JSON (see below)
-     * @throws QdbException if the connection with the current instance fail.
-     * @throws URISyntaxException TODO
-     * @since 0.7.4
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
-    public String getNodeStatus(final String uri) throws URISyntaxException, QdbException {
-        if (validateURI(uri)) {
-            String result = "";
-            final error_carrier error = new error_carrier();
-            ByteBuffer buffer = qdb.node_status(session, uri, error);
-            try {
-                if (buffer != null) {
-                    result = decoder.decode(buffer).toString();
-                }
-            } catch (CharacterCodingException e) {
-                throw new QdbException(e);
-            } finally {
-                qdb.free_buffer(session, buffer);
-                buffer = null;
-            }
-
-            return result;
-        } else {
-            throw new URISyntaxException(uri, "qdb uri should be in the form of qdb://<address1>:<port1>[,<address2>:<port2>...]");
+    public String getNodeStatus(String uri) {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_status(session, uri, error);
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
         }
     }
 
@@ -363,31 +282,20 @@ public final class QdbCluster {
      * }
      * </pre>
      *
-     * @param uri TODO
+     * @param uri The address of the node
      * @return configuration of the current quasardb instance.
-     * @throws QdbException if the connection with the current instance fail.
-     * @throws URISyntaxException TODO
-     * @since 0.7.4
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
-    public String getNodeConfig(final String uri) throws URISyntaxException, QdbException {
-        if (validateURI(uri)) {
-            String result = "";
-            final error_carrier error = new error_carrier();
-            ByteBuffer buffer = qdb.node_config(session, uri, error);
-            try {
-                if (buffer != null) {
-                    result = decoder.decode(buffer).toString();
-                }
-            } catch (CharacterCodingException e) {
-                throw new QdbException(e);
-            } finally {
-                qdb.free_buffer(session, buffer);
-                buffer = null;
-            }
-
-            return result;
-        } else {
-            throw new URISyntaxException(uri, "qdb uri should be in the form of qdb://<address1>:<port1>[,<address2>:<port2>...]");
+    public String getNodeConfig(String uri) {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_config(session, uri, error);
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
+            buffer = null;
         }
     }
 
@@ -415,29 +323,18 @@ public final class QdbCluster {
      *
      * @param uri the host of the quasardb node you want to retrieve topology
      * @return topology of the current quasardb instance.
-     * @throws QdbException if the connection with the current instance fail.
-     * @throws URISyntaxException TODO
-     * @since 0.7.4
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
-    public String getNodeTopology(final String uri) throws URISyntaxException, QdbException {
-        if (validateURI(uri)) {
-            String result = "";
-            final error_carrier error = new error_carrier();
-            ByteBuffer buffer = qdb.node_topology(session, uri, error);
-            try {
-                if (buffer != null) {
-                    result = decoder.decode(buffer).toString();
-                }
-            } catch (CharacterCodingException e) {
-                throw new QdbException(e);
-            } finally {
-                qdb.free_buffer(session, buffer);
-                buffer = null;
-            }
-
-            return result;
-        } else {
-            throw new URISyntaxException(uri, "qdb uri should be in the form of qdb://<address1>:<port1>[,<address2>:<port2>...]");
+    public String getNodeTopology(String uri) {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_topology(session, uri, error);
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
+            buffer = null;
         }
     }
 
@@ -447,124 +344,102 @@ public final class QdbCluster {
      * @param uri address of node to stop.
      * @param reason administration message which is a notification why the node was stopped.
      * @return true when node was stopped.
-     * @throws URISyntaxException when provided uri wasn't in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
-    public boolean stopNode(String uri, String reason) throws URISyntaxException {
-        if (validateURI(uri)) {
-            final qdb_error_t qdbError = qdb.stop_node(session, uri, reason);
-            if (qdbError != qdb_error_t.error_ok) {
-                return false;
-            } else {
-                return true;
-            }
+    public boolean stopNode(String uri, String reason) {
+        qdb_error_t err = qdb.stop_node(session, uri, reason);
+        if (err != qdb_error_t.error_ok) {
+            return false;
         } else {
-            throw new URISyntaxException(uri, "qdb uri should be in the form of qdb://<address1>:<port1>[,<address2>:<port2>...]");
+            return true;
         }
     }
 
     /**
      * Remove all data from the cluster.
      *
-     * @throws QdbException TODO
-     * @since 2.0.0
+     * @throws QdbOperationDisabledException If the purgeAll operation has been disabled on the server.
      */
-    public void purgeAll() throws QdbException {
-        final qdb_error_t qdbError = qdb.purge_all(session);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
+    public void purgeAll() {
+        qdb_error_t err = qdb.purge_all(session);
+        QdbExceptionThrower.throwIfError(err);
     }
 
     /**
      * Trim data from the cluster, that is, remove dead references and old versions.
-     *
-     * @throws QdbException TODO
-     * @since 2.0.0
      */
-    public void trimAll() throws QdbException {
-        final qdb_error_t qdbError = qdb.trim_all(session);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
-    }
-
-    /**
-     *
-     * @param alias TODO
-     * @throws QdbException TODO
-     * @since 2.0.0
-     */
-    public void removeEntry(String alias) throws QdbException {
-        final qdb_error_t qdbError = qdb.remove(session, alias);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
+    public void trimAll() {
+        qdb_error_t err = qdb.trim_all(session);
+        QdbExceptionThrower.throwIfError(err);
     }
 
     /**
      * Retrieve the location for a provided alias.
      *
-     * @param alias the object's unique key/alias.
+     * @param alias The entry unique key/identifier in the database.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
-     * @throws QdbException if the connection with current instance fail or provided alias doesn't exist or provided alias is reserved.
-     * @since 2.0.0
      */
-    public QdbNode getKeyLocation(final String alias) throws QdbException {
-        final error_carrier error = new error_carrier();
+    public QdbNode getKeyLocation(String alias) {
+        error_carrier error = new error_carrier();
         RemoteNode location = qdb.get_location(session, alias, error);
-        if (error.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(error.getError());
-        }
+        QdbExceptionThrower.throwIfError(error.getError());
         return new QdbNode(location.getAddress(), location.getPort());
     }
 
     /**
-     * @param alias TODO
-     * @return QdbInteger
-     */
-    public QdbInteger getInteger(String alias) {
-        return new QdbInteger(session, alias);
-    }
-
-    /**
+     * Get a handle to a blob in the database.
      *
-     * @param alias TODO
-     * @return QdbBlob
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the blob.
      */
     public QdbBlob getBlob(String alias) {
         return new QdbBlob(session, alias);
     }
 
     /**
+     * Get a handle to a deque (double-ended queue) in the database.
      *
-     * @param alias TODO
-     * @return QdbHashSet
-     */
-    public QdbHashSet getSet(String alias) {
-        return new QdbHashSet(session, alias);
-    }
-
-    /**
-     *
-     * @param alias TODO
-     * @return QdbDeque
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the deque.
      */
     public QdbDeque getDeque(String alias) {
         return new QdbDeque(session, alias);
     }
 
     /**
+     * Get a handle to a integer in the database.
      *
-     * @param alias TODO
-     * @return QdbTag
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the integer.
+     */
+    public QdbInteger getInteger(String alias) {
+        return new QdbInteger(session, alias);
+    }
+
+    /**
+     * Get a handle to a hash-set in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the hash-set.
+     */
+    public QdbHashSet getSet(String alias) {
+        return new QdbHashSet(session, alias);
+    }
+
+    /**
+     * Get a tag to a hash-set in the database
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the tag.
      */
     public QdbTag getTag(String alias) {
         return new QdbTag(session, alias);
     }
 
     /**
+     * Create an empty batch.
      *
-     * @return QdbBatch
+     * @return An empty batch.
      */
     public QdbBatch createBatch() {
         return new QdbBatch(session);
@@ -577,7 +452,7 @@ public final class QdbCluster {
     public String toString() {
         try {
             return "QdbCluster - Version : " + this.getVersion() + " - Build : " + this.getBuild();
-        } catch (QdbException e) {
+        } catch (Exception e) {
             return "QdbCluster - Error => " + e.getMessage();
         }
     }

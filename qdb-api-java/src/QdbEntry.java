@@ -1,149 +1,113 @@
 package net.quasardb.qdb;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+import net.quasardb.qdb.jni.*;
 
-import net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session;
-import net.quasardb.qdb.jni.error_carrier;
-import net.quasardb.qdb.jni.qdb;
-import net.quasardb.qdb.jni.qdb_error_t;
-import net.quasardb.qdb.jni.results_list;
-import net.quasardb.qdb.jni.StringVec;
-
+/**
+ * An entry in the database.
+ */
 public class QdbEntry {
-
     protected final transient SWIGTYPE_p_qdb_session session;
-    private final String alias;
+    protected final String alias;
 
-    /**
-     * Create an empty entry associated with given alias.
-     *
-     * @param session TODO
-     * @param alias TODO
-     */
-    public QdbEntry(final SWIGTYPE_p_qdb_session session, final String alias) {
+    protected QdbEntry(SWIGTYPE_p_qdb_session session, String alias) {
         this.session = session;
         this.alias = alias;
     }
 
     /**
-     * Gets the alias (i.e. its "key") of the integer in the database.
+     * Gets the alias (i.e. its "key") of the entry in the database.
      *
      * @return The alias.
      */
-    public final String getAlias() {
-        return this.alias;
-    }
-
-    /**
-     * @return The underlying session object
-     */
-
-    public final SWIGTYPE_p_qdb_session session() {
-        return this.session;
+    public String getAlias() {
+        return alias;
     }
 
     /**
      * Removes the entry from the database.
      *
-     * @throws QdbException TODO
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final void remove() throws QdbException {
-        final qdb_error_t err = qdb.remove(session, alias);
-        if (err != qdb_error_t.error_ok) {
-            throw new QdbException(err);
-        }
+    public void remove() {
+        qdb_error_t err = qdb.remove(session, alias);
+        QdbExceptionThrower.throwIfError(err);
     }
 
     /**
-     * Adds a tag to the entry
+     * Assigns a tag to an entry. The tag is created if it does not exist.
      *
-     * @param tag TODO
-     * @return true if the tag has been set, false if it was already set
-     * @throws QdbException TODO
+     * @param tag The tag's name.
+     * @return true If the tag has been set, false if it was already set
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
+    public boolean addTag(String tag) {
+        qdb_error_t err = qdb.add_tag(session, alias, tag);
 
-    public final boolean addTag(String tag) throws QdbException {
-        final qdb_error_t err = qdb.add_tag(this.session, this.alias, tag);
-        if (err == qdb_error_t.error_tag_already_set) {
+        if (err == qdb_error_t.error_tag_already_set)
             return false;
-        }
-        if (err != qdb_error_t.error_ok) {
-            throw new QdbException(err);
-        }
+        QdbExceptionThrower.throwIfError(err);
         return true;
     }
 
     /**
+     * Determines if a given tag has been assigned to an entry.
      *
-     * Tests if an entry has the provided tag
-     *
-     * @param tag TODO
+     * @param tag The tag's name.
      * @return true if the entry has the provided tag, false otherwise
-     * @throws QdbException TODO
-     *
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final boolean hasTag(String tag) throws QdbException {
-        final qdb_error_t err = qdb.has_tag(this.session, this.alias, tag);
-        if (err == qdb_error_t.error_tag_not_set)
-        {
+    public boolean hasTag(String tag) {
+        qdb_error_t err = qdb.has_tag(session, alias, tag);
+        if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
-        if (err != qdb_error_t.error_ok) {
-            throw new QdbException(err);
-        }
+        QdbExceptionThrower.throwIfError(err);
         return true;
     }
 
     /**
+     * Removes a tag assignment from an entry.
      *
-     * Removes the provided tag
-     *
-     * @param tag TODO
+     * @param tag The tag's name.
      * @return true if the tag has been removed, false if the tag was not set
-     * @throws QdbException TODO
-     *
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final boolean removeTag(String tag) throws QdbException {
-        final qdb_error_t err = qdb.remove_tag(this.session, this.alias, tag);
-        if (err == qdb_error_t.error_tag_not_set)
-        {
+    public boolean removeTag(String tag) {
+        qdb_error_t err = qdb.remove_tag(session, alias, tag);
+        if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
-        if (err != qdb_error_t.error_ok) {
-            throw new QdbException(err);
-        }
+        QdbExceptionThrower.throwIfError(err);
         return true;
     }
 
-    static protected List<String> resultsToList(StringVec results)
-    {
+    /**
+     * Retrieves the tags assigned to the given alias.
+     *
+     * @return The list of tag.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     */
+    public List<String> getTags() {
+        results_list res = qdb.get_tags(session, alias);
+        QdbExceptionThrower.throwIfError(res.getError());
+
+        return resultsToList(res.getResults());
+    }
+
+    static protected List<String> resultsToList(StringVec results) {
         int vecSize = (int)results.size();
 
         Vector<String> entries = new Vector<String>(vecSize, 2);
 
-        for(int i = 0; i < vecSize; i++)
-        {
+        for (int i = 0; i < vecSize; i++) {
             entries.add(results.get(i));
         }
 
         return entries;
     }
-
-    /**
-     *
-     * Return the list of tags associated with the entry
-     *
-     * @return TODO
-     * @throws QdbException TODO
-     */
-    public List<String> getTags() throws QdbException {
-        final results_list res = qdb.get_tags(this.session, this.alias);
-        if (res.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(res.getError());
-        }
-
-        return resultsToList(res.getResults());
-    }
-
 }

@@ -6,7 +6,7 @@ import org.junit.*;
 
 public class QdbTagTest {
     @Test
-    public void testTag() throws QdbException {
+    public void testTag() {
         String blobAlias = Helpers.createUniqueAlias();
         String tagAlias = Helpers.createUniqueAlias();
         QdbTag tag = Helpers.getTag(tagAlias);

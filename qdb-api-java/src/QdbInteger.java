@@ -1,92 +1,44 @@
 package net.quasardb.qdb;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-import net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session;
-import net.quasardb.qdb.jni.error_carrier;
-import net.quasardb.qdb.jni.qdb;
-import net.quasardb.qdb.jni.qdb_error_t;
-
-import net.quasardb.qdb.QdbExpirableEntry;
+import net.quasardb.qdb.jni.*;
 
 /**
- * Represents an signed 64-bit integer in a quasardb database.
- *
- * @author &copy; <a href="https://www.quasardb.net">quasardb</a> - 2015
- * @version 2.0.0
- * @since 2.0.0
+ * A signed 64-bit integer in the database.
  */
-public class QdbInteger extends QdbExpirableEntry {
-    private static final long serialVersionUID = 7669517081331110295L;
-
-    /**
-     * Build a QdbInteger with an initial value and store it into quasardb cluster as provided alias.
-     *
-     * @param session quasardb session handler.
-     * @param alias alias (i.e. its "key") of the integer in the database.
-     */
-    protected QdbInteger(final SWIGTYPE_p_qdb_session session, final String alias) {
+public final class QdbInteger extends QdbExpirableEntry {
+    protected QdbInteger(SWIGTYPE_p_qdb_session session, String alias) {
         super(session, alias);
     }
 
     /**
+     * Atomically adds the given value to the current value.
      *
-     * @throws QdbException TODO
+     * @param delta The increment to add to the current value.
+     * @return The resulting value after the operation.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final void put() throws QdbException {
-        this.put(0, 0L);
+    public long add(long delta) {
+        error_carrier err = new error_carrier();
+        long res = qdb.int_add(session, alias, delta, err);
+        QdbExceptionThrower.throwIfError(err);
+        return res;
     }
 
     /**
+     * Reads the current value of the integer.
      *
-     * @param initialValue TODO
-     * @throws QdbException TODO
+     * @return The current value
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final void put(final long initialValue) throws QdbException {
-        this.put(initialValue, 0L);
-    }
-
-    /**
-     *
-     * @param initialValue TODO
-     * @param expiryTimeInSeconds TODO
-     * @throws QdbException TODO
-     */
-    public final void put(final long initialValue, final long expiryTimeInSeconds) throws QdbException {
-        final qdb_error_t qdbError = qdb.int_put(session, getAlias(), initialValue, (expiryTimeInSeconds == 0L) ? expiryTimeInSeconds : (System.currentTimeMillis() / 1000) + expiryTimeInSeconds);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
-    }
-
-    /**
-     * Gets the current value.
-     *
-     * @return the current value
-     * @throws QdbException TODO
-     */
-    public final long get() throws QdbException {
-        final error_carrier error = new error_carrier();
-        long value = qdb.int_get(session, getAlias(), error);
-        if (error.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(error.getError());
-        }
+    public long get() {
+        error_carrier err = new error_carrier();
+        long value = qdb.int_get(session, alias, err);
+        QdbExceptionThrower.throwIfError(err);
         return value;
-    }
-
-    /**
-     * Sets to the given value.
-     *
-     * @param newValue the new value
-     * @throws QdbException TODO
-     */
-    public final void set(long newValue) throws QdbException {
-        final qdb_error_t qdbError = qdb.int_update(session, getAlias(), newValue, 0);
-        if (qdbError != qdb_error_t.error_ok) {
-            throw new QdbException(qdbError);
-        }
     }
 
     /**
@@ -96,28 +48,48 @@ public class QdbInteger extends QdbExpirableEntry {
      * @return the previous value
      * @throws QdbException TODO
      */
-    public final long getAndSet(long newValue) throws QdbException {
+    public long getAndSet(long newValue) {
         for (;;) {
             long current = get();
-            if (qdb.int_update(session, getAlias(), newValue, 0) == qdb_error_t.error_ok) {
+            if (qdb.int_update(session, alias, newValue, 0) == qdb_error_t.error_ok) {
                 return current;
             }
         }
     }
 
     /**
-     * Atomically adds the given value to the current value.
+     * Creates a new integer. Errors if the integer already exists.
      *
-     * @param delta the value to add
-     * @return the resutling value
-     * @throws QdbException TODO
+     * @param initialValue The value of the new integer.
+     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public final long add(long delta) throws QdbException {
-        final error_carrier error = new error_carrier();
-        long res = qdb.int_add(session, getAlias(), delta, error);
-        if (error.getError() != qdb_error_t.error_ok) {
-            throw new QdbException(error.getError());
-        }
-        return res;
+    public void put(long initialValue) {
+        this.put(initialValue, 0L);
+    }
+
+    /**
+     * Creates a new integer. Errors if the integer already exists.
+     *
+     * @param initialValue The value of the new integer.
+     * @param expiryTimeInSeconds The absolute expiry time of the entry, in seconds, relative to epoch
+     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public void put(long initialValue, long expiryTimeInSeconds) {
+        qdb_error_t err = qdb.int_put(session, alias, initialValue, (expiryTimeInSeconds == 0L) ? expiryTimeInSeconds : (System.currentTimeMillis() / 1000) + expiryTimeInSeconds);
+        QdbExceptionThrower.throwIfError(err);
+    }
+
+    /**
+     * Updates an existing integer or creates one if it does not exist.
+     *
+     * @param newValue The new value of the integer.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public void set(long newValue) {
+        qdb_error_t err = qdb.int_update(session, alias, newValue, 0);
+        QdbExceptionThrower.throwIfError(err);
     }
 }

@@ -1,3 +1,4 @@
+
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 
@@ -41,6 +42,12 @@ public class Helpers {
         return getBlob(createUniqueAlias());
     }
 
+    public static QdbBlob createBlob() {
+        QdbBlob blob = createEmptyBlob();
+        blob.put(createSampleData());
+        return blob;
+    }
+
     public static QdbDeque createEmptyDeque() {
         return getDeque(createUniqueAlias());
     }
@@ -55,6 +62,10 @@ public class Helpers {
 
     public static QdbBlob getBlob(String alias) {
         return cluster.getBlob(alias);
+    }
+
+    public static QdbCluster getCluster() {
+        return cluster;
     }
 
     public static QdbDeque getDeque(String alias) {
