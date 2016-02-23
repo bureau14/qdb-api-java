@@ -242,28 +242,20 @@ public final class QdbCluster {
      * JSON response has the following format :
      * <pre>
      * {
-     *       "global":{
+     *       "local":{
      *           "depot":{
-     *               "replication_factor":1,
      *               "root":"db",
-     *               "sync":false,
-     *               "transient":false
+     *               "sync":false
+     *           },
+     *           "user":{
+     *               "license_file":"qdb.lic"
      *           },
      *           "limiter":{
      *               "max_bytes":12883636224,
-     *               "max_in_entries_count":100000
-     *           }
-     *       },
-     *       "local":{
-     *           "chord":{
-     *               "bootstrapping_peers":[],
-     *               "no_stabilization":false,
-     *               "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *               "max_resident_entries":100000
      *           },
      *           "logger":{
-     *               "dump_file":"qdb_error_dump.txt",
      *               "flush_interval":3,
-     *               "log_files":[],
      *               "log_level":2,
      *               "log_to_console":true,
      *               "log_to_syslog":false
@@ -275,8 +267,16 @@ public final class QdbCluster {
      *               "partitions_count":5,
      *               "server_sessions":2000
      *           },
-     *           "user":{
-     *               "license_file":"qdb.lic"
+     *           "chord":{
+     *               "bootstrapping_peers":[],
+     *               "no_stabilization":false,
+     *               "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
+     *           }
+     *       },
+     *       "global":{
+     *           "cluster":{
+     *               "replication_factor":1,
+     *               "transient":false
      *           }
      *       }
      * }
