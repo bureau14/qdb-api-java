@@ -71,17 +71,6 @@ public class QdbIntegerGetTest {
     }
 
     @Test
-    public void returnsUpdatedValue_afterCallingGetAndSet() {
-        QdbInteger integer = Helpers.createEmptyInteger();
-
-        integer.put(666);
-        integer.getAndSet(42);
-        long result = integer.get();
-
-        Assert.assertEquals(42, result);
-    }
-
-    @Test
     public void returnsUpdatedValue_afterCallingAdd() {
         QdbInteger integer = Helpers.createEmptyInteger();
 

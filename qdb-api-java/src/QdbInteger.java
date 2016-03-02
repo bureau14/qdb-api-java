@@ -42,22 +42,6 @@ public final class QdbInteger extends QdbExpirableEntry {
     }
 
     /**
-     * Atomically sets to the given value and returns the old value.
-     *
-     * @param newValue the new value
-     * @return the previous value
-     * @throws QdbException TODO
-     */
-    public long getAndSet(long newValue) {
-        for (;;) {
-            long current = get();
-            if (qdb.int_update(session, alias, newValue, 0) == qdb_error_t.error_ok) {
-                return current;
-            }
-        }
-    }
-
-    /**
      * Creates a new integer. Errors if the integer already exists.
      *
      * @param initialValue The value of the new integer.
