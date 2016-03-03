@@ -5,21 +5,11 @@ import org.junit.*;
 public class QdbIntegerGetTest {
     @Test(expected = QdbAliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingPut_thenWaitingExpiration() {
-        final long expiryTimeInSeconds = 1;
         QdbInteger integer = Helpers.createEmptyInteger();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
-        integer.put(42, expiryTimeInSeconds);
-        Helpers.wait(expiryTimeInSeconds + 0.5);
-        integer.get(); // <- throws
-    }
-
-    @Test(expected = QdbAliasNotFoundException.class)
-    public void throwsAliasNotFound_afterCallingExpiresFromNowWithZero() {
-        QdbInteger integer = Helpers.createEmptyInteger();
-
-        integer.put(1);
-        integer.expiresFromNow(0);
-        Helpers.wait(0.5);
+        integer.put(42, expiry);
+        Helpers.wait(1.5);
         integer.get(); // <- throws
     }
 

@@ -9,7 +9,7 @@ public class QdbClusterTest {
 
     @Test(expected = QdbConnectionRefusedException.class)
     public void constructor_throwsInvalidArgument_whenUriPointsToNothing() {
-        new QdbCluster("qdb://127.0.0.1:666");
+        new QdbCluster("qdb://127.0.0.1:1");
     }
 
     @Test(expected = QdbHostNotFoundException.class)

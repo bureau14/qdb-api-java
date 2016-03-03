@@ -6,15 +6,13 @@ public class QdbIntegerGetExpiryTimeTest {
     @Test
     public void returnSameValue_afterCallingExpiresAt() {
         QdbInteger integer = Helpers.createEmptyInteger();
-        long expiryTimeInMillis = System.currentTimeMillis() + 1000 * 60 * 60;
-        long expiryTimeInSeconds = expiryTimeInMillis / 1000;
-        Date expiryDate = new Date(expiryTimeInMillis);
+        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
 
         integer.put(1);
-        integer.expiresAt(expiryDate);
-        long result = integer.getExpiryTime();
+        integer.setExpiryTime(expiry);
+        QdbExpiryTime result = integer.getExpiryTime();
 
-        Assert.assertEquals(expiryTimeInSeconds, result);
+        Assert.assertEquals(expiry, result);
     }
 
     @Test
@@ -22,8 +20,8 @@ public class QdbIntegerGetExpiryTimeTest {
         QdbInteger integer = Helpers.createEmptyInteger();
 
         integer.put(42);
-        long result = integer.getExpiryTime();
+        QdbExpiryTime result = integer.getExpiryTime();
 
-        Assert.assertEquals(0, result);
+        Assert.assertEquals(QdbExpiryTime.NEVER_EXPIRES, result);
     }
 }

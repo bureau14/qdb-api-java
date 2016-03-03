@@ -8,6 +8,7 @@ import net.quasardb.qdb.jni.*;
  * Blob standands for "Binary Large Object", it's an entry which store binary data.
  */
 public final class QdbBlob extends QdbExpirableEntry {
+    // Protected constructor. Call QdbCluster.getBlob() to create a QdbBlob
     protected QdbBlob(SWIGTYPE_p_qdb_session session, String alias) {
         super(session, alias);
     }
@@ -23,23 +24,23 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
-        return this.compareAndSwap(newContent, comparand, 0L);
+        return this.compareAndSwap(newContent, comparand, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
      * Atomically compares the content of the blob and replaces it, if it matches.
      *
-     * @param newContent The content to be updated to the server in case of match.
+     * @param newContent The content to be updated to the server, in case of match.
      * @param comparand The content to be compared to.
-     * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
+     * @param expiryTime The new expiry time of the blob, in case of match
      * @return Returns The original content if comparand doesn't match. Returns null otherwise.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, long expiryTime) {
+    public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_compare_and_swap(session, alias, newContent, newContent.limit(), comparand, comparand.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, err);
+        ByteBuffer value = qdb.blob_compare_and_swap(session, alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
         if (err.getError() == qdb_error_t.error_unmatched_content)
             return value;
         QdbExceptionThrower.throwIfError(err);
@@ -86,22 +87,22 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public ByteBuffer getAndUpdate(ByteBuffer content) {
-        return this.getAndUpdate(content, 0L);
+        return this.getAndUpdate(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
      * Atomically reads and replaces (in this order) the content of blob.
      *
      * @param content The content of the blob to be set, before being replaced.
-     * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
+     * @param expiryTime The new expiry time of the blob.
      * @return The content of the blob to be set, before being replaced.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer getAndUpdate(ByteBuffer content, long expiryTime) {
+    public ByteBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get_and_update(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime, err);
+        ByteBuffer value = qdb.blob_get_and_update(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
         QdbExceptionThrower.throwIfError(err);
         return value;
     }
@@ -114,19 +115,19 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content) {
-        this.put(content, 0);
+        this.put(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
      * Create a new blob with the specified content. Fails if the blob already exists.
      *
      * @param content The content of the blob to be created.
-     * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
+     * @param expiryTime The expiry time of the blob.
      * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void put(ByteBuffer content, long expiryTime) {
-        qdb_error_t err = qdb.blob_put(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+    public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
+        qdb_error_t err = qdb.blob_put(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -138,19 +139,19 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void update(ByteBuffer content) {
-        this.update(content, 0);
+        this.update(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
      * Replaces the content of the blob.
      *
      * @param content The content of the blob to be set.
-     * @param expiryTime The absolute expiry time of the blob, in seconds, relative to epoch.
+     * @param expiryTime The new expiry time of the blob.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void update(ByteBuffer content, long expiryTime) {
-        qdb_error_t err = qdb.blob_update(session, alias, content, content.limit(), (expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
+    public void update(ByteBuffer content, QdbExpiryTime expiryTime) {
+        qdb_error_t err = qdb.blob_update(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 

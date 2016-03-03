@@ -14,13 +14,12 @@ public class QdbBlobGetExpiryTimeTest {
     public void returnSameValue_afterCallingExpiresAt() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        long expiryTimeMillis = System.currentTimeMillis() + 1000 * 60 * 60;
-        long expiryTimeSeconds = expiryTimeMillis / 1000;
+        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(1);
 
         blob.put(content);
-        blob.expiresAt(new Date(expiryTimeMillis));
-        long result = blob.getExpiryTime();
+        blob.setExpiryTime(expiry);
+        QdbExpiryTime result = blob.getExpiryTime();
 
-        Assert.assertEquals(expiryTimeSeconds, result);
+        Assert.assertEquals(expiry, result);
     }
 }

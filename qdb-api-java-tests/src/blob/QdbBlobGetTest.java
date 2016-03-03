@@ -10,9 +10,10 @@ public class QdbBlobGetTest {
         ByteBuffer content = Helpers.createSampleData();
         ByteBuffer comparand = content.duplicate();
         ByteBuffer newContent = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
         blob.put(content);
-        blob.compareAndSwap(newContent, comparand, 1);
+        blob.compareAndSwap(newContent, comparand, expiry);
         Helpers.wait(1.5);
         blob.get(); // <- throws
     }
@@ -21,22 +22,11 @@ public class QdbBlobGetTest {
     public void throwsAliasNotFound_afterCallingExpiresAt_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        long expiryTime = System.currentTimeMillis() + 1000;
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
         blob.put(content);
-        blob.expiresAt(new Date(expiryTime));
+        blob.setExpiryTime(expiry);
         Helpers.wait(1.5);
-        blob.get(); // <- throws
-    }
-
-    @Test(expected = QdbAliasNotFoundException.class)
-    public void throwsAliasNotFound_afterCallingExpiresFromNow_thenWaitingExpiration() {
-        QdbBlob blob = Helpers.createEmptyBlob();
-        ByteBuffer content = Helpers.createSampleData();
-
-        blob.put(content);
-        blob.expiresFromNow(0);
-        Helpers.wait(1.0);
         blob.get(); // <- throws
     }
 
@@ -54,9 +44,10 @@ public class QdbBlobGetTest {
     public void throwsAliasNotFound_afterCallingGetAndUpdate_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
         blob.put(content);
-        blob.getAndUpdate(content, 1);
+        blob.getAndUpdate(content, expiry);
         Helpers.wait(1.5);
         blob.get(); // <- throws
     }
@@ -65,8 +56,9 @@ public class QdbBlobGetTest {
     public void throwsAliasNotFound_afterCallingPut_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
-        blob.put(content, 1);
+        blob.put(content, expiry);
         Helpers.wait(1.5);
         blob.get(); // <- throws
     }
@@ -85,9 +77,10 @@ public class QdbBlobGetTest {
     public void throwsAliasNotFound_afterCallingUpdate_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
         blob.put(content);
-        blob.update(content, 1);
+        blob.update(content, expiry);
         Helpers.wait(1.5);
         blob.get(); // <- throws
     }

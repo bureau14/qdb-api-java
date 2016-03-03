@@ -15,18 +15,11 @@ public class QdbEntryTest {
     }
 
     @Test(expected = QdbInvalidArgumentException.class)
-    public void expiresFromNow_throwsInvalidArgument_whenOffsetIsNegative() {
-        QdbExpirableEntry entry = Helpers.createBlob();
-
-        entry.expiresFromNow(-1000);
-    }
-
-    @Test(expected = QdbInvalidArgumentException.class)
     public void expiresAt_throwsInvalidArgument_whenDateIsInThePast() {
         QdbExpirableEntry entry = Helpers.createBlob();
 
-        long expiryTime = System.currentTimeMillis() - 5 * 60 * 1000;
-        entry.expiresAt(new Date(expiryTime));
+        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        entry.setExpiryTime(fiveMinutesAgo);
     }
 
     @Test(expected = QdbAliasNotFoundException.class)

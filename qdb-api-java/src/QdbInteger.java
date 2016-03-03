@@ -49,19 +49,19 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue) {
-        this.put(initialValue, 0L);
+        this.put(initialValue, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
      * Creates a new integer. Errors if the integer already exists.
      *
      * @param initialValue The value of the new integer.
-     * @param expiryTimeInSeconds The absolute expiry time of the entry, in seconds, relative to epoch
+     * @param expiryTime The expiry time of the entry.
      * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void put(long initialValue, long expiryTimeInSeconds) {
-        qdb_error_t err = qdb.int_put(session, alias, initialValue, (expiryTimeInSeconds == 0L) ? expiryTimeInSeconds : (System.currentTimeMillis() / 1000) + expiryTimeInSeconds);
+    public void put(long initialValue, QdbExpiryTime expiryTime) {
+        qdb_error_t err = qdb.int_put(session, alias, initialValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -73,6 +73,19 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void set(long newValue) {
+        qdb_error_t err = qdb.int_update(session, alias, newValue, 0);
+        QdbExceptionThrower.throwIfError(err);
+    }
+
+    /**
+     * Updates an existing integer or creates one if it does not exist.
+     *
+     * @param newValue The new value of the integer.
+     * @param expiryTime The expiry time of the entry.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public void set(long newValue, QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.int_update(session, alias, newValue, 0);
         QdbExceptionThrower.throwIfError(err);
     }
