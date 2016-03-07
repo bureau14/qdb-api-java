@@ -6,7 +6,7 @@ import net.quasardb.qdb.*;
 import net.quasardb.qdb.jni.*;
 
 /**
- * A connection to a quasardb cluser.
+ * A connection to a quasardb cluster.
  */
 public final class QdbCluster {
     private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
@@ -18,7 +18,7 @@ public final class QdbCluster {
 
     /**
      * Connects to a quasardb cluster through the specified URI.
-     * The URI contains the addresses of the bootstraping nodes, other nodes are discovered during the first connection.
+     * The URI contains the addresses of the bootstrapping nodes, other nodes are discovered during the first connection.
      * Having more than one node in the URI allows to connect to the cluster even if the first node is down.
      *
      * @param uri a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
@@ -59,7 +59,7 @@ public final class QdbCluster {
 
     /**
      * Returns the low-level, underlying, session object.
-     * This is reserved for advanced user who want to use the JNI API.
+     * This is reserved for advanced users who want to use the JNI API.
      *
      * @return the low-level, underlying, session object
      *
@@ -69,7 +69,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Close connetion to the database.
+     * Close connection to the database.
      */
     public void disconnect() {
         qdb_error_t err = qdb.close(session);
@@ -407,7 +407,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a integer in the database.
+     * Get a handle to an integer in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the integer.
@@ -424,6 +424,16 @@ public final class QdbCluster {
      */
     public QdbHashSet getSet(String alias) {
         return new QdbHashSet(session, alias);
+    }
+
+    /**
+     * Get a handle to a stream in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the stream.
+     */
+    public QdbStream getStream(String alias) {
+        return new QdbStream(session, alias);
     }
 
     /**

@@ -18,7 +18,7 @@ public class QdbBatch {
     private final BatchOpsVec operations = new BatchOpsVec();
 
     /**
-     * Creates an empty batch, i.e. an empty collection of operation.<br>
+     * Creates an empty batch, i.e.<!-- --> an empty collection of operation. <br>
      * Batch operations can greatly increase performance when it is necessary to run many small operations. <br>
      * Operations in a QdbBatch are not executed until run() is called.
      *

@@ -1,4 +1,3 @@
-
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 
@@ -60,6 +59,10 @@ public class Helpers {
         return getInteger(createUniqueAlias());
     }
 
+    public static QdbStream createEmptyStream() {
+        return getStream(createUniqueAlias());
+    }
+
     public static QdbBlob getBlob(String alias) {
         return cluster.getBlob(alias);
     }
@@ -78,6 +81,10 @@ public class Helpers {
 
     public static QdbInteger getInteger(String alias) {
         return cluster.getInteger(alias);
+    }
+
+    public static QdbStream getStream(String alias) {
+        return cluster.getStream(alias);
     }
 
     public static QdbTag getTag(String alias) {

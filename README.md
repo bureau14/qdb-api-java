@@ -19,19 +19,28 @@ Step 1, unzip JNI package:
 
 Step 2, build:
 
-    gradle build -Pqdbd.path=qdb/qdbd
+    gradle build -Pqdbd.path=$PWD/qdb/qdbd
 
 or, on Windows:
 
-    gradle build -Pqdbd.path=qdb/qdbd.exe
+    gradle build -Pqdbd.path=%CD%/qdb/qdbd.exe
+
+### Troubleshooting
+
+If you encounter strange build or test errors, try to clean the directory:
+
+    gradle clean -Pqdbd.path=
+
+You may verify as well that the given paths are absolute.
+On Windows, do not use symbolic links for `qdb_api.dll`, otherwise all the tests will fail.
 
 ### Contact information
 
 > **quasardb**
-> 
+>
 > 24, rue Feydeau
 > 75002 Paris, France
-> 
+>
 > +33 (0)1 55 34 92 30
 >
 > +33 (0)1 55 34 92 39

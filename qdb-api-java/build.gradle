@@ -6,7 +6,7 @@ jar {
     doFirst {
         String osName = System.getProperty("os.name")
         if (osName.startsWith("Windows"))
-            appendix = "win" + System.getProperty("sun.arch.data.model") 
+            appendix = "win" + System.getProperty("sun.arch.data.model")
         else if (osName == "Mac OS X")
             appendix = "darwin"
         else if (osName == "FreeBSD")
@@ -28,6 +28,7 @@ jar {
         "../qdb/lib/libqdb_api_jni.so"
     ]}
 }
+
 sourceSets {
     main {
         java {
@@ -36,6 +37,28 @@ sourceSets {
         }
     }
 }
+
+// http://docs.oracle.com/javase/1.5.0/docs/tooldocs/windows/javadoc.html#options
+javadoc {
+    options.noQualifiers = ['all']
+    options.links = ['https://docs.oracle.com/javase/7/docs/api/']
+    exclude "**/SWIGTYPE*"
+    exclude "**/error_carrier*"
+    exclude "**/batch_request*"
+    exclude "**/batch_result*"
+    exclude "**/qdbJNI*"
+    exclude "**/qdb*"
+    exclude "**/results_list*"
+    exclude "**/retval*"
+    exclude "**/run_batch_result*"
+    exclude "**/ApiBufferPtr*"
+    exclude "**/BatchOpsVec*"
+    exclude "**/OperationHasValue*"
+    exclude "**/RemoteNode*"
+    exclude "**/StringVec*"
+    exclude "**/TypeOperationMap*"
+}
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir

@@ -5,7 +5,7 @@ import net.quasardb.qdb.jni.*;
 
 /**
  * A blob in the database.
- * Blob standands for "Binary Large Object", it's an entry which store binary data.
+ * Blob stands for "Binary Large Object", it's an entry which store binary data.
  */
 public final class QdbBlob extends QdbExpirableEntry {
     // Protected constructor. Call QdbCluster.getBlob() to create a QdbBlob
