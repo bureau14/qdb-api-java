@@ -54,7 +54,7 @@ public class QdbIntegerGetTest {
         QdbInteger integer = Helpers.createEmptyInteger();
 
         integer.put(666);
-        integer.set(42);
+        integer.update(42);
         long result = integer.get();
 
         Assert.assertEquals(42, result);

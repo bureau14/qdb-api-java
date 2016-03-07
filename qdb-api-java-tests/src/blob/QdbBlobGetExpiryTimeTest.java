@@ -1,25 +1,54 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbBlobGetExpiryTimeTest {
-    @Test(expected = QdbReservedAliasException.class)
-    public void throwsReservedAlias() {
-        QdbBlob blob = Helpers.getBlob("qdb");
-        blob.getExpiryTime(); // <- throws
-    }
-
     @Test
-    public void returnSameValue_afterCallingExpiresAt() {
+    public void returnsSameValue_afterCallingPutWithExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(1);
+        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
 
-        blob.put(content);
-        blob.setExpiryTime(expiry);
+        blob.put(content, expiry);
         QdbExpiryTime result = blob.getExpiryTime();
 
         Assert.assertEquals(expiry, result);
+    }
+
+    @Test
+    public void returnOriginalValue_afterCallingUpdateWithoutExpiration() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
+
+        blob.put(content, expiry);
+        blob.update(content);
+        QdbExpiryTime result = blob.getExpiryTime();
+
+        Assert.assertEquals(expiry, result);
+    }
+
+    @Test
+    public void returnUpdatedValue_afterCallingUpdateWithExpiration() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
+
+        blob.put(content);
+        blob.update(content, expiry);
+        QdbExpiryTime result = blob.getExpiryTime();
+
+        Assert.assertEquals(expiry, result);
+    }
+
+    @Test
+    public void returnsZero_afterCallingPutWithoutExpiration() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+
+        blob.put(content);
+        QdbExpiryTime result = blob.getExpiryTime();
+
+        Assert.assertEquals(QdbExpiryTime.NEVER_EXPIRES, result);
     }
 }

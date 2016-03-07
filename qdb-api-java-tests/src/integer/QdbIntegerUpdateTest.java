@@ -11,12 +11,12 @@ public class QdbIntegerUpdateTest {
         ByteBuffer content = Helpers.createSampleData();
 
         blob.put(content);
-        integer.set(666); // <- throws
+        integer.update(666); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwReservedAlias() {
         QdbInteger integer = Helpers.getInteger("qdb");
-        integer.set(666); // <- throws
+        integer.update(666); // <- throws
     }
 }

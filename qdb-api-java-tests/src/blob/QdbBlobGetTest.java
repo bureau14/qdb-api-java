@@ -19,7 +19,7 @@ public class QdbBlobGetTest {
     }
 
     @Test(expected = QdbAliasNotFoundException.class)
-    public void throwsAliasNotFound_afterCallingExpiresAt_thenWaitingExpiration() {
+    public void throwsAliasNotFound_afterCallingSetExpiryTime_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
         QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);

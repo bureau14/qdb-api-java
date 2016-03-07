@@ -36,6 +36,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @return Returns The original content if comparand doesn't match. Returns null otherwise.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
@@ -98,6 +99,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @return The content of the blob to be set, before being replaced.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public ByteBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
@@ -115,7 +117,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content) {
-        this.put(content, QdbExpiryTime.PRESERVE_EXPIRATION);
+        this.put(content, QdbExpiryTime.NEVER_EXPIRES);
     }
 
     /**
@@ -124,6 +126,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @param content The content of the blob to be created.
      * @param expiryTime The expiry time of the blob.
      * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
@@ -148,6 +151,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @param content The content of the blob to be set.
      * @param expiryTime The new expiry time of the blob.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void update(ByteBuffer content, QdbExpiryTime expiryTime) {

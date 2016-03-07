@@ -15,6 +15,15 @@ public class QdbBlobUpdateTest {
         blob.update(newContent); // <- throws
     }
 
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+
+        blob.update(content, fiveMinutesAgo); // <- throws
+    }
+
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer newContent = Helpers.createSampleData();

@@ -6,6 +6,7 @@ import net.quasardb.qdb.jni.*;
  * A signed 64-bit integer in the database.
  */
 public final class QdbInteger extends QdbExpirableEntry {
+    // Protected constructor. Call QdbCluster.getInteger()
     protected QdbInteger(SWIGTYPE_p_qdb_session session, String alias) {
         super(session, alias);
     }
@@ -49,7 +50,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue) {
-        this.put(initialValue, QdbExpiryTime.PRESERVE_EXPIRATION);
+        this.put(initialValue, QdbExpiryTime.NEVER_EXPIRES);
     }
 
     /**
@@ -72,9 +73,8 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void set(long newValue) {
-        qdb_error_t err = qdb.int_update(session, alias, newValue, 0);
-        QdbExceptionThrower.throwIfError(err);
+    public void update(long newValue) {
+        update(newValue, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
@@ -85,8 +85,8 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void set(long newValue, QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.int_update(session, alias, newValue, 0);
+    public void update(long newValue, QdbExpiryTime expiryTime) {
+        qdb_error_t err = qdb.int_update(session, alias, newValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 }

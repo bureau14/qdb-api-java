@@ -25,6 +25,16 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+
+        blob.put(content);
+        blob.compareAndSwap(content, content, fiveMinutesAgo); // <- throws
+    }
+
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer comparand = Helpers.createSampleData();

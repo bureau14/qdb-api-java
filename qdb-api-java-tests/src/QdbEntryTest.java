@@ -14,14 +14,6 @@ public class QdbEntryTest {
         Assert.assertEquals(alias, result);
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
-    public void expiresAt_throwsInvalidArgument_whenDateIsInThePast() {
-        QdbExpirableEntry entry = Helpers.createBlob();
-
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
-        entry.setExpiryTime(fiveMinutesAgo);
-    }
-
     @Test(expected = QdbAliasNotFoundException.class)
     public void remove_throwsAliasNotFound_ifCalledTwice() {
         QdbEntry entry = Helpers.createBlob();
