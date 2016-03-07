@@ -36,6 +36,9 @@ class QdbExceptionThrower {
         if (errorCode == qdb_error_t.error_underflow)
             throw new QdbUnderflowException();
 
+        if (errorCode == qdb_error_t.error_out_of_bounds)
+            throw new QdbOutOfBoundsException();
+
         if (errorCode == qdb_error_t.error_unexpected_reply)
             throw new QdbUnexpectedReplyException();
 

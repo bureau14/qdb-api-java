@@ -1,7 +1,6 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
-import java.util.*;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -15,112 +14,126 @@ public final class QdbDeque extends QdbEntry {
     }
 
     /**
-     * Inserts the specified element at the front of this deque.
+     * Retrives the item at the back of the queue. The queue must already exist.
      *
-     * @param content The content of the item to be added to the deque
-     * @throws QdbException TODO
+     * @return The content of the item, or null if the deque was empty.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void addFirst(ByteBuffer content) {
-        if (content == null) {
-            throw new NullPointerException();
-        }
-        final qdb_error_t err = qdb.deque_push_front(session, alias, content, content.limit());
-        QdbExceptionThrower.throwIfError(err);
-    }
-
-    /**
-     * Inserts the specified element at the end of this deque.
-     *
-     *
-     * @param content The content of the item to be added to the deque
-     * @throws NullPointerException if the specified element is null
-     * @throws QdbException TODO
-     */
-    public void addLast(ByteBuffer content) {
-        final qdb_error_t err = qdb.deque_push_back(session, alias, content, content.limit());
-        QdbExceptionThrower.throwIfError(err);
-    }
-
-    /**
-     *
-     * @return TODO
-     * @throws QdbException TODO
-     */
-    public ByteBuffer pollFirst() {
-        final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.deque_pop_front(session, alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
+    public ByteBuffer back() {
+        error_carrier error = new error_carrier();
+        ByteBuffer result = qdb.deque_back(session, alias, error);
+        if (error.getError() == qdb_error_t.error_container_empty)
+            return null;
+        QdbExceptionThrower.throwIfError(error);
         return result; // return null when empty
     }
 
     /**
+     * Retrieves the value of the queue at the specified index. The queue must already exist.
      *
-     * @return TODO
-     * @throws QdbException TODO
+     * @param index The zero-based index you wish to retrieve.
+     * @return The content of the item.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbOutOfBoundsException If the index is negative, or greater or equal than deque size.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer pollLast() {
-        final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.deque_pop_back(session, alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
+    public ByteBuffer get(long index) {
+        error_carrier error = new error_carrier();
+        ByteBuffer result = qdb.deque_get_at(session, alias, index, error);
+        QdbExceptionThrower.throwIfError(error);
         return result; // return null when empty
     }
 
     /**
+     * Retrieves the item at the front of the queue. The queue must already exist.
      *
-     * @return TODO
-     * @throws QdbException TODO
+     * @return The content of the item, or null if the deque was empty.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer peekFirst() {
-        final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.deque_front(session, alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
+    public ByteBuffer front() {
+        error_carrier error = new error_carrier();
+        ByteBuffer result = qdb.deque_front(session, alias, error);
+        if (error.getError() == qdb_error_t.error_container_empty)
+            return null;
+        QdbExceptionThrower.throwIfError(error);
         return result; // return null when empty
     }
 
     /**
+     * Removes and retrieves the item at the back of the queue. The queue must already exist.
      *
-     * @return TODO
-     * @throws QdbException TODO
+     * @return The content of the removed item, or null if the deque was empty.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer peekLast() {
-        final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.deque_back(session, alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
-        return result; // return null when empty
-    }
-
-    /**
-     *
-     * @return TODO
-     * @throws QdbException TODO
-     */
-    public long size() {
-
-        final error_carrier error = new error_carrier();
-        final long result = qdb.deque_size(session, alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
+    public ByteBuffer popBack() {
+        error_carrier error = new error_carrier();
+        ByteBuffer result = qdb.deque_pop_back(session, alias, error);
+        if (error.getError() == qdb_error_t.error_container_empty)
+            return null;
+        QdbExceptionThrower.throwIfError(error);
         return result;
     }
 
     /**
+     * Removes and retrieves the item at the front of the queue. The queue must already exist.
      *
-     * @param i TODO
-     * @return TODO
-     * @throws QdbException TODO
+     * @return The content of the removed item, or null if the deque was empty.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer get(long i) {
-        final error_carrier error = new error_carrier();
-        final ByteBuffer result = qdb.deque_get_at(session, alias, i, error);
-        QdbExceptionThrower.throwIfError(error.getError());
-        return result; // return null when empty
+    public ByteBuffer popFront() {
+        error_carrier error = new error_carrier();
+        ByteBuffer result = qdb.deque_pop_front(session, alias, error);
+        if (error.getError() == qdb_error_t.error_container_empty)
+            return null;
+        QdbExceptionThrower.throwIfError(error);
+        return result;
     }
 
     /**
+     * Inserts the content at the back of the queue. Creates the queue if it does not exist.
      *
-     * @return TODO
-     * @throws QdbException TODO
+     * @param content The content that will be added to the queue.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public boolean isEmpty() {
-        return size() == 0;
+    public void pushBack(ByteBuffer content) {
+        qdb_error_t err = qdb.deque_push_back(session, alias, content, content.limit());
+        QdbExceptionThrower.throwIfError(err);
+    }
+
+    /**
+     * Inserts the content at the front of the queue. Creates the queue if it does not exist.
+     *
+     * @param content The content that will be added to the queue.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public void pushFront(ByteBuffer content) {
+        qdb_error_t err = qdb.deque_push_front(session, alias, content, content.limit());
+        QdbExceptionThrower.throwIfError(err);
+    }
+
+    /**
+     * Retrieves the size of the queue. The queue must already exist.
+     *
+     * @return The number of items in the deque.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public long size() {
+        error_carrier error = new error_carrier();
+        long result = qdb.deque_size(session, alias, error);
+        QdbExceptionThrower.throwIfError(error);
+        return result;
     }
 }
