@@ -1,15 +1,13 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.*;
-import net.quasardb.qdb.*;
+import java.util.regex.*;
 import net.quasardb.qdb.jni.*;
 
 /**
  * A connection to a quasardb cluster.
  */
 public final class QdbCluster {
-    private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
     private transient SWIGTYPE_p_qdb_session session;
 
     static {
@@ -91,271 +89,6 @@ public final class QdbCluster {
     }
 
     /**
-     * Retrieve the status of the current quasardb instance in JSON format.
-     * <br>
-     * JSON response has the following format :
-     * <pre>
-     * {
-     *       "engine_build_date":"87f8d02 2014-01-15 16:12:30 +0100",
-     *       "engine_version":"master",
-     *       "entries":
-     *       {
-     *          "persisted":{"count":0,"size":0},
-     *           "resident":{"count":0,"size":0}
-     *       },
-     *       "hardware_concurrency":6,
-     *       "memory":
-     *       {
-     *           "physmem":{"total":25767272448,"used":5493329920},
-     *           "vm":{"total":8796092891136,
-     *           "used":417980416}
-     *       },
-     *       "network":{
-     *           "listening_address":"127.0.0.1",
-     *           "listening_port":2836,
-     *           "partitions":
-     *           {
-     *               "available_sessions":[1999,1999,2000,2000,2000],
-     *               "count":5,
-     *               "max_sessions":2000
-     *           }
-     *       },
-     *       "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9",
-     *       "operating_system":"Microsoft Windows 7 Ultimate Edition Service Pack 1 (build 7601), 64-bit",
-     *       "operations":
-     *       {
-     *           "compare_and_swap":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *              "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "find":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "find_remove":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "find_update":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "put":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "remove":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "purge_all":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *          },
-     *           "remove_if":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *           },
-     *           "update":{
-     *               "count":0,
-     *               "evictions":0,
-     *               "failures":0,
-     *               "in_bytes":0,
-     *               "out_bytes":0,
-     *               "pageins":0,
-     *               "successes":0
-     *          }
-     *       },
-     *       "overall":{
-     *           "count":0,
-     *           "evictions":0,
-     *           "failures":0,
-     *           "in_bytes":0,
-     *           "out_bytes":0,
-     *           "pageins":0,
-     *           "successes":0
-     *       },
-     *       "startup":"2014-01-20T15:01:11",
-     *       "timestamp":"2014-01-20T15:09:40"
-     * }
-     * </pre>
-     *
-     * @param uri The address of the node
-     * @return status of the current quasardb instance in JSON (see below)
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
-     */
-    public String getNodeStatus(String uri) {
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_status(session, uri, error);
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session, buffer);
-        }
-    }
-
-    /**
-     * Retrieve the configuration of the specific quasardb instance in JSON.
-     * <br>
-     * JSON response has the following format :
-     * <pre>
-     * {
-     *       "local":{
-     *           "depot":{
-     *               "root":"db",
-     *               "sync":false
-     *           },
-     *           "user":{
-     *               "license_file":"qdb.lic"
-     *           },
-     *           "limiter":{
-     *               "max_bytes":12883636224,
-     *               "max_resident_entries":100000
-     *           },
-     *           "logger":{
-     *               "flush_interval":3,
-     *               "log_level":2,
-     *               "log_to_console":true,
-     *               "log_to_syslog":false
-     *           },
-     *           "network":{
-     *               "client_timeout":60,
-     *               "idle_timeout":300,
-     *               "listen_on":"127.0.0.1:2836",
-     *               "partitions_count":5,
-     *               "server_sessions":2000
-     *           },
-     *           "chord":{
-     *               "bootstrapping_peers":[],
-     *               "no_stabilization":false,
-     *               "node_id":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
-     *           }
-     *       },
-     *       "global":{
-     *           "cluster":{
-     *               "replication_factor":1,
-     *               "transient":false
-     *           }
-     *       }
-     * }
-     * </pre>
-     *
-     * @param uri The address of the node
-     * @return configuration of the current quasardb instance.
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
-     */
-    public String getNodeConfig(String uri) {
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_config(session, uri, error);
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session, buffer);
-            buffer = null;
-        }
-    }
-
-    /**
-     * Retrieve the topology of the current quasardb instance.
-     * <br>
-     * JSON response has the following format :
-     * <pre>
-     * {
-     *       "center":{
-     *           "endpoint":"127.0.0.1:2836",
-     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
-     *       },
-     *       "predecessor":{
-     *           "endpoint":"127.0.0.1:2836",
-     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
-     *       },
-     *       "successor":{
-     *           "endpoint":"127.0.0.1:2836",
-     *           "reference":"5309f39a3f176b9-179cd55bd9dc83e5-c09beea926e4bb75-a460c8c4e5487da9"
-     *       }
-     * }
-     *
-     * </pre>
-     *
-     * @param uri the host of the quasardb node you want to retrieve topology
-     * @return topology of the current quasardb instance.
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
-     */
-    public String getNodeTopology(String uri) {
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_topology(session, uri, error);
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session, buffer);
-            buffer = null;
-        }
-    }
-
-    /**
-     * Stop a quasardb node of the cluster.
-     *
-     * @param uri address of node to stop.
-     * @param reason administration message which is a notification why the node was stopped.
-     * @return true when node was stopped.
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
-     */
-    public boolean stopNode(String uri, String reason) {
-        qdb_error_t err = qdb.stop_node(session, uri, reason);
-        if (err != qdb_error_t.error_ok) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Remove all data from the cluster.
      *
      * @throws QdbOperationDisabledException If the purgeAll operation has been disabled on the server.
@@ -383,7 +116,7 @@ public final class QdbCluster {
         error_carrier error = new error_carrier();
         RemoteNode location = qdb.get_location(session, alias, error);
         QdbExceptionThrower.throwIfError(error.getError());
-        return new QdbNode(location.getAddress(), location.getPort());
+        return new QdbNode(session, location.getAddress(), location.getPort());
     }
 
     /**
@@ -414,6 +147,25 @@ public final class QdbCluster {
      */
     public QdbInteger getInteger(String alias) {
         return new QdbInteger(session, alias);
+    }
+
+    /**
+     * Get a handle to a node (ie a server) in the cluster.
+     *
+     * @param uri The uri of the node, in the form qdb://10.0.0.1:2836
+     * @return The node
+     */
+    public QdbNode getNode(String uri) {
+        Pattern pattern = Pattern.compile("^qdb://(.*):(\\d+)/?$");
+        Matcher matcher = pattern.matcher(uri);
+
+        if (!matcher.find())
+            throw new QdbInvalidArgumentException("URI format is incorrect.");
+
+        String hostName = matcher.group(1);
+        int port = Integer.parseInt(matcher.group(2));
+
+        return new QdbNode(session, hostName, port);
     }
 
     /**

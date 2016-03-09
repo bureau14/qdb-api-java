@@ -1,71 +1,120 @@
 package net.quasardb.qdb;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.*;
+import net.quasardb.qdb.jni.*;
+
 /**
- * A quasardb <a href="https://doc.quasardb.net/1.1.4/glossary.html#term-node">node</a> is a <i>{hostname, port}</i> tuple.
- *  
- * @author &copy; <a href="http://www.quasardb.fr">quasardb</a> - 2014
- * @version 2.0.0
- * @since 1.1.5
+ * A node in the quasardb cluster.
  */
-public class QdbNode {
-    // Hostname of quasardb node
-    private String hostName;
-    
-    // Port of quasardb node
-    private int port;
-    
-    /**
-     * Build a QuasardbNode with a provided hostname and port.
-     * 
-     * @param hostName hostname of the quasardb node. Example : 127.0.0.1
-     * @param port port of the quasardb node. Example : 2836
-     * @since 1.1.5
-     */
-    public QdbNode(String hostName, int port) {
+public final class QdbNode {
+    private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
+    private transient SWIGTYPE_p_qdb_session session;
+    private final String hostName;
+    private final int port;
+    private final String uri;
+
+    // Protected constructor. Call QdbCluster.getNode() to construct a QdbNode.
+    protected QdbNode(SWIGTYPE_p_qdb_session session, String hostName, int port) {
+        this.session = session;
         this.hostName = hostName;
+        this.port = port;
+        uri = "qdb://" + hostName + ":" + port;
     }
 
     /**
-     * Get the hostname of the current quasardb node.
-     * 
+     * Get the hostname of the node.
+     *
      * @return the hostname of the quasardb node
-     * @since 1.1.5
      */
     public String getHostName() {
         return this.hostName;
     }
 
     /**
-     * Set hostname for a quasardb node.
-     * Example : 127.0.0.1
-     * 
-     * <b>N.B :</b>hostname can be a logical name 
-     * 
-     * @param hostName the host to set
-     * @since 1.1.5
-     */
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-    
-    /**
-     * Get the port of the current quasardb node.
-     * 
+     * Get the port of the node.
+     *
      * @return the port of the quasardb node
-     * @since 1.1.5
      */
     public int getPort() {
         return this.port;
     }
-    
+
     /**
-     * Set port for a quasardb node.
-     * 
-     * @param port the quasardb node port to set to the node
-     * @since 1.1.5
+     * Retrieve the configuration node.
+     *
+     * @return A JSON string containing the confiuration of the node.
      */
-    public void setPort(int port) {
-        this.port = port;
+    public String getConfig() {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_config(session, uri, error);
+        QdbExceptionThrower.throwIfError(error);
+
+        // workaround: remove null terminator:
+        buffer.limit(buffer.limit() - 1);
+
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
+            buffer = null;
+        }
     }
-    
+
+    /**
+     * Retrieve the topology of the node.
+     *
+     * @return A JSON string containing the tology of the node.
+     */
+    public String getTopology() {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_topology(session, uri, error);
+        QdbExceptionThrower.throwIfError(error);
+
+        // workaround: remove null terminator:
+        buffer.limit(buffer.limit() - 1);
+
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
+            buffer = null;
+        }
+    }
+
+    /**
+     * Retrieve the status of the node.
+     *
+     * @return A JSON string containing the status of the node.
+     */
+    public String getStatus() {
+        error_carrier error = new error_carrier();
+        ByteBuffer buffer = qdb.node_status(session, uri, error);
+        QdbExceptionThrower.throwIfError(error);
+
+        // workaround: remove null terminator:
+        buffer.limit(buffer.limit() - 1);
+
+        try {
+            return utf8.decode(buffer).toString();
+        } catch (CharacterCodingException e) {
+            throw new QdbUnexpectedReplyException(e.getMessage());
+        } finally {
+            qdb.free_buffer(session, buffer);
+        }
+    }
+
+    /**
+     * Shutdown the node.
+     *
+     * @param reason A message that will be logged as the reason for the shutdown.
+     */
+    public void stop(String reason) {
+        qdb_error_t err = qdb.stop_node(session, uri, reason);
+        QdbExceptionThrower.throwIfError(err);
+    }
 }

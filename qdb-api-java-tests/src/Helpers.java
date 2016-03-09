@@ -83,6 +83,10 @@ public class Helpers {
         return cluster.getInteger(alias);
     }
 
+    public static QdbNode getNode() {
+        return cluster.getNode(DaemonRunner.getURI());
+    }
+
     public static QdbStream getStream(String alias) {
         return cluster.getStream(alias);
     }

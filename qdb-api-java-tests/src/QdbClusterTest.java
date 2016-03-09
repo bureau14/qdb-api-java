@@ -21,4 +21,9 @@ public class QdbClusterTest {
     public void purgeAll_throwsOperationDisabled() {
         Helpers.getCluster().purgeAll(); // <- throws
     }
+
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void getNode_throwsInvalidArgument_whenUriIsInvalid() {
+        Helpers.getCluster().getNode("wrong_uri"); // <- throws
+    }
 }
