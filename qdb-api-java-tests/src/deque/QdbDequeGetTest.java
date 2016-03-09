@@ -4,7 +4,7 @@ import org.junit.*;
 
 public class QdbDequeGetTest {
     @Test
-    public void returnsItems_afterCallingPushBack() {
+    public void returnsItemsInOrder_whenIndexIsPositive() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();
@@ -19,27 +19,18 @@ public class QdbDequeGetTest {
     }
 
     @Test
-    public void returnsItems_afterCallingPushFront() {
+    public void returnsItemsInReverseOrder_whenIndexIsNegative() {
         QdbDeque deque = Helpers.createEmptyDeque();
         ByteBuffer content1 = Helpers.createSampleData();
         ByteBuffer content2 = Helpers.createSampleData();
 
-        deque.pushFront(content1);
-        deque.pushFront(content2);
-        ByteBuffer result1 = deque.get(0);
-        ByteBuffer result2 = deque.get(1);
+        deque.pushBack(content1);
+        deque.pushBack(content2);
+        ByteBuffer result1 = deque.get(-1);
+        ByteBuffer result2 = deque.get(-2);
 
         Assert.assertEquals(content2, result1);
         Assert.assertEquals(content1, result2);
-    }
-
-    @Test(expected = QdbOutOfBoundsException.class)
-    public void throwsOutOfBounds_whenIndexIsNegative() {
-        QdbDeque deque = Helpers.createEmptyDeque();
-        ByteBuffer content = Helpers.createSampleData();
-
-        deque.pushBack(content);
-        deque.get(-1); // <- throws
     }
 
     @Test(expected = QdbOutOfBoundsException.class)
@@ -49,6 +40,15 @@ public class QdbDequeGetTest {
 
         deque.pushBack(content);
         deque.get(1); // <- throws
+    }
+
+    @Test(expected = QdbOutOfBoundsException.class)
+    public void throwsOutOfBounds_whenIndexIsLowerThanNegatedSize() {
+        QdbDeque deque = Helpers.createEmptyDeque();
+        ByteBuffer content = Helpers.createSampleData();
+
+        deque.pushBack(content);
+        deque.get(-2); // <- throws
     }
 
     @Test(expected = QdbAliasNotFoundException.class)
