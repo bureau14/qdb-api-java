@@ -48,6 +48,9 @@ class QdbExceptionThrower {
         if (errorCode == qdb_error_t.error_host_not_found)
             throw new QdbHostNotFoundException();
 
+        if (errorCode == qdb_error_t.error_resource_locked)
+            throw new QdbResourceLockedException();
+
         throw new QdbMiscException(errorCode);
     }
 }
