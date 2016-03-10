@@ -9,7 +9,7 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbBlob extends QdbExpirableEntry {
     // Protected constructor. Call QdbCluster.getBlob() to create a QdbBlob
-    protected QdbBlob(SWIGTYPE_p_qdb_session session, String alias) {
+    protected QdbBlob(QdbSession session, String alias) {
         super(session, alias);
     }
 
@@ -41,7 +41,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_compare_and_swap(session, alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
+        ByteBuffer value = qdb.blob_compare_and_swap(session.handle(), alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
         if (err.getError() == qdb_error_t.error_unmatched_content)
             return value;
         QdbExceptionThrower.throwIfError(err);
@@ -58,7 +58,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public ByteBuffer get() {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get(session, alias, err);
+        ByteBuffer value = qdb.blob_get(session.handle(), alias, err);
         QdbExceptionThrower.throwIfError(err);
         return value;
     }
@@ -73,7 +73,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public ByteBuffer getAndRemove() {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get_and_remove(session, alias, err);
+        ByteBuffer value = qdb.blob_get_and_remove(session.handle(), alias, err);
         QdbExceptionThrower.throwIfError(err);
         return value;
     }
@@ -104,7 +104,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public ByteBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get_and_update(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
+        ByteBuffer value = qdb.blob_get_and_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
         QdbExceptionThrower.throwIfError(err);
         return value;
     }
@@ -130,7 +130,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.blob_put(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
+        qdb_error_t err = qdb.blob_put(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -155,7 +155,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void update(ByteBuffer content, QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.blob_update(session, alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
+        qdb_error_t err = qdb.blob_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -169,7 +169,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeIf(ByteBuffer comparand) {
-        qdb_error_t err = qdb.blob_remove_if(session, alias, comparand, comparand.limit());
+        qdb_error_t err = qdb.blob_remove_if(session.handle(), alias, comparand, comparand.limit());
         if (err == qdb_error_t.error_unmatched_content)
             return false;
         QdbExceptionThrower.throwIfError(err);

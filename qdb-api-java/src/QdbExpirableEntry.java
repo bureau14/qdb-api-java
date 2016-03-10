@@ -7,7 +7,7 @@ import net.quasardb.qdb.jni.*;
  * An entry that has the ability to expire.
  */
 public class QdbExpirableEntry extends QdbEntry {
-    protected QdbExpirableEntry(SWIGTYPE_p_qdb_session session, String alias) {
+    protected QdbExpirableEntry(QdbSession session, String alias) {
         super(session, alias);
     }
 
@@ -19,7 +19,7 @@ public class QdbExpirableEntry extends QdbEntry {
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      */
     public void setExpiryTime(QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.expires_at(session, alias, expiryTime.toSecondsSinceEpoch());
+        qdb_error_t err = qdb.expires_at(session.handle(), alias, expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -31,7 +31,7 @@ public class QdbExpirableEntry extends QdbEntry {
      */
     public QdbExpiryTime getExpiryTime() {
         error_carrier error = new error_carrier();
-        long secondsSinceEpoch = qdb.get_expiry(session, alias, error);
+        long secondsSinceEpoch = qdb.get_expiry(session.handle(), alias, error);
         QdbExceptionThrower.throwIfError(error);
         return QdbExpiryTime.makeSecondsSinceEpoch(secondsSinceEpoch);
     }

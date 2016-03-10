@@ -11,7 +11,7 @@ import net.quasardb.qdb.jni.*;
  * Represents a stream in a quasardb database.
  */
 public final class QdbStream extends QdbEntry implements AutoCloseable, SeekableByteChannel {
-    protected QdbStream(final SWIGTYPE_p_qdb_session session, final String alias) {
+    protected QdbStream(final QdbSession session, final String alias) {
         super(session, alias);
     }
 
@@ -24,12 +24,12 @@ public final class QdbStream extends QdbEntry implements AutoCloseable, Seekable
 
         switch (option) {
         case READ:
-            stream = qdb.stream_open(this.session, this.alias, qdb_stream_mode_t.qdb_stream_mode_read, error);
+            stream = qdb.stream_open(session.handle(), alias, qdb_stream_mode_t.qdb_stream_mode_read, error);
             break;
         case APPEND:
-            stream = qdb.stream_open(this.session, this.alias, qdb_stream_mode_t.qdb_stream_mode_append, error);
+            stream = qdb.stream_open(session.handle(), alias, qdb_stream_mode_t.qdb_stream_mode_append, error);
             break;
-        // TODO(marek): Should we throw QdbInvalidArgumentException or UnsupportedOperationException?
+            // TODO(marek): Should we throw QdbInvalidArgumentException or UnsupportedOperationException?
         }
 
         QdbExceptionThrower.throwIfError(error);

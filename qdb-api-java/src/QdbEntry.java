@@ -7,10 +7,10 @@ import net.quasardb.qdb.jni.*;
  * An entry in the database.
  */
 public class QdbEntry {
-    protected final transient SWIGTYPE_p_qdb_session session;
+    protected final transient QdbSession session;
     protected final String alias;
 
-    protected QdbEntry(SWIGTYPE_p_qdb_session session, String alias) {
+    protected QdbEntry(QdbSession session, String alias) {
         this.session = session;
         this.alias = alias;
     }
@@ -31,7 +31,7 @@ public class QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void remove() {
-        qdb_error_t err = qdb.remove(session, alias);
+        qdb_error_t err = qdb.remove(session.handle(), alias);
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -44,7 +44,7 @@ public class QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean addTag(String tag) {
-        qdb_error_t err = qdb.add_tag(session, alias, tag);
+        qdb_error_t err = qdb.add_tag(session.handle(), alias, tag);
 
         if (err == qdb_error_t.error_tag_already_set)
             return false;
@@ -61,7 +61,7 @@ public class QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean hasTag(String tag) {
-        qdb_error_t err = qdb.has_tag(session, alias, tag);
+        qdb_error_t err = qdb.has_tag(session.handle(), alias, tag);
         if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
@@ -78,7 +78,7 @@ public class QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeTag(String tag) {
-        qdb_error_t err = qdb.remove_tag(session, alias, tag);
+        qdb_error_t err = qdb.remove_tag(session.handle(), alias, tag);
         if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
@@ -93,7 +93,7 @@ public class QdbEntry {
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      */
     public List<String> getTags() {
-        results_list res = qdb.get_tags(session, alias);
+        results_list res = qdb.get_tags(session.handle(), alias);
         QdbExceptionThrower.throwIfError(res.getError());
 
         return resultsToList(res.getResults());

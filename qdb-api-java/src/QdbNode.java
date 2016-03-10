@@ -9,13 +9,13 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbNode {
     private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
-    private transient SWIGTYPE_p_qdb_session session;
+    private transient QdbSession session;
     private final String hostName;
     private final int port;
     private final String uri;
 
     // Protected constructor. Call QdbCluster.getNode() to construct a QdbNode.
-    protected QdbNode(SWIGTYPE_p_qdb_session session, String hostName, int port) {
+    protected QdbNode(QdbSession session, String hostName, int port) {
         this.session = session;
         this.hostName = hostName;
         this.port = port;
@@ -47,7 +47,7 @@ public final class QdbNode {
      */
     public String getConfig() {
         error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_config(session, uri, error);
+        ByteBuffer buffer = qdb.node_config(session.handle(), uri, error);
         QdbExceptionThrower.throwIfError(error);
 
         // workaround: remove null terminator:
@@ -58,7 +58,7 @@ public final class QdbNode {
         } catch (CharacterCodingException e) {
             throw new QdbUnexpectedReplyException(e.getMessage());
         } finally {
-            qdb.free_buffer(session, buffer);
+            qdb.free_buffer(session.handle(), buffer);
             buffer = null;
         }
     }
@@ -70,7 +70,7 @@ public final class QdbNode {
      */
     public String getTopology() {
         error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_topology(session, uri, error);
+        ByteBuffer buffer = qdb.node_topology(session.handle(), uri, error);
         QdbExceptionThrower.throwIfError(error);
 
         // workaround: remove null terminator:
@@ -81,7 +81,7 @@ public final class QdbNode {
         } catch (CharacterCodingException e) {
             throw new QdbUnexpectedReplyException(e.getMessage());
         } finally {
-            qdb.free_buffer(session, buffer);
+            qdb.free_buffer(session.handle(), buffer);
             buffer = null;
         }
     }
@@ -93,7 +93,7 @@ public final class QdbNode {
      */
     public String getStatus() {
         error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_status(session, uri, error);
+        ByteBuffer buffer = qdb.node_status(session.handle(), uri, error);
         QdbExceptionThrower.throwIfError(error);
 
         // workaround: remove null terminator:
@@ -104,7 +104,7 @@ public final class QdbNode {
         } catch (CharacterCodingException e) {
             throw new QdbUnexpectedReplyException(e.getMessage());
         } finally {
-            qdb.free_buffer(session, buffer);
+            qdb.free_buffer(session.handle(), buffer);
         }
     }
 
@@ -114,7 +114,7 @@ public final class QdbNode {
      * @param reason A message that will be logged as the reason for the shutdown.
      */
     public void stop(String reason) {
-        qdb_error_t err = qdb.stop_node(session, uri, reason);
+        qdb_error_t err = qdb.stop_node(session.handle(), uri, reason);
         QdbExceptionThrower.throwIfError(err);
     }
 }

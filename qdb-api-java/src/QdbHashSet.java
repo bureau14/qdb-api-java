@@ -7,7 +7,7 @@ import net.quasardb.qdb.jni.*;
  * A hash-set in the database
  */
 public final class QdbHashSet extends QdbEntry {
-    protected QdbHashSet(SWIGTYPE_p_qdb_session session, String alias) {
+    protected QdbHashSet(QdbSession session, String alias) {
         super(session, alias);
     }
 
@@ -21,7 +21,7 @@ public final class QdbHashSet extends QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean contains(ByteBuffer content) {
-        qdb_error_t err = qdb.hset_contains(session, alias, content, content.limit());
+        qdb_error_t err = qdb.hset_contains(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_not_found)
             return false;
@@ -39,7 +39,7 @@ public final class QdbHashSet extends QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean erase(ByteBuffer content) {
-        qdb_error_t err = qdb.hset_erase(session, alias, content, content.limit());
+        qdb_error_t err = qdb.hset_erase(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_not_found)
             return false;
@@ -56,7 +56,7 @@ public final class QdbHashSet extends QdbEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean insert(ByteBuffer content) {
-        qdb_error_t err = qdb.hset_insert(session, alias, content, content.limit());
+        qdb_error_t err = qdb.hset_insert(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_already_exists)
             return false;

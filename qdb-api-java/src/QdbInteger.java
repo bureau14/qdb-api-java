@@ -7,7 +7,7 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbInteger extends QdbExpirableEntry {
     // Protected constructor. Call QdbCluster.getInteger()
-    protected QdbInteger(SWIGTYPE_p_qdb_session session, String alias) {
+    protected QdbInteger(QdbSession session, String alias) {
         super(session, alias);
     }
 
@@ -22,7 +22,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public long add(long delta) {
         error_carrier err = new error_carrier();
-        long res = qdb.int_add(session, alias, delta, err);
+        long res = qdb.int_add(session.handle(), alias, delta, err);
         QdbExceptionThrower.throwIfError(err);
         return res;
     }
@@ -37,7 +37,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public long get() {
         error_carrier err = new error_carrier();
-        long value = qdb.int_get(session, alias, err);
+        long value = qdb.int_get(session.handle(), alias, err);
         QdbExceptionThrower.throwIfError(err);
         return value;
     }
@@ -62,7 +62,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.int_put(session, alias, initialValue, expiryTime.toSecondsSinceEpoch());
+        qdb_error_t err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -86,7 +86,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void update(long newValue, QdbExpiryTime expiryTime) {
-        qdb_error_t err = qdb.int_update(session, alias, newValue, expiryTime.toSecondsSinceEpoch());
+        qdb_error_t err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionThrower.throwIfError(err);
     }
 }

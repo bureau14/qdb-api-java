@@ -8,7 +8,7 @@ import net.quasardb.qdb.jni.*;
  * Represents a tag in a quasardb database.
  */
 public final class QdbTag extends QdbEntry {
-    protected QdbTag(final SWIGTYPE_p_qdb_session session, final String alias) {
+    protected QdbTag(QdbSession session, String alias) {
         super(session, alias);
     }
 
@@ -19,7 +19,7 @@ public final class QdbTag extends QdbEntry {
      * @throws QdbException TODO
      */
     public List<String> getEntries() {
-        results_list res = qdb.get_tagged(session, alias);
+        results_list res = qdb.get_tagged(session.handle(), alias);
         QdbExceptionThrower.throwIfError(res.getError());
         return resultsToList(res.getResults());
     }

@@ -8,11 +8,7 @@ import net.quasardb.qdb.jni.*;
  * A connection to a quasardb cluster.
  */
 public final class QdbCluster {
-    private transient SWIGTYPE_p_qdb_session session;
-
-    static {
-        QdbNativeApi.load();
-    }
+    private transient QdbSession session;
 
     /**
      * Connects to a quasardb cluster through the specified URI.
@@ -24,15 +20,9 @@ public final class QdbCluster {
      * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri) {
-        session = qdb.open();
-        qdb_error_t err = qdb.connect(session, uri);
+        session = new QdbSession();
+        qdb_error_t err = qdb.connect(session.handle(), uri);
         QdbExceptionThrower.throwIfError(err);
-    }
-
-    private void checkSession() {
-        if (session == null) {
-            throw new QdbMiscException(qdb_error_t.error_not_connected);
-        }
     }
 
     /**
@@ -40,8 +30,7 @@ public final class QdbCluster {
      *
      * @return version of the current quasardb instance.
      */
-    public String getVersion() {
-        this.checkSession();
+    public static String getVersion() {
         return qdb.version();
     }
 
@@ -50,42 +39,8 @@ public final class QdbCluster {
      *
      * @return build version of the current quasardb instance.
      */
-    public String getBuild() {
-        this.checkSession();
+    public static String getBuild() {
         return qdb.build();
-    }
-
-    /**
-     * Returns the low-level, underlying, session object.
-     * This is reserved for advanced users who want to use the JNI API.
-     *
-     * @return the low-level, underlying, session object
-     *
-     */
-    public SWIGTYPE_p_qdb_session getSession() {
-        return session;
-    }
-
-    /**
-     * Close connection to the database.
-     */
-    public void disconnect() {
-        qdb_error_t err = qdb.close(session);
-        QdbExceptionThrower.throwIfError(err);
-        this.session = null;
-    }
-
-    /**
-     * Check if client is connected to quasardb instance.
-     *
-     * @return true if client is connected to quasardb instance
-     */
-    public boolean isConnected() {
-        try {
-            return !this.getVersion().isEmpty();
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     /**
@@ -94,7 +49,7 @@ public final class QdbCluster {
      * @throws QdbOperationDisabledException If the operation has been disabled on the server.
      */
     public void purgeAll() {
-        qdb_error_t err = qdb.purge_all(session);
+        qdb_error_t err = qdb.purge_all(session.handle());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -102,7 +57,7 @@ public final class QdbCluster {
      * Trim data from the cluster, that is, remove dead references and old versions.
      */
     public void trimAll() {
-        qdb_error_t err = qdb.trim_all(session);
+        qdb_error_t err = qdb.trim_all(session.handle());
         QdbExceptionThrower.throwIfError(err);
     }
 
@@ -114,7 +69,7 @@ public final class QdbCluster {
      */
     public QdbNode getKeyLocation(String alias) {
         error_carrier error = new error_carrier();
-        RemoteNode location = qdb.get_location(session, alias, error);
+        RemoteNode location = qdb.get_location(session.handle(), alias, error);
         QdbExceptionThrower.throwIfError(error.getError());
         return new QdbNode(session, location.getAddress(), location.getPort());
     }
@@ -204,18 +159,6 @@ public final class QdbCluster {
      * @return An empty batch.
      */
     public QdbBatch createBatch() {
-        return new QdbBatch(session);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        try {
-            return "QdbCluster - Version : " + this.getVersion() + " - Build : " + this.getBuild();
-        } catch (Exception e) {
-            return "QdbCluster - Error => " + e.getMessage();
-        }
+        return new QdbBatch(session.handle());
     }
 }
