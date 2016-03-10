@@ -91,7 +91,7 @@ public final class QdbCluster {
     /**
      * Remove all data from the cluster.
      *
-     * @throws QdbOperationDisabledException If the purgeAll operation has been disabled on the server.
+     * @throws QdbOperationDisabledException If the operation has been disabled on the server.
      */
     public void purgeAll() {
         qdb_error_t err = qdb.purge_all(session);
@@ -150,9 +150,9 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a node (ie a server) in the cluster.
+     * Get a handle to a node (i.e.<!-- --> a server) in the cluster.
      *
-     * @param uri The uri of the node, in the form qdb://10.0.0.1:2836
+     * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
      * @return The node
      */
     public QdbNode getNode(String uri) {

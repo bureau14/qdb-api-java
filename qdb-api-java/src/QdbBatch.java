@@ -24,7 +24,7 @@ public class QdbBatch {
      *
      * @param session TODO
      */
-    public QdbBatch(SWIGTYPE_p_qdb_session session) {
+    protected QdbBatch(SWIGTYPE_p_qdb_session session) {
         this.session = session;
     }
 

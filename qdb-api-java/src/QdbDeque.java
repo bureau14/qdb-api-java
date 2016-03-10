@@ -5,7 +5,7 @@ import net.quasardb.qdb.jni.*;
 
 /**
  * A deque in the database.
- * Deque stands for "double-ended queue", you can both endeque and dedeque from the front and the back.
+ * Deque stands for "double-ended queue", you can both enqueue and dequeue from the front and the back.
  */
 public final class QdbDeque extends QdbEntry {
     // Protected constructor. Call QdbCluster.getDeque() to create a QdbDeque
@@ -14,7 +14,7 @@ public final class QdbDeque extends QdbEntry {
     }
 
     /**
-     * Retrives the item at the back of the queue. The queue must already exist.
+     * Retrieves the item at the back of the queue. The queue must already exist.
      *
      * @return The content of the item, or null if the deque was empty.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.

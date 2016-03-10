@@ -43,7 +43,7 @@ public final class QdbNode {
     /**
      * Retrieve the configuration node.
      *
-     * @return A JSON string containing the confiuration of the node.
+     * @return A JSON string containing the configuration of the node.
      */
     public String getConfig() {
         error_carrier error = new error_carrier();
@@ -66,7 +66,7 @@ public final class QdbNode {
     /**
      * Retrieve the topology of the node.
      *
-     * @return A JSON string containing the tology of the node.
+     * @return A JSON string containing the topology of the node.
      */
     public String getTopology() {
         error_carrier error = new error_carrier();
