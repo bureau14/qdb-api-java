@@ -8,7 +8,7 @@ import net.quasardb.qdb.jni.*;
  * Deque stands for "double-ended queue", you can both enqueue and dequeue from the front and the back.
  */
 public final class QdbDeque extends QdbEntry {
-    // Protected constructor. Call QdbCluster.getDeque() to create a QdbDeque
+    // Protected constructor. Call QdbCluster.deque() to get an instance.
     protected QdbDeque(QdbSession session, String alias) {
         super(session, alias);
     }

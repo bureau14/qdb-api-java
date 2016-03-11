@@ -26,21 +26,95 @@ public final class QdbCluster {
     }
 
     /**
-     * Retrieve the version of the current quasardb instance.
+     * Get a handle to a blob in the database.
      *
-     * @return version of the current quasardb instance.
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the blob.
      */
-    public static String getVersion() {
-        return qdb.version();
+    public QdbBlob blob(String alias) {
+        return new QdbBlob(session, alias);
     }
 
     /**
-     * Retrieve the build version of the current quasardb instance.
+     * Get a handle to a deque (double-ended queue) in the database.
      *
-     * @return build version of the current quasardb instance.
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the deque.
      */
-    public static String getBuild() {
-        return qdb.build();
+    public QdbDeque deque(String alias) {
+        return new QdbDeque(session, alias);
+    }
+
+    /**
+     * Get a handle to an integer in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the integer.
+     */
+    public QdbInteger integer(String alias) {
+        return new QdbInteger(session, alias);
+    }
+
+    /**
+     * Get a handle to a node (i.e. a server) in the cluster.
+     *
+     * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
+     * @return The node
+     */
+    public QdbNode node(String uri) {
+        Pattern pattern = Pattern.compile("^qdb://(.*):(\\d+)/?$");
+        Matcher matcher = pattern.matcher(uri);
+
+        if (!matcher.find())
+            throw new QdbInvalidArgumentException("URI format is incorrect.");
+
+        String hostName = matcher.group(1);
+        int port = Integer.parseInt(matcher.group(2));
+
+        return new QdbNode(session, hostName, port);
+    }
+
+    /**
+     * Get a handle to a hash-set in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the hash-set.
+     */
+    public QdbHashSet hashSet(String alias) {
+        return new QdbHashSet(session, alias);
+    }
+
+    /**
+     * Get a handle to a stream in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the stream.
+     */
+    public QdbStream stream(String alias) {
+        return new QdbStream(session, alias);
+    }
+
+    /**
+     * Get a tag to a hash-set in the database
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the tag.
+     */
+    public QdbTag tag(String alias) {
+        return new QdbTag(session, alias);
+    }
+
+    /**
+     * Retrieve the location for a provided alias.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
+     */
+    public QdbNode findNodeContaining(String alias) {
+        error_carrier error = new error_carrier();
+        RemoteNode location = qdb.get_location(session.handle(), alias, error);
+        QdbExceptionThrower.throwIfError(error.getError());
+        return new QdbNode(session, location.getAddress(), location.getPort());
     }
 
     /**
@@ -62,103 +136,29 @@ public final class QdbCluster {
     }
 
     /**
-     * Retrieve the location for a provided alias.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
-     */
-    public QdbNode getKeyLocation(String alias) {
-        error_carrier error = new error_carrier();
-        RemoteNode location = qdb.get_location(session.handle(), alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
-        return new QdbNode(session, location.getAddress(), location.getPort());
-    }
-
-    /**
-     * Get a handle to a blob in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the blob.
-     */
-    public QdbBlob getBlob(String alias) {
-        return new QdbBlob(session, alias);
-    }
-
-    /**
-     * Get a handle to a deque (double-ended queue) in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the deque.
-     */
-    public QdbDeque getDeque(String alias) {
-        return new QdbDeque(session, alias);
-    }
-
-    /**
-     * Get a handle to an integer in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the integer.
-     */
-    public QdbInteger getInteger(String alias) {
-        return new QdbInteger(session, alias);
-    }
-
-    /**
-     * Get a handle to a node (i.e.<!-- --> a server) in the cluster.
-     *
-     * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
-     * @return The node
-     */
-    public QdbNode getNode(String uri) {
-        Pattern pattern = Pattern.compile("^qdb://(.*):(\\d+)/?$");
-        Matcher matcher = pattern.matcher(uri);
-
-        if (!matcher.find())
-            throw new QdbInvalidArgumentException("URI format is incorrect.");
-
-        String hostName = matcher.group(1);
-        int port = Integer.parseInt(matcher.group(2));
-
-        return new QdbNode(session, hostName, port);
-    }
-
-    /**
-     * Get a handle to a hash-set in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the hash-set.
-     */
-    public QdbHashSet getSet(String alias) {
-        return new QdbHashSet(session, alias);
-    }
-
-    /**
-     * Get a handle to a stream in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the stream.
-     */
-    public QdbStream getStream(String alias) {
-        return new QdbStream(session, alias);
-    }
-
-    /**
-     * Get a tag to a hash-set in the database
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the tag.
-     */
-    public QdbTag getTag(String alias) {
-        return new QdbTag(session, alias);
-    }
-
-    /**
      * Create an empty batch.
      *
      * @return An empty batch.
      */
     public QdbBatch createBatch() {
         return new QdbBatch(session.handle());
+    }
+
+    /**
+     * Retrieve the build version of the quasardb API
+     *
+     * @return build version of the quasardb API
+     */
+    public static String build() {
+        return qdb.build();
+    }
+
+    /**
+     * Retrieve the version of the quasardb API
+     *
+     * @return The version of the quasardb API.
+     */
+    public static String version() {
+        return qdb.version();
     }
 }

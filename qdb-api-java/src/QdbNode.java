@@ -14,7 +14,7 @@ public final class QdbNode {
     private final int port;
     private final String uri;
 
-    // Protected constructor. Call QdbCluster.getNode() to construct a QdbNode.
+    // Protected constructor. Call QdbCluster.node() to get an instance.
     protected QdbNode(QdbSession session, String hostName, int port) {
         this.session = session;
         this.hostName = hostName;

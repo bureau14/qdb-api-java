@@ -64,7 +64,7 @@ public class Helpers {
     }
 
     public static QdbBlob getBlob(String alias) {
-        return cluster.getBlob(alias);
+        return cluster.blob(alias);
     }
 
     public static QdbCluster getCluster() {
@@ -72,26 +72,26 @@ public class Helpers {
     }
 
     public static QdbDeque getDeque(String alias) {
-        return cluster.getDeque(alias);
+        return cluster.deque(alias);
     }
 
     public static QdbHashSet getHashSet(String alias) {
-        return cluster.getSet(alias);
+        return cluster.hashSet(alias);
     }
 
     public static QdbInteger getInteger(String alias) {
-        return cluster.getInteger(alias);
+        return cluster.integer(alias);
     }
 
     public static QdbNode getNode() {
-        return cluster.getNode(DaemonRunner.getURI());
+        return cluster.node(DaemonRunner.getURI());
     }
 
     public static QdbStream getStream(String alias) {
-        return cluster.getStream(alias);
+        return cluster.stream(alias);
     }
 
     public static QdbTag getTag(String alias) {
-        return cluster.getTag(alias);
+        return cluster.tag(alias);
     }
 }

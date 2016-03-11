@@ -23,7 +23,19 @@ public class QdbClusterTest {
     }
 
     @Test(expected = QdbInvalidArgumentException.class)
-    public void getNode_throwsInvalidArgument_whenUriIsInvalid() {
-        Helpers.getCluster().getNode("wrong_uri"); // <- throws
+    public void node_throwsInvalidArgument_whenUriIsInvalid() {
+        Helpers.getCluster().node("wrong_uri"); // <- throws
+    }
+
+    @Test
+    public void version_returnNonEmptyString() {
+        String version = QdbCluster.version();
+        Assert.assertTrue(version.length() > 5);
+    }
+
+    @Test
+    public void build_returnNonEmptyString() {
+        String build = QdbCluster.build();
+        Assert.assertTrue(build.length() > 5);
     }
 }

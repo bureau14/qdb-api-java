@@ -6,7 +6,7 @@ import net.quasardb.qdb.jni.*;
  * A signed 64-bit integer in the database.
  */
 public final class QdbInteger extends QdbExpirableEntry {
-    // Protected constructor. Call QdbCluster.getInteger()
+    // Protected constructor. Call QdbCluster.integer() to get an instance.
     protected QdbInteger(QdbSession session, String alias) {
         super(session, alias);
     }
