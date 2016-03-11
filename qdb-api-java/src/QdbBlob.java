@@ -23,7 +23,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
+    public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
         return this.compareAndSwap(newContent, comparand, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -39,11 +39,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
+    public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_compare_and_swap(session.handle(), alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
         if (err.getError() == qdb_error_t.error_unmatched_content)
-            return value;
+            return new QdbBuffer(session, value);
         QdbExceptionThrower.throwIfError(err);
         return null; // comparand matched
     }
@@ -56,11 +56,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer get() {
+    public QdbBuffer get() {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get(session.handle(), alias, err);
         QdbExceptionThrower.throwIfError(err);
-        return value;
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -71,11 +71,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer getAndRemove() {
+    public QdbBuffer getAndRemove() {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get_and_remove(session.handle(), alias, err);
         QdbExceptionThrower.throwIfError(err);
-        return value;
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -87,7 +87,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer getAndUpdate(ByteBuffer content) {
+    public QdbBuffer getAndUpdate(ByteBuffer content) {
         return this.getAndUpdate(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -102,11 +102,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
+    public QdbBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get_and_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
         QdbExceptionThrower.throwIfError(err);
-        return value;
+        return new QdbBuffer(session, value);
     }
 
     /**

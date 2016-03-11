@@ -21,13 +21,13 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer back() {
+    public QdbBuffer back() {
         error_carrier error = new error_carrier();
-        ByteBuffer result = qdb.deque_back(session.handle(), alias, error);
+        ByteBuffer value = qdb.deque_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
         QdbExceptionThrower.throwIfError(error);
-        return result; // return null when empty
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -40,11 +40,11 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbOutOfBoundsException If the index is negative, or greater or equal than deque size.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer get(long index) {
+    public QdbBuffer get(long index) {
         error_carrier error = new error_carrier();
-        ByteBuffer result = qdb.deque_get_at(session.handle(), alias, index, error);
+        ByteBuffer value = qdb.deque_get_at(session.handle(), alias, index, error);
         QdbExceptionThrower.throwIfError(error);
-        return result; // return null when empty
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -55,13 +55,13 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer front() {
+    public QdbBuffer front() {
         error_carrier error = new error_carrier();
-        ByteBuffer result = qdb.deque_front(session.handle(), alias, error);
+        ByteBuffer value = qdb.deque_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
         QdbExceptionThrower.throwIfError(error);
-        return result; // return null when empty
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -72,13 +72,13 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer popBack() {
+    public QdbBuffer popBack() {
         error_carrier error = new error_carrier();
-        ByteBuffer result = qdb.deque_pop_back(session.handle(), alias, error);
+        ByteBuffer value = qdb.deque_pop_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
         QdbExceptionThrower.throwIfError(error);
-        return result;
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -89,13 +89,13 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public ByteBuffer popFront() {
+    public QdbBuffer popFront() {
         error_carrier error = new error_carrier();
-        ByteBuffer result = qdb.deque_pop_front(session.handle(), alias, error);
+        ByteBuffer value = qdb.deque_pop_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
         QdbExceptionThrower.throwIfError(error);
-        return result;
+        return new QdbBuffer(session, value);
     }
 
     /**
@@ -132,8 +132,8 @@ public final class QdbDeque extends QdbEntry {
      */
     public long size() {
         error_carrier error = new error_carrier();
-        long result = qdb.deque_size(session.handle(), alias, error);
+        long value = qdb.deque_size(session.handle(), alias, error);
         QdbExceptionThrower.throwIfError(error);
-        return result;
+        return value;
     }
 }

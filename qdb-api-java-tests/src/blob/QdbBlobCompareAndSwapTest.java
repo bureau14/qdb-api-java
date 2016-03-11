@@ -52,7 +52,7 @@ public class QdbBlobCompareAndSwapTest {
         ByteBuffer newContent = Helpers.createSampleData();
 
         blob.put(content);
-        ByteBuffer result = blob.compareAndSwap(newContent, comparand);
+        QdbBuffer result = blob.compareAndSwap(newContent, comparand);
 
         Assert.assertNull(result);
     }
@@ -65,8 +65,8 @@ public class QdbBlobCompareAndSwapTest {
         ByteBuffer newContent = Helpers.createSampleData();
 
         blob.put(content);
-        ByteBuffer result = blob.compareAndSwap(newContent, comparand);
+        QdbBuffer result = blob.compareAndSwap(newContent, comparand);
 
-        Assert.assertEquals(content, result);
+        Assert.assertEquals(content, result.toByteBuffer());
     }
 }

@@ -117,7 +117,7 @@ public class QdbBatchTest {
 
     private void checkBlob(String alias, ByteBuffer expected_content) {
         QdbBlob blob = Helpers.getBlob(alias);
-        Assert.assertEquals(expected_content, blob.get());
+        Assert.assertEquals(expected_content, blob.get().toByteBuffer());
     }
 
     private void checkBatch(QdbBatchResult results, int operationsCount) {

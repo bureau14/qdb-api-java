@@ -27,8 +27,8 @@ public class QdbBlobGetAndRemoveTest {
         ByteBuffer content = Helpers.createSampleData();
 
         blob.put(content);
-        ByteBuffer result = blob.getAndRemove();
+        QdbBuffer result = blob.getAndRemove();
 
-        Assert.assertEquals(content, result);
+        Assert.assertEquals(content, result.toByteBuffer());
     }
 }

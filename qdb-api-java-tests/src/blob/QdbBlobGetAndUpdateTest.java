@@ -40,8 +40,8 @@ public class QdbBlobGetAndUpdateTest {
         ByteBuffer content2 = Helpers.createSampleData();
 
         blob.put(content1);
-        ByteBuffer result = blob.getAndUpdate(content2);
+        QdbBuffer result = blob.getAndUpdate(content2);
 
-        Assert.assertEquals(content1, result);
+        Assert.assertEquals(content1, result.toByteBuffer());
     }
 }

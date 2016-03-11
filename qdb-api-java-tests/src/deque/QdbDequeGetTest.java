@@ -11,11 +11,11 @@ public class QdbDequeGetTest {
 
         deque.pushBack(content1);
         deque.pushBack(content2);
-        ByteBuffer result1 = deque.get(0);
-        ByteBuffer result2 = deque.get(1);
+        QdbBuffer result1 = deque.get(0);
+        QdbBuffer result2 = deque.get(1);
 
-        Assert.assertEquals(content1, result1);
-        Assert.assertEquals(content2, result2);
+        Assert.assertEquals(content1, result1.toByteBuffer());
+        Assert.assertEquals(content2, result2.toByteBuffer());
     }
 
     @Test
@@ -26,11 +26,11 @@ public class QdbDequeGetTest {
 
         deque.pushBack(content1);
         deque.pushBack(content2);
-        ByteBuffer result1 = deque.get(-1);
-        ByteBuffer result2 = deque.get(-2);
+        QdbBuffer result1 = deque.get(-1);
+        QdbBuffer result2 = deque.get(-2);
 
-        Assert.assertEquals(content2, result1);
-        Assert.assertEquals(content1, result2);
+        Assert.assertEquals(content2, result1.toByteBuffer());
+        Assert.assertEquals(content1, result2.toByteBuffer());
     }
 
     @Test(expected = QdbOutOfBoundsException.class)

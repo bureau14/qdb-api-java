@@ -11,11 +11,11 @@ public class QdbDequePopFrontTest {
 
         deque.pushBack(content1);
         deque.pushBack(content2);
-        ByteBuffer result1 = deque.popFront();
-        ByteBuffer result2 = deque.popFront();
+        QdbBuffer result1 = deque.popFront();
+        QdbBuffer result2 = deque.popFront();
 
-        Assert.assertEquals(content1, result1);
-        Assert.assertEquals(content2, result2);
+        Assert.assertEquals(content1, result1.toByteBuffer());
+        Assert.assertEquals(content2, result2.toByteBuffer());
     }
 
     @Test
@@ -25,7 +25,7 @@ public class QdbDequePopFrontTest {
 
         deque.pushBack(content);
         deque.popFront();
-        ByteBuffer result = deque.popFront();
+        QdbBuffer result = deque.popFront();
 
         Assert.assertNull(result);
     }

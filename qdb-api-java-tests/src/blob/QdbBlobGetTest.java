@@ -107,9 +107,9 @@ public class QdbBlobGetTest {
         ByteBuffer content = Helpers.createSampleData();
 
         blob.put(content);
-        ByteBuffer result = blob.get();
+        QdbBuffer result = blob.get();
 
-        Assert.assertEquals(content, result);
+        Assert.assertEquals(content, result.toByteBuffer());
     }
 
     @Test
@@ -121,9 +121,9 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.compareAndSwap(newContent, comparand);
-        ByteBuffer result = blob.get();
+        QdbBuffer result = blob.get();
 
-        Assert.assertEquals(content, result);
+        Assert.assertEquals(content, result.toByteBuffer());
     }
 
     @Test
@@ -134,9 +134,9 @@ public class QdbBlobGetTest {
 
         blob.put(content1);
         blob.getAndUpdate(content2);
-        ByteBuffer result = blob.get();
+        QdbBuffer result = blob.get();
 
-        Assert.assertEquals(content2, result);
+        Assert.assertEquals(content2, result.toByteBuffer());
     }
 
     @Test
@@ -147,9 +147,9 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.update(newContent);
-        ByteBuffer result = blob.get();
+        QdbBuffer result = blob.get();
 
-        Assert.assertEquals(newContent, result);
+        Assert.assertEquals(newContent, result.toByteBuffer());
     }
 
     @Test
@@ -161,8 +161,8 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.compareAndSwap(newContent, comparand);
-        ByteBuffer result = blob.get();
+        QdbBuffer result = blob.get();
 
-        Assert.assertEquals(newContent, result);
+        Assert.assertEquals(newContent, result.toByteBuffer());
     }
 }
