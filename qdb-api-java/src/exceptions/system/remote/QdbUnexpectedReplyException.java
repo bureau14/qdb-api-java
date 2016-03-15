@@ -3,7 +3,7 @@ package net.quasardb.qdb;
 /**
  * Exception thrown the response from a remote host cannot be treated.
  */
-public class QdbUnexpectedReplyException extends QdbException {
+public final class QdbUnexpectedReplyException extends QdbRemoteSystemException {
 
     public QdbUnexpectedReplyException() {
         super("Unexpected reply from the remote host.");
