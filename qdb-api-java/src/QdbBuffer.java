@@ -1,9 +1,10 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
+import java.lang.AutoCloseable;
 import net.quasardb.qdb.jni.*;
 
-public final class QdbBuffer {
+public final class QdbBuffer implements AutoCloseable {
     QdbSession session;
     ByteBuffer buffer;
 
@@ -14,13 +15,16 @@ public final class QdbBuffer {
 
     @Override
     protected void finalize() throws Throwable {
-        qdb.free_buffer(session.handle(), buffer);
+        close();
         super.finalize();
     }
 
-    public void free() {
-        qdb.free_buffer(session.handle(), buffer);
-        buffer = null;
+    @Override
+    public void close() {
+        if (buffer != null) {
+            qdb.free_buffer(session.handle(), buffer);
+            buffer = null;
+        }
     }
 
     public ByteBuffer toByteBuffer() {
