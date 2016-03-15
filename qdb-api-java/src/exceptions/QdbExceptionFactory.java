@@ -2,55 +2,61 @@ package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
 
-class QdbExceptionThrower {
+class QdbExceptionFactory {
 
     public static void throwIfError(error_carrier errorCarrier) {
         throwIfError(errorCarrier.getError());
     }
 
     public static void throwIfError(qdb_error_t errorCode) {
+        QdbException exception = createException(errorCode);
+        if (exception != null)
+            throw exception;
+    }
+
+    static QdbException createException(qdb_error_t errorCode) {
         if (errorCode == qdb_error_t.error_ok)
-            return;
+            return null;
 
         if (errorCode == qdb_error_t.error_alias_not_found)
-            throw new QdbAliasNotFoundException();
+            return new QdbAliasNotFoundException();
 
         if (errorCode == qdb_error_t.error_alias_already_exists)
-            throw new QdbAliasAlreadyExistsException();
+            return new QdbAliasAlreadyExistsException();
 
         if (errorCode == qdb_error_t.error_incompatible_type)
-            throw new QdbIncompatibleTypeException();
+            return new QdbIncompatibleTypeException();
 
         if (errorCode == qdb_error_t.error_reserved_alias)
-            throw new QdbReservedAliasException();
+            return new QdbReservedAliasException();
 
         if (errorCode == qdb_error_t.error_operation_disabled)
-            throw new QdbOperationDisabledException();
+            return new QdbOperationDisabledException();
 
         if (errorCode == qdb_error_t.error_invalid_argument)
-            throw new QdbInvalidArgumentException();
+            return new QdbInvalidArgumentException();
 
         if (errorCode == qdb_error_t.error_overflow)
-            throw new QdbOverflowException();
+            return new QdbOverflowException();
 
         if (errorCode == qdb_error_t.error_underflow)
-            throw new QdbUnderflowException();
+            return new QdbUnderflowException();
 
         if (errorCode == qdb_error_t.error_out_of_bounds)
-            throw new QdbOutOfBoundsException();
+            return new QdbOutOfBoundsException();
 
         if (errorCode == qdb_error_t.error_unexpected_reply)
-            throw new QdbUnexpectedReplyException();
+            return new QdbUnexpectedReplyException();
 
         if (errorCode == qdb_error_t.error_connection_refused)
-            throw new QdbConnectionRefusedException();
+            return new QdbConnectionRefusedException();
 
         if (errorCode == qdb_error_t.error_host_not_found)
-            throw new QdbHostNotFoundException();
+            return new QdbHostNotFoundException();
 
         if (errorCode == qdb_error_t.error_resource_locked)
-            throw new QdbResourceLockedException();
+            return new QdbResourceLockedException();
 
-        throw new QdbMiscException(errorCode);
+        return new QdbMiscException(errorCode);
     }
 }

@@ -25,7 +25,7 @@ public final class QdbHashSet extends QdbEntry {
 
         if (err == qdb_error_t.error_element_not_found)
             return false;
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 
@@ -43,7 +43,7 @@ public final class QdbHashSet extends QdbEntry {
 
         if (err == qdb_error_t.error_element_not_found)
             return false;
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 
@@ -60,7 +60,7 @@ public final class QdbHashSet extends QdbEntry {
 
         if (err == qdb_error_t.error_element_already_exists)
             return false;
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 }

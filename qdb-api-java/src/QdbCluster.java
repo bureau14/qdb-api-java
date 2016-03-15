@@ -22,7 +22,7 @@ public final class QdbCluster {
     public QdbCluster(String uri) {
         session = new QdbSession();
         qdb_error_t err = qdb.connect(session.handle(), uri);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -113,7 +113,7 @@ public final class QdbCluster {
     public QdbNode findNodeContaining(String alias) {
         error_carrier error = new error_carrier();
         RemoteNode location = qdb.get_location(session.handle(), alias, error);
-        QdbExceptionThrower.throwIfError(error.getError());
+        QdbExceptionFactory.throwIfError(error);
         return new QdbNode(session, location.getAddress(), location.getPort());
     }
 
@@ -124,7 +124,7 @@ public final class QdbCluster {
      */
     public void purgeAll() {
         qdb_error_t err = qdb.purge_all(session.handle());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -132,7 +132,7 @@ public final class QdbCluster {
      */
     public void trimAll() {
         qdb_error_t err = qdb.trim_all(session.handle());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**

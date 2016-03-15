@@ -23,7 +23,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public long add(long delta) {
         error_carrier err = new error_carrier();
         long res = qdb.int_add(session.handle(), alias, delta, err);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return res;
     }
 
@@ -38,7 +38,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public long get() {
         error_carrier err = new error_carrier();
         long value = qdb.int_get(session.handle(), alias, err);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return value;
     }
 
@@ -63,7 +63,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toSecondsSinceEpoch());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -87,6 +87,6 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public void update(long newValue, QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toSecondsSinceEpoch());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 }

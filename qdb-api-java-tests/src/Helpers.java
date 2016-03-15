@@ -1,4 +1,6 @@
 import java.nio.ByteBuffer;
+import java.nio.channels.*;
+import java.io.IOException;
 import net.quasardb.qdb.*;
 
 public class Helpers {
@@ -22,8 +24,14 @@ public class Helpers {
     }
 
     public static ByteBuffer createSampleData() {
+        return createSampleData(0);
+    }
+
+    public static ByteBuffer createSampleData(int size) {
         String DATA = String.format("data.%d", n++);
-        ByteBuffer buffer = ByteBuffer.allocateDirect(DATA.getBytes().length);
+        if (size == 0)
+            size = DATA.getBytes().length;
+        ByteBuffer buffer = ByteBuffer.allocateDirect(size);
         buffer.put(DATA.getBytes());
         buffer.flip();
         return buffer;
@@ -61,6 +69,14 @@ public class Helpers {
 
     public static QdbStream createEmptyStream() {
         return getStream(createUniqueAlias());
+    }
+
+    public static QdbStream createStream() throws ClosedChannelException, IOException {
+        QdbStream stream = createEmptyStream();
+        try (SeekableByteChannel channel = stream.open(QdbStream.Mode.APPEND)) {
+            channel.write(createSampleData());
+        }
+        return stream;
     }
 
     public static QdbBlob getBlob(String alias) {

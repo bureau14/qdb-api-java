@@ -32,7 +32,7 @@ public class QdbEntry {
      */
     public void remove() {
         qdb_error_t err = qdb.remove(session.handle(), alias);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -48,7 +48,7 @@ public class QdbEntry {
 
         if (err == qdb_error_t.error_tag_already_set)
             return false;
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 
@@ -65,7 +65,7 @@ public class QdbEntry {
         if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 
@@ -82,7 +82,7 @@ public class QdbEntry {
         if (err == qdb_error_t.error_tag_not_set) {
             return false;
         }
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 
@@ -94,7 +94,7 @@ public class QdbEntry {
      */
     public List<String> getTags() {
         results_list res = qdb.get_tags(session.handle(), alias);
-        QdbExceptionThrower.throwIfError(res.getError());
+        QdbExceptionFactory.throwIfError(res.getError());
 
         return resultsToList(res.getResults());
     }

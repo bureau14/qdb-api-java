@@ -48,7 +48,7 @@ public final class QdbNode {
     public String getConfig() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_config(session.handle(), uri, error);
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
 
         // workaround: remove null terminator:
         buffer.limit(buffer.limit() - 1);
@@ -71,7 +71,7 @@ public final class QdbNode {
     public String getTopology() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_topology(session.handle(), uri, error);
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
 
         // workaround: remove null terminator:
         buffer.limit(buffer.limit() - 1);
@@ -94,7 +94,7 @@ public final class QdbNode {
     public String getStatus() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_status(session.handle(), uri, error);
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
 
         // workaround: remove null terminator:
         buffer.limit(buffer.limit() - 1);
@@ -115,6 +115,6 @@ public final class QdbNode {
      */
     public void stop(String reason) {
         qdb_error_t err = qdb.stop_node(session.handle(), uri, reason);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 }

@@ -20,7 +20,7 @@ public final class QdbTag extends QdbEntry {
      */
     public List<String> getEntries() {
         results_list res = qdb.get_tagged(session.handle(), alias);
-        QdbExceptionThrower.throwIfError(res.getError());
+        QdbExceptionFactory.throwIfError(res.getError());
         return resultsToList(res.getResults());
     }
 }

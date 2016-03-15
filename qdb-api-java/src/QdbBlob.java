@@ -44,7 +44,7 @@ public final class QdbBlob extends QdbExpirableEntry {
         ByteBuffer value = qdb.blob_compare_and_swap(session.handle(), alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
         if (err.getError() == qdb_error_t.error_unmatched_content)
             return new QdbBuffer(session, value);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return null; // comparand matched
     }
 
@@ -59,7 +59,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public QdbBuffer get() {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get(session.handle(), alias, err);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return new QdbBuffer(session, value);
     }
 
@@ -74,7 +74,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public QdbBuffer getAndRemove() {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get_and_remove(session.handle(), alias, err);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return new QdbBuffer(session, value);
     }
 
@@ -105,7 +105,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public QdbBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
         ByteBuffer value = qdb.blob_get_and_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return new QdbBuffer(session, value);
     }
 
@@ -131,7 +131,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.blob_put(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -156,7 +156,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public void update(ByteBuffer content, QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.blob_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -172,7 +172,7 @@ public final class QdbBlob extends QdbExpirableEntry {
         qdb_error_t err = qdb.blob_remove_if(session.handle(), alias, comparand, comparand.limit());
         if (err == qdb_error_t.error_unmatched_content)
             return false;
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
         return true;
     }
 }

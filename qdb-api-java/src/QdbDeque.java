@@ -26,7 +26,7 @@ public final class QdbDeque extends QdbEntry {
         ByteBuffer value = qdb.deque_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return new QdbBuffer(session, value);
     }
 
@@ -43,7 +43,7 @@ public final class QdbDeque extends QdbEntry {
     public QdbBuffer get(long index) {
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_get_at(session.handle(), alias, index, error);
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return new QdbBuffer(session, value);
     }
 
@@ -60,7 +60,7 @@ public final class QdbDeque extends QdbEntry {
         ByteBuffer value = qdb.deque_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return new QdbBuffer(session, value);
     }
 
@@ -77,7 +77,7 @@ public final class QdbDeque extends QdbEntry {
         ByteBuffer value = qdb.deque_pop_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return new QdbBuffer(session, value);
     }
 
@@ -94,7 +94,7 @@ public final class QdbDeque extends QdbEntry {
         ByteBuffer value = qdb.deque_pop_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
             return null;
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return new QdbBuffer(session, value);
     }
 
@@ -107,7 +107,7 @@ public final class QdbDeque extends QdbEntry {
      */
     public void pushBack(ByteBuffer content) {
         qdb_error_t err = qdb.deque_push_back(session.handle(), alias, content, content.limit());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -119,7 +119,7 @@ public final class QdbDeque extends QdbEntry {
      */
     public void pushFront(ByteBuffer content) {
         qdb_error_t err = qdb.deque_push_front(session.handle(), alias, content, content.limit());
-        QdbExceptionThrower.throwIfError(err);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -133,7 +133,7 @@ public final class QdbDeque extends QdbEntry {
     public long size() {
         error_carrier error = new error_carrier();
         long value = qdb.deque_size(session.handle(), alias, error);
-        QdbExceptionThrower.throwIfError(error);
+        QdbExceptionFactory.throwIfError(error);
         return value;
     }
 }
