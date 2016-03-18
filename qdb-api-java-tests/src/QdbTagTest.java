@@ -1,6 +1,5 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
@@ -25,12 +24,12 @@ public class QdbTagTest {
         Assert.assertTrue(blob.hasTag(tagAlias));
 
         // tag must be listed
-        List<String> tags = blob.getTags();
+        List<String> tags = Helpers.toList(blob.getTagsAlias());
         Assert.assertEquals(tags.size(), 1);
         Assert.assertEquals(tags.get(0), tagAlias);
 
         // reverse lookup must work
-        List<String> entries = tag.getEntries();
+        List<String> entries = Helpers.toList(tag.getEntriesAlias());
         Assert.assertEquals(entries.size(), 1);
         Assert.assertEquals(entries.get(0), blobAlias);
 
@@ -39,5 +38,50 @@ public class QdbTagTest {
         Assert.assertFalse(blob.removeTag(tagAlias));
 
         Assert.assertFalse(blob.hasTag(tagAlias));
+    }
+
+    @Test
+    public void getEntriesAlias_returnsEmptyCollection_whenAliasIsRandom() {
+        QdbTag tag = Helpers.createEmptyTag();
+
+        Iterable<String> result = tag.getEntriesAlias();
+
+        List<String> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+    }
+
+    public void getEntriesAlias_returnOneAlias_afterCallingAddTag() {
+        QdbBlob blob = Helpers.createBlob();
+        QdbTag tag = Helpers.createEmptyTag();
+
+        blob.addTag(tag);
+        Iterable<String> result = tag.getEntriesAlias();
+
+        List<String> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+        Assert.assertEquals(blob.alias(), resultAsList.get(0));
+    }
+
+    @Test
+    public void getEntries_returnsEmptyCollection_whenAliasIsRandom() {
+        QdbTag tag = Helpers.createEmptyTag();
+
+        Iterable<QdbEntry> result = tag.getEntries();
+
+        List<QdbEntry> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+    }
+
+    public void getEntries_returnOneAlias_afterCallingAddTag() {
+        QdbBlob blob = Helpers.createBlob();
+        QdbTag tag = Helpers.createEmptyTag();
+
+        blob.addTag(tag);
+        Iterable<QdbEntry> result = tag.getEntries();
+
+        List<QdbEntry> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+        Assert.assertEquals(blob.alias(), resultAsList.get(0).alias());
+        Assert.assertTrue(resultAsList.get(0) instanceof QdbBlob);
     }
 }

@@ -1,6 +1,7 @@
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.io.IOException;
+import java.util.*;
 import net.quasardb.qdb.*;
 
 public class Helpers {
@@ -143,5 +144,12 @@ public class Helpers {
 
     public static QdbTag getTag(String alias) {
         return cluster.tag(alias);
+    }
+
+    public static <T> List<T> toList(Iterable<T> source) {
+        List<T> list = new ArrayList<T>();
+        for (T item : source)
+            list.add(item);
+        return list;
     }
 }

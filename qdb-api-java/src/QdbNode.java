@@ -27,7 +27,7 @@ public final class QdbNode {
      *
      * @return the hostname of the quasardb node
      */
-    public String getHostName() {
+    public String hostName() {
         return this.hostName;
     }
 
@@ -36,7 +36,7 @@ public final class QdbNode {
      *
      * @return the port of the quasardb node
      */
-    public int getPort() {
+    public int port() {
         return this.port;
     }
 

@@ -6,7 +6,7 @@ public class QdbNodeTest {
     public void getHostName_returnsExpectedValue() {
         QdbNode node = Helpers.getNode();
 
-        String hostName = node.getHostName();
+        String hostName = node.hostName();
 
         Assert.assertEquals("127.0.0.1", hostName);
     }
@@ -15,7 +15,7 @@ public class QdbNodeTest {
     public void getPort_returnsExpectedValue() {
         QdbNode node = Helpers.getNode();
 
-        int port = node.getPort();
+        int port = node.port();
 
         Assert.assertEquals(2836, port);
     }

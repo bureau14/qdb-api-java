@@ -1,7 +1,6 @@
 package net.quasardb.qdb;
 
-import java.nio.ByteBuffer;
-import java.util.List;
+import java.util.*;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -15,12 +14,25 @@ public final class QdbTag extends QdbEntry {
     /**
      * Retrieves the list of tags of the entry
      *
-     * @return The entry's list of tags
-     * @throws QdbException TODO
+     * @return A collection of alias.
      */
-    public List<String> getEntries() {
+    public Iterable<String> getEntriesAlias() {
         results_list res = qdb.get_tagged(session.handle(), alias);
         QdbExceptionFactory.throwIfError(res.getError());
-        return resultsToList(res.getResults());
+        return QdbNativeApi.resultsToList(res.getResults());
+    }
+
+    /**
+     * Gets the entries tagged with this tag.
+     *
+     * @return A collection of subclasses of QdbEntry, whose types depends on the actual type of the entries in the database.
+     */
+    public Iterable<QdbEntry> getEntries() {
+        ArrayList<QdbEntry> entries = new ArrayList<QdbEntry>();
+        QdbEntryFactory factory = new QdbEntryFactory(session);
+        for (String alias : getEntriesAlias()) {
+            entries.add(factory.createEntry(alias));
+        }
+        return entries;
     }
 }
