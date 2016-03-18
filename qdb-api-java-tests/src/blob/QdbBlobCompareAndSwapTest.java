@@ -1,5 +1,4 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;
 

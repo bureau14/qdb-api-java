@@ -141,7 +141,7 @@ public final class QdbCluster {
      * @return An empty batch.
      */
     public QdbBatch createBatch() {
-        return new QdbBatch(session.handle());
+        return new QdbBatch(session);
     }
 
     /**

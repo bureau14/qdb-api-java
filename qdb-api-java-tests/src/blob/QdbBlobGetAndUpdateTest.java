@@ -1,9 +1,16 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbBlobGetAndUpdateTest {
+    @Test(expected = QdbAliasNotFoundException.class)
+    public void throwsAliasNotFound() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+
+        blob.getAndUpdate(content); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

@@ -1,5 +1,4 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
@@ -95,10 +94,32 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
-    public void throwsReservedAlias() {
-        QdbBlob blob = Helpers.getBlob("qdb");
-        blob.get(); // <- throws
+    @Test
+    public void returnsOriginalContent_afterCallingBatchPut() {
+        String alias = Helpers.createUniqueAlias();
+        QdbBatch batch = Helpers.createBatch();
+        QdbBlob blob = Helpers.getBlob(alias);
+        ByteBuffer content = Helpers.createSampleData();
+
+        batch.blob(alias).put(content);
+        batch.run();
+        QdbBuffer result = blob.get();
+
+        Assert.assertEquals(content, result.toByteBuffer());
+    }
+
+    @Test
+    public void returnsOriginalContent_afterCallingBatchUpdate() {
+        String alias = Helpers.createUniqueAlias();
+        QdbBatch batch = Helpers.createBatch();
+        QdbBlob blob = Helpers.getBlob(alias);
+        ByteBuffer content = Helpers.createSampleData();
+
+        batch.blob(alias).update(content);
+        batch.run();
+        QdbBuffer result = blob.get();
+
+        Assert.assertEquals(content, result.toByteBuffer());
     }
 
     @Test

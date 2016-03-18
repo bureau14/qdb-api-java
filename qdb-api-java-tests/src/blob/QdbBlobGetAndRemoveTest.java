@@ -1,9 +1,15 @@
 import java.nio.ByteBuffer;
-import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbBlobGetAndRemoveTest {
+    @Test(expected = QdbAliasNotFoundException.class)
+    public void throwsAliasNotFound() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+
+        blob.getAndRemove(); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
@@ -16,8 +22,9 @@ public class QdbBlobGetAndRemoveTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
+        String alias = Helpers.RESERVED_ALIAS;
 
-        QdbBlob blob = Helpers.getBlob("qdb");
+        QdbBlob blob = Helpers.getBlob(alias);
         blob.getAndRemove(); // <- throws
     }
 

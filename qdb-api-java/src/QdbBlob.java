@@ -41,11 +41,9 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_compare_and_swap(session.handle(), alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
-        if (err.getError() == qdb_error_t.error_unmatched_content)
-            return new QdbBuffer(session, value);
+        ByteBuffer result = qdb.blob_compare_and_swap(session.handle(), alias, newContent, newContent.limit(), comparand, comparand.limit(), expiryTime.toSecondsSinceEpoch(), err);
         QdbExceptionFactory.throwIfError(err);
-        return null; // comparand matched
+        return wrapBuffer(result);
     }
 
     /**
@@ -58,9 +56,9 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public QdbBuffer get() {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get(session.handle(), alias, err);
+        ByteBuffer result = qdb.blob_get(session.handle(), alias, err);
         QdbExceptionFactory.throwIfError(err);
-        return new QdbBuffer(session, value);
+        return wrapBuffer(result);
     }
 
     /**
@@ -73,9 +71,9 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public QdbBuffer getAndRemove() {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get_and_remove(session.handle(), alias, err);
+        ByteBuffer result = qdb.blob_get_and_remove(session.handle(), alias, err);
         QdbExceptionFactory.throwIfError(err);
-        return new QdbBuffer(session, value);
+        return wrapBuffer(result);
     }
 
     /**
@@ -104,9 +102,9 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public QdbBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         error_carrier err = new error_carrier();
-        ByteBuffer value = qdb.blob_get_and_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
+        ByteBuffer result = qdb.blob_get_and_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch(), err);
         QdbExceptionFactory.throwIfError(err);
-        return new QdbBuffer(session, value);
+        return wrapBuffer(result);
     }
 
     /**
@@ -135,6 +133,21 @@ public final class QdbBlob extends QdbExpirableEntry {
     }
 
     /**
+     * Removes the blob if its content matches comparand.
+     *
+     * @param comparand The content to be compared to.
+     * @return true if the blob was actually removed, false if not.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public boolean removeIf(ByteBuffer comparand) {
+        qdb_error_t err = qdb.blob_remove_if(session.handle(), alias, comparand, comparand.limit());
+        QdbExceptionFactory.throwIfError(err);
+        return err != qdb_error_t.error_unmatched_content;
+    }
+
+    /**
      * Replaces the content of the blob.
      *
      * @param content The content of the blob to be set.
@@ -159,20 +172,7 @@ public final class QdbBlob extends QdbExpirableEntry {
         QdbExceptionFactory.throwIfError(err);
     }
 
-    /**
-     * Removes the blob if its content matches comparand.
-     *
-     * @param comparand The content to be compared to.
-     * @return true if the blob was actually removed, false if not.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
-     */
-    public boolean removeIf(ByteBuffer comparand) {
-        qdb_error_t err = qdb.blob_remove_if(session.handle(), alias, comparand, comparand.limit());
-        if (err == qdb_error_t.error_unmatched_content)
-            return false;
-        QdbExceptionFactory.throwIfError(err);
-        return true;
+    private QdbBuffer wrapBuffer(ByteBuffer nakedBuffer) {
+        return nakedBuffer != null ? new QdbBuffer(session, nakedBuffer) : null;
     }
 }

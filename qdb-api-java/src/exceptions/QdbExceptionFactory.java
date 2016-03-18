@@ -5,117 +5,101 @@ import net.quasardb.qdb.jni.*;
 class QdbExceptionFactory {
 
     public static void throwIfError(error_carrier errorCarrier) {
-        throwIfError(errorCarrier.getError());
+        throwIfError(new QdbErrorCode(errorCarrier.getError()));
     }
 
     public static void throwIfError(qdb_error_t errorCode) {
+        throwIfError(new QdbErrorCode(errorCode));
+    }
+
+    public static void throwIfError(QdbErrorCode errorCode) {
         QdbException exception = createException(errorCode);
         if (exception != null)
             throw exception;
     }
 
-    static QdbException createException(qdb_error_t errorCode) {
-        if (errorCode == qdb_error_t.error_ok)
+    public static QdbException createException(qdb_error_t errorCode) {
+        return createException(new QdbErrorCode(errorCode));
+    }
+
+    static QdbException createException(QdbErrorCode errorCode) {
+        if (errorCode.severity() == qdb_error_severity_t.error_severity_info)
             return null;
 
-        if (isConnectionError(errorCode))
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_connection)
             return createConnectionException(errorCode);
 
-        if (isInputError(errorCode))
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_input)
             return createInputException(errorCode);
 
-        if (isLocalSystemError(errorCode))
-            return createLocalSystemException(errorCode);
-
-        if (isOperationError(errorCode))
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_operation)
             return createOperationException(errorCode);
 
-        if (isRemoteSystemError(errorCode))
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_system_local)
+            return createLocalSystemException(errorCode);
+
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_system_remote)
             return createRemoteSystemException(errorCode);
 
-        return new QdbException(qdb.make_error_string(errorCode));
+        return new QdbException(errorCode.message());
     }
 
-    private static boolean isConnectionError(qdb_error_t errorCode) {
-        return testErrorOrigin(errorCode, qdb_error_origin_t.error_origin_connection);
-    }
-
-    private static boolean isInputError(qdb_error_t errorCode) {
-        return testErrorOrigin(errorCode, qdb_error_origin_t.error_origin_input);
-    }
-
-    private static boolean isOperationError(qdb_error_t errorCode) {
-        return testErrorOrigin(errorCode, qdb_error_origin_t.error_origin_operation);
-    }
-
-    private static boolean isLocalSystemError(qdb_error_t errorCode) {
-        return testErrorOrigin(errorCode, qdb_error_origin_t.error_origin_system_local);
-    }
-
-    private static boolean isRemoteSystemError(qdb_error_t errorCode) {
-        return testErrorOrigin(errorCode, qdb_error_origin_t.error_origin_system_remote);
-    }
-
-    private static boolean testErrorOrigin(qdb_error_t errorCode, qdb_error_origin_t candidateOrigin) {
-        return (errorCode.swigValue() & candidateOrigin.swigValue()) == candidateOrigin.swigValue();
-    }
-
-    private static QdbConnectionException createConnectionException(qdb_error_t errorCode) {
-        if (errorCode == qdb_error_t.error_connection_refused)
+    private static QdbConnectionException createConnectionException(QdbErrorCode errorCode) {
+        if (errorCode.equals(qdb_error_t.error_connection_refused))
             return new QdbConnectionRefusedException();
 
-        if (errorCode == qdb_error_t.error_host_not_found)
+        if (errorCode.equals(qdb_error_t.error_host_not_found))
             return new QdbHostNotFoundException();
 
-        return new QdbConnectionException(qdb.make_error_string(errorCode));
+        return new QdbConnectionException(errorCode.message());
     }
 
-    private static QdbInputException createInputException(qdb_error_t errorCode) {
-        if (errorCode == qdb_error_t.error_reserved_alias)
+    private static QdbInputException createInputException(QdbErrorCode errorCode) {
+        if (errorCode.equals(qdb_error_t.error_reserved_alias))
             return new QdbReservedAliasException();
 
-        if (errorCode == qdb_error_t.error_invalid_argument)
+        if (errorCode.equals(qdb_error_t.error_invalid_argument))
             return new QdbInvalidArgumentException();
 
-        if (errorCode == qdb_error_t.error_out_of_bounds)
+        if (errorCode.equals(qdb_error_t.error_out_of_bounds))
             return new QdbOutOfBoundsException();
 
-        return new QdbInputException(qdb.make_error_string(errorCode));
+        return new QdbInputException(errorCode.message());
     }
 
-    private static QdbLocalSystemException createLocalSystemException(qdb_error_t errorCode) {
-        return new QdbLocalSystemException(qdb.make_error_string(errorCode));
+    private static QdbLocalSystemException createLocalSystemException(QdbErrorCode errorCode) {
+        return new QdbLocalSystemException(errorCode.message());
     }
 
-    private static QdbOperationException createOperationException(qdb_error_t errorCode) {
-        if (errorCode == qdb_error_t.error_alias_not_found)
+    private static QdbOperationException createOperationException(QdbErrorCode errorCode) {
+        if (errorCode.equals(qdb_error_t.error_alias_not_found))
             return new QdbAliasNotFoundException();
 
-        if (errorCode == qdb_error_t.error_alias_already_exists)
+        if (errorCode.equals(qdb_error_t.error_alias_already_exists))
             return new QdbAliasAlreadyExistsException();
 
-        if (errorCode == qdb_error_t.error_incompatible_type)
+        if (errorCode.equals(qdb_error_t.error_incompatible_type))
             return new QdbIncompatibleTypeException();
 
-        if (errorCode == qdb_error_t.error_operation_disabled)
+        if (errorCode.equals(qdb_error_t.error_operation_disabled))
             return new QdbOperationDisabledException();
 
-        if (errorCode == qdb_error_t.error_overflow)
+        if (errorCode.equals(qdb_error_t.error_overflow))
             return new QdbOverflowException();
 
-        if (errorCode == qdb_error_t.error_underflow)
+        if (errorCode.equals(qdb_error_t.error_underflow))
             return new QdbUnderflowException();
 
-        if (errorCode == qdb_error_t.error_resource_locked)
+        if (errorCode.equals(qdb_error_t.error_resource_locked))
             return new QdbResourceLockedException();
 
-        return new QdbOperationException(qdb.make_error_string(errorCode));
+        return new QdbOperationException(errorCode.message());
     }
 
-    private static QdbRemoteSystemException createRemoteSystemException(qdb_error_t errorCode) {
-        if (errorCode == qdb_error_t.error_unexpected_reply)
+    private static QdbRemoteSystemException createRemoteSystemException(QdbErrorCode errorCode) {
+        if (errorCode.equals(qdb_error_t.error_unexpected_reply))
             return new QdbUnexpectedReplyException();
 
-        return new QdbRemoteSystemException(qdb.make_error_string(errorCode));
+        return new QdbRemoteSystemException(errorCode.message());
     }
 }

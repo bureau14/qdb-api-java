@@ -6,6 +6,7 @@ import net.quasardb.qdb.*;
 public class Helpers {
     private static QdbCluster cluster = createCluster();
     private static long n;
+    public static final String RESERVED_ALIAS = "qdb.prefix.is.reserved";
 
     private static QdbCluster createCluster() {
         try {

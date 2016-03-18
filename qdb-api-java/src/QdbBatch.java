@@ -1,205 +1,159 @@
 package net.quasardb.qdb;
 
-import java.nio.ByteBuffer;
+import java.lang.AutoCloseable;
+import net.quasardb.qdb.jni.*;
 
-import net.quasardb.qdb.batch.QdbBatchResult;
-import net.quasardb.qdb.batch.Result;
-import net.quasardb.qdb.batch.TypeOperation;
-import net.quasardb.qdb.jni.BatchOpsVec;
-import net.quasardb.qdb.jni.SWIGTYPE_p_qdb_session;
-import net.quasardb.qdb.jni.qdb;
-import net.quasardb.qdb.jni.qdb_error_t;
-import net.quasardb.qdb.jni.qdb_operation_t;
-import net.quasardb.qdb.jni.qdb_operation_type_t;
-import net.quasardb.qdb.jni.run_batch_result;
+/**
+ * A batch containing a list of operation.
+ *
+ * Batches are used to reduce the number of requests by performing several operations in one request. 
+ */
+public final class QdbBatch implements AutoCloseable {
+    private final QdbSession session;
+    private BatchOpsVec operations;
+    private boolean hasRun;
+    private int successCount;
 
-public class QdbBatch {
-    private final transient SWIGTYPE_p_qdb_session session;
-    private final BatchOpsVec operations = new BatchOpsVec();
-
-    /**
-     * Creates an empty batch, i.e.<!-- --> an empty collection of operation. <br>
-     * Batch operations can greatly increase performance when it is necessary to run many small operations. <br>
-     * Operations in a QdbBatch are not executed until run() is called.
-     *
-     * @param session TODO
-     */
-    protected QdbBatch(SWIGTYPE_p_qdb_session session) {
+    // Protected constructor. Call  QdbCluster.createBatch() to create a batch.
+    protected QdbBatch(QdbSession session) {
         this.session = session;
+        operations = new BatchOpsVec();
     }
 
     /**
-     * Adds a "get and remove" operation to the batch. When executed, the "get and remove" operation atomically gets an entry and removes it.
+     * Add blob operations to the batch.
      *
-     * @param alias TODO
-     */
-    public void getAndRemove(String alias) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_get_and_remove);
-        operation.setAlias(alias);
-        operations.push_back(operation);
-    }
-
-    /**
-     * Adds a "get" operation to the batch. When executed, the "get" operation retrieves an entry's content.
+     * A call to this method is usually followed by a call to an operation.
+     * For example:
+     * {@code
+     * QdbFuture<ByteBuffer> result = myBatch.blob("myBlob").get();
+     * }
      *
-     * @param alias TODO
+     * @param alias The alias of the blob you want to add operations for.
+     * @return A handle to a virtual blob on with to perform the operation.
+     * @throws QdbBatchClosedException If close() has been called.
+     * @throws QdbBatchAlreadyRunException If the run() has been called.
      */
-    public void get(String alias) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_get);
-        operation.setAlias(alias);
-        operations.push_back(operation);
+    public QdbBatchBlob blob(String alias) {
+        throwIfClosed();
+        throwIfHasRun();
+        return new QdbBatchBlob(this, alias);
     }
 
     /**
-     * Adds a "remove" operation to the batch. When executed, the "remove" operation removes an entry.
+     * Executes all operations in the batch.
      *
-     * @param alias TODO
-     */
-    public void remove(String alias) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_remove);
-        operation.setAlias(alias);
-        operations.push_back(operation);
-    }
-
-    /**
-     * Adds a "put" operation to the batch. When executed, the "put" operation adds an entry.<br>
-     * Alias beginning with "qdb" are reserved and cannot be used.
+     * A batch can only be run once.
+     * Once a batch is run, most method will throw a QdbBatchAlreadyRunException.
      *
-     * @param alias TODO
-     * @param content TODO
+     * @throws QdbBatchClosedException If close() has been called.
+     * @throws QdbBatchAlreadyRunException If the run() has been called.
      */
-    public void put(String alias, ByteBuffer content) {
-        this.put(alias, content, 0L);
+    public void run() {
+        throwIfClosed();
+        throwIfHasRun();
+
+        successCount = (int)qdb.run_batch2(session.handle(), operations);
+        hasRun = true;
     }
 
     /**
-     * Adds a "put" operation to the batch. When executed, the "put" operation adds an entry.<br>
-     * Alias beginning with "qdb" are reserved and cannot be used.
+     * If you forgot to call close() we have you covered.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        this.close();
+        super.finalize();
+    }
+
+    /**
+     * Release the memory allocated by quasardb.
      *
-     * @param alias TODO
-     * @param content TODO
-     * @param expiryTime TODO
+     * Once this method has been called, most other methods will throw QdbBatchClosedException.
      */
-    public void put(String alias, ByteBuffer content, long expiryTime) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_put);
-        operation.setAlias(alias);
-        operation.setContent(content);
-        operation.setContent_size(content.limit());
-        operation.setExpiry_time((expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
-        operations.push_back(operation);
+    public void close() {
+        if (operations != null) {
+            qdb.free_operations(session.handle(), operations);
+            operations = null;
+        }
     }
 
     /**
-     * Adds an "update" operation to the batch. When executed, the "update" operation updates an entry. <br>
-     * If the entry already exists, the content will be updated. If the entry does not exist, it will be created.<br>
-     * Alias beginning with "qdb" are reserved and cannot be used.
+     * Check if all operations executed successfully.
      *
-     * @param alias TODO
-     * @param content TODO
+     * @return true if all operations succeeded, false if any operation failed.
+     * @throws QdbBatchClosedException If close() has been called.
+     * @throws QdbBatchNotRunException If run() has not been called.
      */
-    public void update(String alias, ByteBuffer content) {
-        this.update(alias, content, 0L);
+    public boolean success() {
+        throwIfClosed();
+        throwIfNotRun();
+        return operations.size() == successCount;
     }
 
     /**
-     * Adds an "update" operation to the batch. When executed, the "update" operation updates an entry. <br>
-     * If the entry already exists, the content will be updated. If the entry does not exist, it will be created.<br>
-     * Alias beginning with "qdb" are reserved and cannot be used.
+     * Gets the total number of operations in the batch
      *
-     * @param alias TODO
-     * @param content TODO
-     * @param expiryTime TODO
+     * @return The number of operations that the batch contains.
+     * @throws QdbBatchClosedException If close() has been called.
      */
-    public void update(String alias, ByteBuffer content, long expiryTime) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_update);
-        operation.setAlias(alias);
-        operation.setContent(content);
-        operation.setContent_size(content.limit());
-        operation.setExpiry_time((expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
-        operations.push_back(operation);
+    public int operationCount() {
+        throwIfClosed();
+        return (int)operations.size();
     }
 
     /**
-     * Adds a "get and update" operation to the batch. When executed, the "get and update" operation atomically gets and updates (in this order) the entry.
-     * @param alias TODO
-     * @param content TODO
-     */
-    public void getAndUpdate(String alias, ByteBuffer content) {
-        this.getAndUpdate(alias, content, 0L);
-    }
-
-    /**
-     * Adds a "get and update" operation to the batch. When executed, the "get and update" operation atomically gets and updates (in this order) the entry.
+     * Gets the number of successful operations
      *
-     * @param alias TODO
-     * @param content TODO
-     * @param expiryTime TODO
+     * @return The number of successful operations
+     * @throws QdbBatchClosedException If close() has been called.
+     * @throws QdbBatchNotRunException If run() has not been called.
      */
-    public void getAndUpdate(String alias, ByteBuffer content, long expiryTime) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_get_and_update);
-        operation.setAlias(alias);
-        operation.setContent(content);
-        operation.setContent_size(content.limit());
-        operation.setExpiry_time((expiryTime == 0) ? 0 : (System.currentTimeMillis() / 1000) + expiryTime);
-        operations.push_back(operation);
+    public int successCount() {
+        throwIfClosed();
+        throwIfNotRun();
+        return successCount;
     }
 
     /**
-     * Adds a "remove if" operation to the batch. When executed, the "remove if" operation removes an entry if it matches $comparand. The operation is atomic.
+     * Checks if close() has been called.
      *
-     * @param alias TODO
-     * @param comparand TODO
+     * @return true if batch has been closed, false if not
      */
-    public void removeIf(String alias, ByteBuffer comparand) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_remove_if);
-        operation.setAlias(alias);
-        operation.setComparand(comparand);
-        operation.setComparand_size(comparand.limit());
-        operations.push_back(operation);
+    public boolean isClosed() {
+        return operations == null;
     }
 
-    /**
-     * Adds a "compare and swap" operation to the batch. When executed, the "compare and swap" operation atomically compares the entry with $comparand and updates it to $new_content if, and only if, they match.
-     *
-     * @param alias TODO
-     * @param content TODO
-     * @param comparand TODO
-     */
-    public void compareAndSwap(String alias, ByteBuffer content, ByteBuffer comparand) {
-        this.compareAndSwap(alias, content, comparand, 0L);
+    protected int addOperation(qdb_operation_t op) {
+        throwIfClosed();
+        throwIfHasRun();
+        int index = (int)operations.size();
+        operations.push_back(op);
+        return index;
     }
 
-    /**
-     * Adds a "compare and swap" operation to the batch. When executed, the "compare and swap" operation atomically compares the entry with $comparand and updates it to $new_content if, and only if, they match.
-     *
-     * @param alias TODO
-     * @param content TODO
-     * @param comparand TODO
-     * @param expiryTime TODO
-     */
-    public void compareAndSwap(String alias, ByteBuffer content, ByteBuffer comparand, long expiryTime) {
-        qdb_operation_t operation = new qdb_operation_t();
-        operation.setType(qdb_operation_type_t.qdb_op_blob_cas);
-        operation.setAlias(alias);
-        operation.setContent(content);
-        operation.setContent_size(content.limit());
-        operation.setComparand(comparand);
-        operation.setComparand_size(comparand.limit());
-        operations.push_back(operation);
+    protected qdb_operation_t getOperation(int index) {
+        throwIfClosed();
+        return operations.get(index);
     }
 
-    /**
-     *
-     * @return QdbBatchResult
-     */
-    public QdbBatchResult run() {
-        return new QdbBatchResult(session, operations, qdb.run_batch(session, operations));
+    protected boolean hasRun() {
+        throwIfClosed();
+        return hasRun;
+    }
+
+    private void throwIfClosed() {
+        if (isClosed())
+            throw new QdbBatchClosedException();
+    }
+
+    private void throwIfHasRun() {
+        if (hasRun)
+            throw new QdbBatchAlreadyRunException();
+    }
+
+    private void throwIfNotRun() {
+        if (!hasRun)
+            throw new QdbBatchNotRunException();
     }
 }
