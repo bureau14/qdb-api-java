@@ -2,6 +2,12 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbClusterTest {
+    @Test
+    public void build_returnsNonEmptyString() {
+        String build = QdbCluster.build();
+        Assert.assertTrue(build.length() > 5);
+    }
+
     @Test(expected = QdbInvalidArgumentException.class)
     public void constructor_throwsInvalidArgument_whenUriIsInvalid() {
         new QdbCluster("wrong_uri");
@@ -28,14 +34,8 @@ public class QdbClusterTest {
     }
 
     @Test
-    public void version_returnNonEmptyString() {
+    public void version_returnsNonEmptyString() {
         String version = QdbCluster.version();
         Assert.assertTrue(version.length() > 5);
-    }
-
-    @Test
-    public void build_returnNonEmptyString() {
-        String build = QdbCluster.build();
-        Assert.assertTrue(build.length() > 5);
     }
 }

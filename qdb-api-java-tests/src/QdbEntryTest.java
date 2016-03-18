@@ -4,11 +4,11 @@ import org.junit.*;
 
 public class QdbEntryTest {
     @Test
-    public void getAlias_returnsSameAlias() {
+    public void alias_returnsSameAlias() {
         String alias = Helpers.createUniqueAlias();
         QdbEntry entry = Helpers.getBlob(alias);
 
-        String result = entry.getAlias();
+        String result = entry.alias();
 
         Assert.assertEquals(alias, result);
     }

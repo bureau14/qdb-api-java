@@ -56,6 +56,12 @@ public class Helpers {
         return blob;
     }
 
+    public static QdbDeque createDeque() {
+        QdbDeque deque = createEmptyDeque();
+        deque.pushBack(createSampleData());
+        return deque;
+    }
+
     public static QdbDeque createEmptyDeque() {
         return getDeque(createUniqueAlias());
     }
@@ -72,12 +78,35 @@ public class Helpers {
         return getStream(createUniqueAlias());
     }
 
-    public static QdbStream createStream() throws ClosedChannelException, IOException {
+    public static QdbTag createEmptyTag() {
+        return getTag(createUniqueAlias());
+    }
+
+    public static QdbHashSet createHashSet() {
+        QdbHashSet hset = createEmptyHashSet();
+        hset.insert(createSampleData());
+        return hset;
+    }
+
+    public static QdbInteger createInteger() {
+        QdbInteger integer = createEmptyInteger();
+        integer.put(42);
+        return integer;
+    }
+
+    public static QdbStream createStream() throws IOException {
         QdbStream stream = createEmptyStream();
         try (SeekableByteChannel channel = stream.open(QdbStream.Mode.APPEND)) {
             channel.write(createSampleData());
         }
         return stream;
+    }
+
+    public static QdbTag createTag() {
+        QdbBlob blob = createBlob();
+        QdbTag tag = createEmptyTag();
+        blob.addTag(tag.alias());
+        return tag;
     }
 
     public static QdbBlob getBlob(String alias) {
@@ -90,6 +119,10 @@ public class Helpers {
 
     public static QdbDeque getDeque(String alias) {
         return cluster.deque(alias);
+    }
+
+    public static QdbEntry getEntry(String alias) {
+        return cluster.entry(alias);
     }
 
     public static QdbHashSet getHashSet(String alias) {

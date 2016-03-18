@@ -5,9 +5,6 @@ import java.nio.channels.*;
 import java.io.IOException;
 import net.quasardb.qdb.jni.*;
 
-/**
- * Represents a stream in a quasardb database.
- */
 final class QdbStreamChannel implements SeekableByteChannel {
     private SWIGTYPE_p_qdb_stream_session stream;
 

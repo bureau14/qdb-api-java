@@ -26,7 +26,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a blob in the database.
+     * Gets a handle to a blob in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the blob.
@@ -36,7 +36,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a deque (double-ended queue) in the database.
+     * Gets a handle to a deque (double-ended queue) in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the deque.
@@ -46,7 +46,28 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to an integer in the database.
+     * Gets a handle to an entry in the database, the entry must exist.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A subclass of QdbEntry depending on the type of entry currently in the database.
+     * @throws QdbAliasNotFoundException If the entry does not exist.
+     */
+    public QdbEntry entry(String alias) {
+        return new QdbEntryFactory(session).createEntry(alias);
+    }
+
+    /**
+     * Gets a handle to a hash-set in the database.
+     *
+     * @param alias The entry unique key/identifier in the database.
+     * @return A handle to perform operations on the hash-set.
+     */
+    public QdbHashSet hashSet(String alias) {
+        return new QdbHashSet(session, alias);
+    }
+
+    /**
+     * Gets a handle to an integer in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the integer.
@@ -56,7 +77,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a node (i.e. a server) in the cluster.
+     * Gets a handle to a node (i.e. a server) in the cluster.
      *
      * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
      * @return The node
@@ -75,17 +96,7 @@ public final class QdbCluster {
     }
 
     /**
-     * Get a handle to a hash-set in the database.
-     *
-     * @param alias The entry unique key/identifier in the database.
-     * @return A handle to perform operations on the hash-set.
-     */
-    public QdbHashSet hashSet(String alias) {
-        return new QdbHashSet(session, alias);
-    }
-
-    /**
-     * Get a handle to a stream in the database.
+     * Gets a handle to a stream in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the stream.

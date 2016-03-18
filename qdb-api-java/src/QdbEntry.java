@@ -20,7 +20,7 @@ public class QdbEntry {
      *
      * @return The alias.
      */
-    public String getAlias() {
+    public String alias() {
         return alias;
     }
 
