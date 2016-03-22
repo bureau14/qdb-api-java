@@ -15,7 +15,7 @@ Java API for [quasardb](http://www.quasardb.net/).
 Step 1, unzip JNI package:
 
 - extract quasardb daemon archive to `qdb/`
-- extract quasardb JNI API archive to `qdb/`
+- copy net.quasardb.qdb.jni jar files to `qdb/`
 
 Step 2, build:
 

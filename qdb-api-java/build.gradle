@@ -1,39 +1,31 @@
 apply plugin: 'java'
 group = 'net.quasardb.qdb'
 version = '2.0.0'
+archivesBaseName = 'net.quasardb.qdb'
 
-jar {
-    doFirst {
-        String osName = System.getProperty("os.name")
-        if (osName.startsWith("Windows"))
-            appendix = "win" + System.getProperty("sun.arch.data.model")
-        else if (osName == "Mac OS X")
-            appendix = "darwin"
-        else if (osName == "FreeBSD")
-            appendix = "freebsd"
-        else if (osName == "Linux")
-            appendix = "linux"
-    }
-    from {[
-        // Windows
-        "../qdb/bin/qdb_api.dll",
-        "../qdb/bin/qdb_api_jni.dll",
+String arch = System.getProperty("os.arch").toLowerCase();
+if (arch.endsWith("64")) arch = "x64"
+else arch = "x86"
 
-        // OS X
-        "../qdb/lib/libqdb_api.dylib",
-        "../qdb/lib/libqdb_api_jni.jnilib",
+String os = System.getProperty("os.name").toLowerCase();
+if (os.startsWith("windows")) os = "windows"
+if (os.startsWith("mac")) os = "macosx"
 
-        // FreeBSD and Linux
-        "../qdb/lib/libqdb_api.so",
-        "../qdb/lib/libqdb_api_jni.so"
-    ]}
+repositories {
+   flatDir {
+       dirs '../qdb'
+   }
+}
+
+dependencies {
+   compile name: "net.quasardb.qdb.jni", version: "$version"
+   runtime name: "net.quasardb.qdb.jni", version: "$version", classifier: "$os-$arch"
 }
 
 sourceSets {
     main {
         java {
             srcDir 'src'
-            srcDir '../qdb/jni'
         }
     }
 }
@@ -42,21 +34,11 @@ sourceSets {
 javadoc {
     options.noQualifiers = ['all']
     options.links = ['https://docs.oracle.com/javase/7/docs/api/']
-    exclude "**/SWIGTYPE*"
-    exclude "**/error_carrier*"
-    exclude "**/batch_request*"
-    exclude "**/batch_result*"
-    exclude "**/qdbJNI*"
-    exclude "**/qdb*"
-    exclude "**/results_list*"
-    exclude "**/retval*"
-    exclude "**/run_batch_result*"
-    exclude "**/ApiBufferPtr*"
-    exclude "**/BatchOpsVec*"
-    exclude "**/OperationHasValue*"
-    exclude "**/RemoteNode*"
-    exclude "**/StringVec*"
-    exclude "**/TypeOperationMap*"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -65,5 +47,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 artifacts {
+    archives sourcesJar
     archives javadocJar
 }

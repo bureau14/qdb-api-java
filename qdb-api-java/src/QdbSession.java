@@ -6,7 +6,7 @@ final class QdbSession {
     private transient SWIGTYPE_p_qdb_session handle;
 
     static {
-        QdbNativeApi.load();
+        QdbJniApi.load();
     }
 
     public QdbSession() {

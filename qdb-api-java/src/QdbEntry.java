@@ -72,7 +72,7 @@ public class QdbEntry {
     public Iterable<String> getTagsAlias() {
         results_list res = qdb.get_tags(session.handle(), alias);
         QdbExceptionFactory.throwIfError(res.getError());
-        return QdbNativeApi.resultsToList(res.getResults());
+        return QdbJniApi.resultsToList(res.getResults());
     }
 
     /**
