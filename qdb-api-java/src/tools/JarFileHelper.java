@@ -1,31 +1,22 @@
 package net.quasardb.qdb;
 
 import java.io.*;
+import java.net.URL;
+import javax.xml.bind.DatatypeConverter;
 
 class JarFileHelper {
 
-    public static String getSignature() throws IOException {
-        return convertBinaryToString(getBinarySignature(getFileLocation()));
-    }
+    public static String getSignature() {
+        URL jarUrl = JarFileHelper.class.getProtectionDomain().getCodeSource().getLocation();
 
-    static byte[] getBinarySignature(String path) throws IOException {
-        System.out.println("Read " + path);
-        RandomAccessFile file = new RandomAccessFile(path, "r");
-        byte[] signature = new byte[4];
-        file.seek(10);
-        file.read(signature);
-        return signature;
-    }
+        try (InputStream s = jarUrl.openStream()) {
+            s.skip(10);
 
-    static String convertBinaryToString(byte[] bytes) {
-        return javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
-    }
-
-    static String getFileLocation() {
-        return JarFileHelper.class
-            .getProtectionDomain()
-            .getCodeSource()
-            .getLocation()
-            .getPath();
+            byte[] signature = new byte[4];
+            s.read(signature);
+            return DatatypeConverter.printHexBinary(signature);
+        } catch (IOException e) {
+            return "";
+        }
     }
 }
