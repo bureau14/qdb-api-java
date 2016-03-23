@@ -12,33 +12,35 @@ if (os.startsWith("windows")) os = "windows"
 if (os.startsWith("mac")) os = "macosx"
 
 repositories {
+   mavenCentral()
    flatDir {
-       dirs '../qdb'
+       dirs 'qdb'
    }
 }
 
 dependencies {
+   compile group: 'junit', name: 'junit', version: '4.+'
    compile name: "net.quasardb.qdb.jni", version: "$version"
    runtime name: "net.quasardb.qdb.jni", version: "$version", classifier: "$os-$arch"
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src'
-        }
-    }
-}
-
-// http://docs.oracle.com/javase/1.5.0/docs/tooldocs/windows/javadoc.html#options
 javadoc {
     options.noQualifiers = ['all']
     options.links = ['https://docs.oracle.com/javase/7/docs/api/']
 }
 
+test {
+    systemProperty "qdbd.path", project.getProperty("qdbd.path")
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
+}
+
+task testsJar(type: Jar, dependsOn: classes) {
+    classifier = 'tests'
+    from sourceSets.test.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -48,5 +50,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
     archives sourcesJar
+    archives testsJar
     archives javadocJar
 }
