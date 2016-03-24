@@ -65,12 +65,6 @@ public class QdbBatchMultipleOperationsTest {
         Assert.assertEquals(expected_content, blob.get().toByteBuffer());
     }
 
-    private void checkBatch(QdbBatch batch, int operationsCount) {
-        Assert.assertTrue(batch.success());
-        Assert.assertEquals(batch.operationCount(), operationsCount);
-        Assert.assertEquals(batch.successCount(), operationsCount);
-    }
-
     @Test
     public void testSuccessfulBatch() {
         String aliasGet = Helpers.createUniqueAlias();
@@ -94,12 +88,12 @@ public class QdbBatchMultipleOperationsTest {
         QdbFuture<Void> resultOfUpdateCreate = batch.blob(aliasUpdateCreate).update(content_updated);
         QdbFuture<Void> resultOfUpdate = batch.blob(aliasUpdate).update(content_updated);
         QdbFuture<ByteBuffer> resultOfGetAndUpdate = batch.blob(aliasGetAndUpdate).getAndUpdate(content_updated);
-        QdbFuture<Void> resultOfRemove = batch.blob(aliasRemove).remove();
-        QdbFuture<Boolean> resultOfRemoveIf = batch.blob(aliasRemoveIf).removeIf(content);
         QdbFuture<ByteBuffer> resultOfCompareAndSwap = batch.blob(aliasCas).compareAndSwap(content_updated, content);
 
         batch.run();
-        checkBatch(batch, 8);
+        Assert.assertTrue(batch.success());
+        Assert.assertEquals(batch.operationCount(), 6);
+        Assert.assertEquals(batch.successCount(), 6);
 
         // check each result one by one
         Assert.assertEquals(content, resultOfGet.get());
@@ -111,8 +105,6 @@ public class QdbBatchMultipleOperationsTest {
         checkBlob(aliasUpdate, content_updated);
         Assert.assertEquals(content, resultOfGetAndUpdate.get());
         checkBlob(aliasGetAndUpdate, content_updated);
-        Assert.assertTrue(resultOfRemove.success());
-        Assert.assertTrue(resultOfRemoveIf.get());
         Assert.assertNull(resultOfCompareAndSwap.get());
         checkBlob(aliasCas, content_updated);
     }

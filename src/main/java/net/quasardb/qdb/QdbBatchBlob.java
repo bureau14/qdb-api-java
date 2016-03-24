@@ -79,29 +79,6 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     }
 
     /**
-     * Adds a "getAndRemove" operation to the batch: "Atomically reads the content of the blob and removes it."
-     *
-     * @return A future that will contain the result of the operation after the batch is run.
-     * @see QdbBlob#getAndRemove()
-     */
-    public QdbFuture<ByteBuffer> getAndRemove() {
-        assertNotAlreadyRun();
-
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_get_and_remove);
-        op.setAlias(alias);
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<ByteBuffer>(batch, index) {
-            @Override
-            protected ByteBuffer getResult(qdb_operation_t op) {
-                return op.getResult();
-            }
-        };
-    }
-
-    /**
      * Adds a "getAndUpdate" operation to the batch: "Atomically reads and replaces (in this order) the content of blob."
      *
      * @param content The content of the blob to be set, before being replaced.
@@ -175,32 +152,6 @@ public final class QdbBatchBlob extends QdbBatchEntry {
             @Override
             protected Void getResult(qdb_operation_t op) {
                 return null;
-            }
-        };
-    }
-
-    /**
-     * Adds a "removeIf" operation to the batch: "Removes the blob if its content matches comparand."
-     *
-     * @param comparand The content to be compared to.
-     * @return A future that will contain the result of the operation after the batch is run.
-     * @see QdbBlob#removeIf(ByteBuffer)
-     */
-    public QdbFuture<Boolean> removeIf(ByteBuffer comparand) {
-        assertNotAlreadyRun();
-
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_remove_if);
-        op.setAlias(alias);
-        op.setComparand(comparand);
-        op.setComparand_size(comparand.limit());
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<Boolean>(batch, index) {
-            @Override
-            protected Boolean getResult(qdb_operation_t op) {
-                return op.getError() != qdb_error_t.error_unmatched_content;
             }
         };
     }
