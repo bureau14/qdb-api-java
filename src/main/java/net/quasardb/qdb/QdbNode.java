@@ -114,7 +114,7 @@ public final class QdbNode {
      * @param reason A message that will be logged as the reason for the shutdown.
      */
     public void stop(String reason) {
-        qdb_error_t err = qdb.stop_node(session.handle(), uri, reason);
+        qdb_error_t err = qdb.node_stop(session.handle(), uri, reason);
         QdbExceptionFactory.throwIfError(err);
     }
 }
