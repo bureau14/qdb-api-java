@@ -41,7 +41,6 @@ public class QdbBatchBlobGetTest {
         result.get(); // <- throws
     }
 
-    @Ignore("Case 1247 - blob_get in a batch doesn't return incompatible_type for integers")
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         QdbInteger integer = Helpers.getInteger(alias);
