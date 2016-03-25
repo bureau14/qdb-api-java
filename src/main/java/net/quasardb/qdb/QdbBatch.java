@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.lang.AutoCloseable;
+import java.util.LinkedList;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -10,14 +11,16 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbBatch implements AutoCloseable {
     private final QdbSession session;
-    private BatchOpsVec operations;
+    private LinkedList<qdb_operation_t> queuedOperations; // <- to keep O(1) insertion time
+    private BatchOpsVec executedOperations;               // <- to store the results
     private boolean hasRun;
     private int successCount;
 
     // Protected constructor. Call  QdbCluster.createBatch() to create a batch.
     protected QdbBatch(QdbSession session) {
         this.session = session;
-        operations = new BatchOpsVec();
+        queuedOperations = new LinkedList<qdb_operation_t>();
+        executedOperations = new BatchOpsVec();
     }
 
     /**
@@ -53,7 +56,12 @@ public final class QdbBatch implements AutoCloseable {
         throwIfClosed();
         throwIfHasRun();
 
-        successCount = (int)qdb.run_batch2(session.handle(), operations);
+        executedOperations.reserve(queuedOperations.size());
+        while (!queuedOperations.isEmpty())
+            executedOperations.push_back(queuedOperations.removeFirst());
+
+        successCount = (int)qdb.run_batch2(session.handle(), executedOperations);
+
         hasRun = true;
     }
 
@@ -72,9 +80,9 @@ public final class QdbBatch implements AutoCloseable {
      * Once this method has been called, most other methods will throw QdbBatchClosedException.
      */
     public void close() {
-        if (operations != null) {
-            qdb.free_operations(session.handle(), operations);
-            operations = null;
+        if (executedOperations != null) {
+            qdb.free_operations(session.handle(), executedOperations);
+            executedOperations = null;
         }
     }
 
@@ -88,7 +96,7 @@ public final class QdbBatch implements AutoCloseable {
     public boolean success() {
         throwIfClosed();
         throwIfNotRun();
-        return operations.size() == successCount;
+        return executedOperations.size() == successCount;
     }
 
     /**
@@ -99,7 +107,7 @@ public final class QdbBatch implements AutoCloseable {
      */
     public int operationCount() {
         throwIfClosed();
-        return (int)operations.size();
+        return hasRun ? (int)executedOperations.size() : queuedOperations.size();
     }
 
     /**
@@ -121,20 +129,20 @@ public final class QdbBatch implements AutoCloseable {
      * @return true if batch has been closed, false if not
      */
     public boolean isClosed() {
-        return operations == null;
+        return executedOperations == null;
     }
 
     protected int addOperation(qdb_operation_t op) {
         throwIfClosed();
         throwIfHasRun();
-        int index = (int)operations.size();
-        operations.push_back(op);
+        int index = queuedOperations.size();
+        queuedOperations.addLast(op);
         return index;
     }
 
     protected qdb_operation_t getOperation(int index) {
         throwIfClosed();
-        return operations.get(index);
+        return hasRun ? executedOperations.get(index) : queuedOperations.get(index);
     }
 
     protected boolean hasRun() {
