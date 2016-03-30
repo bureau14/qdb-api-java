@@ -32,9 +32,14 @@ test {
     systemProperty "qdbd.path", project.getProperty("qdbd.path")
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+task flatSources(type: Copy) {
+    from sourceSets.main.allSource.files
+    into "$buildDir/flatSrc/net/quasardb/qdb"
+}
+
+task sourcesJar(type: Jar, dependsOn: flatSources) {
     classifier = 'sources'
-    from sourceSets.main.allSource
+    from "$buildDir/flatSrc"
 }
 
 task testsJar(type: Jar, dependsOn: classes) {
