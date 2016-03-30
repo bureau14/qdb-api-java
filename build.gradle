@@ -1,7 +1,6 @@
 apply plugin: 'java'
-group = 'net.quasardb.qdb'
-version = '2.0.0'
-archivesBaseName = 'net.quasardb.qdb'
+group = 'net.quasardb'
+archivesBaseName = 'qdb'
 
 String arch = System.getProperty("os.arch").toLowerCase();
 if (arch.endsWith("64")) arch = "x64"
@@ -20,8 +19,8 @@ repositories {
 
 dependencies {
    compile group: 'junit', name: 'junit', version: '4.+'
-   compile name: "net.quasardb.qdb.jni", version: "$version"
-   runtime name: "net.quasardb.qdb.jni", version: "$version", classifier: "$os-$arch"
+   compile group: 'net.quasardb', name: 'jni'
+   runtime group: 'net.quasardb', name: 'jni', classifier: "$os-$arch"
 }
 
 javadoc {
