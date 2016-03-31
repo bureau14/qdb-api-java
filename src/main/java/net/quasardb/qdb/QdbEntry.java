@@ -56,9 +56,9 @@ public class QdbEntry {
      * @return The tags assigned to the entry.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      */
-    public Iterable<QdbTag> getTags() {
+    public Iterable<QdbTag> tags() {
         List<QdbTag> tags = new ArrayList();
-        for (String alias : getTagsAlias())
+        for (String alias : tagsAlias())
             tags.add(new QdbTag(session, alias));
         return tags;
     }
@@ -68,8 +68,10 @@ public class QdbEntry {
      *
      * @return The aliases of the tags assigned to the entry.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @deprecated Use tags() insteads
      */
-    public Iterable<String> getTagsAlias() {
+    @Deprecated
+    public Iterable<String> tagsAlias() {
         results_list res = qdb.get_tags(session.handle(), alias);
         QdbExceptionFactory.throwIfError(res.getError());
         return QdbJniApi.resultsToList(res.getResults());

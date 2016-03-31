@@ -3,19 +3,19 @@ import java.util.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
-public class QdbEntryGetTagsTest {
+public class QdbEntryTagsTest {
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbEntry entry = Helpers.getBlob("qdb");
 
-        entry.getTags(); // <- throws
+        entry.tags(); // <- throws
     }
 
     @Test
     public void returnsEmptyCollection_beforeCallingAddTag() {
         QdbEntry entry = Helpers.createBlob();
 
-        Iterable<QdbTag> result = entry.getTags();
+        Iterable<QdbTag> result = entry.tags();
 
         List<QdbTag> resultAsList = Helpers.toList(result);
         Assert.assertEquals(0, resultAsList.size());
@@ -27,7 +27,7 @@ public class QdbEntryGetTagsTest {
         QdbTag tag = Helpers.createEmptyTag();
 
         entry.addTag(tag);
-        Iterable<QdbTag> result = entry.getTags();
+        Iterable<QdbTag> result = entry.tags();
 
         List<QdbTag> resultAsList = Helpers.toList(result);
         Assert.assertEquals(1, resultAsList.size());
