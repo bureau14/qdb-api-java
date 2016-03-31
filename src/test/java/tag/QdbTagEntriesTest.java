@@ -14,6 +14,32 @@ public class QdbTagEntriesTest {
     }
 
     @Test
+    public void returnsEmptyCollection_afterCallingRemoveTag() {
+        QdbBlob blob = Helpers.createBlob();
+        QdbTag tag = Helpers.createEmptyTag();
+
+        blob.addTag(tag);
+        blob.removeTag(tag);
+        Iterable<QdbEntry> result = tag.entries();
+
+        List<QdbEntry> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+    }
+
+    @Test
+    public void returnsEmptyCollection_afterCallingRemoveEntry() {
+        QdbBlob blob = Helpers.createBlob();
+        QdbTag tag = Helpers.createEmptyTag();
+
+        tag.addEntry(blob);
+        tag.removeEntry(blob);
+        Iterable<QdbEntry> result = tag.entries();
+
+        List<QdbEntry> resultAsList = Helpers.toList(result);
+        Assert.assertEquals(0, resultAsList.size());
+    }
+
+    @Test
     public void returnsABlob_afterCallingAddTag() {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
