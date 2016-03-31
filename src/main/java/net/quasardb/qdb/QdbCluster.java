@@ -121,7 +121,7 @@ public final class QdbCluster {
      * @param alias The entry unique key/identifier in the database.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
      */
-    public QdbNode findNodeContaining(String alias) {
+    public QdbNode findNodeFor(String alias) {
         error_carrier error = new error_carrier();
         RemoteNode location = qdb.get_location(session.handle(), alias, error);
         QdbExceptionFactory.throwIfError(error);
