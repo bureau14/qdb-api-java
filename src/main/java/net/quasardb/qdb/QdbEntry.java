@@ -60,18 +60,23 @@ public class QdbEntry {
         return obj instanceof QdbEntry && equals((QdbEntry)obj);
     }
 
-    private boolean equals(QdbEntry entry) {
+    /**
+     * Check entry equivalence.
+     *
+     * @return true if entry type and alias are equals, false otherwise
+     */
+    public boolean equals(QdbEntry entry) {
         return entry != null && entry.getClass().equals(getClass()) && entry.alias.equals(alias);
     }
 
     /**
-     * Retrieves the tags assigned to the entry.
+     * Get alias hash code.
      *
-     * @return The tags assigned to the entry.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @return A hash-code based on the entry alias.
      */
-    public Iterable<QdbTag> tags() {
-        return new QdbEntryTags(session, alias);
+    @Override
+    public int hashCode() {
+        return alias.hashCode();
     }
 
     /**
@@ -135,5 +140,15 @@ public class QdbEntry {
         qdb_error_t err = qdb.remove_tag(session.handle(), alias, tag);
         QdbExceptionFactory.throwIfError(err);
         return err != qdb_error_t.error_tag_not_set;
+    }
+
+    /**
+     * Retrieves the tags assigned to the entry.
+     *
+     * @return The tags assigned to the entry.
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     */
+    public Iterable<QdbTag> tags() {
+        return new QdbEntryTags(session, alias);
     }
 }
