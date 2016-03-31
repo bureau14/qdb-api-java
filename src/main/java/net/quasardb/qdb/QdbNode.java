@@ -45,7 +45,7 @@ public final class QdbNode {
      *
      * @return A JSON string containing the configuration of the node.
      */
-    public String getConfig() {
+    public String config() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_config(session.handle(), uri, error);
         QdbExceptionFactory.throwIfError(error);
@@ -68,7 +68,7 @@ public final class QdbNode {
      *
      * @return A JSON string containing the topology of the node.
      */
-    public String getTopology() {
+    public String topology() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_topology(session.handle(), uri, error);
         QdbExceptionFactory.throwIfError(error);
@@ -91,7 +91,7 @@ public final class QdbNode {
      *
      * @return A JSON string containing the status of the node.
      */
-    public String getStatus() {
+    public String status() {
         error_carrier error = new error_carrier();
         ByteBuffer buffer = qdb.node_status(session.handle(), uri, error);
         QdbExceptionFactory.throwIfError(error);

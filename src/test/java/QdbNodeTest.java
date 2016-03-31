@@ -25,28 +25,28 @@ public class QdbNodeTest {
     }
 
     @Test
-    public void getConfig_returnsJson() {
+    public void config_returnsJson() {
         QdbNode node = Helpers.getNode();
 
-        String config = node.getConfig();
+        String config = node.config();
 
         Assert.assertTrue("This is not JSON: \"" + config + "\"", looksLikeJson(config));
     }
 
     @Test
-    public void getStatus_returnsJson() {
+    public void status_returnsJson() {
         QdbNode node = Helpers.getNode();
 
-        String status = node.getStatus();
+        String status = node.status();
 
         Assert.assertTrue("This is not JSON: \"" + status + "\"", looksLikeJson(status));
     }
 
     @Test
-    public void getTopology_returnsJson() {
+    public void topology_returnsJson() {
         QdbNode node = Helpers.getNode();
 
-        String topology = node.getTopology();
+        String topology = node.topology();
 
         Assert.assertTrue("This is not JSON: \"" + topology + "\"", looksLikeJson(topology));
     }
