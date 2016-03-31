@@ -10,7 +10,7 @@ public class QdbBlobGetExpiryTimeTest {
         QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
 
         blob.put(content, expiry);
-        QdbExpiryTime result = blob.getExpiryTime();
+        QdbExpiryTime result = blob.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -23,7 +23,7 @@ public class QdbBlobGetExpiryTimeTest {
 
         blob.put(content, expiry);
         blob.update(content);
-        QdbExpiryTime result = blob.getExpiryTime();
+        QdbExpiryTime result = blob.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -36,7 +36,7 @@ public class QdbBlobGetExpiryTimeTest {
 
         blob.put(content);
         blob.update(content, expiry);
-        QdbExpiryTime result = blob.getExpiryTime();
+        QdbExpiryTime result = blob.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -47,7 +47,7 @@ public class QdbBlobGetExpiryTimeTest {
         ByteBuffer content = Helpers.createSampleData();
 
         blob.put(content);
-        QdbExpiryTime result = blob.getExpiryTime();
+        QdbExpiryTime result = blob.expiryTime();
 
         Assert.assertEquals(QdbExpiryTime.NEVER_EXPIRES, result);
     }

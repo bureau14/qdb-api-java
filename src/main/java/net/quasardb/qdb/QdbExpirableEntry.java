@@ -18,7 +18,7 @@ public class QdbExpirableEntry extends QdbEntry {
      * @throws QdbAliasNotFoundException If the entry does not exist.
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      */
-    public void setExpiryTime(QdbExpiryTime expiryTime) {
+    public void expiryTime(QdbExpiryTime expiryTime) {
         qdb_error_t err = qdb.expires_at(session.handle(), alias, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -29,7 +29,7 @@ public class QdbExpirableEntry extends QdbEntry {
      * @return The absolute expiry time, in seconds since epoch.
      * @throws QdbAliasNotFoundException If the entry does not exist.
      */
-    public QdbExpiryTime getExpiryTime() {
+    public QdbExpiryTime expiryTime() {
         error_carrier error = new error_carrier();
         long secondsSinceEpoch = qdb.get_expiry(session.handle(), alias, error);
         QdbExceptionFactory.throwIfError(error);

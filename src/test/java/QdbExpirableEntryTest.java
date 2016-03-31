@@ -7,7 +7,7 @@ public class QdbExpirableEntryTest {
     @Test(expected = QdbReservedAliasException.class)
     public void getExpiryTime_throwsReservedAlias() {
         QdbExpirableEntry entry = Helpers.getBlob("qdb");
-        entry.getExpiryTime(); // <- throws
+        entry.expiryTime(); // <- throws
     }
 
     @Test
@@ -15,8 +15,8 @@ public class QdbExpirableEntryTest {
         QdbExpirableEntry entry = Helpers.createBlob();
         QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(1);
 
-        entry.setExpiryTime(expiry);
-        QdbExpiryTime result = entry.getExpiryTime();
+        entry.expiryTime(expiry);
+        QdbExpiryTime result = entry.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -26,6 +26,6 @@ public class QdbExpirableEntryTest {
         QdbExpirableEntry entry = Helpers.createBlob();
 
         QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
-        entry.setExpiryTime(fiveMinutesAgo);
+        entry.expiryTime(fiveMinutesAgo);
     }
 }

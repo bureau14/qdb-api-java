@@ -9,7 +9,7 @@ public class QdbIntegerGetExpiryTimeTest {
         QdbExpiryTime expiry = QdbExpiryTime.makeMinutesFromNow(5);
 
         integer.put(42, expiry);
-        QdbExpiryTime result = integer.getExpiryTime();
+        QdbExpiryTime result = integer.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -21,7 +21,7 @@ public class QdbIntegerGetExpiryTimeTest {
 
         integer.put(666, expiry);
         integer.update(42);
-        QdbExpiryTime result = integer.getExpiryTime();
+        QdbExpiryTime result = integer.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -33,7 +33,7 @@ public class QdbIntegerGetExpiryTimeTest {
 
         integer.put(666);
         integer.update(42, expiry);
-        QdbExpiryTime result = integer.getExpiryTime();
+        QdbExpiryTime result = integer.expiryTime();
 
         Assert.assertEquals(expiry, result);
     }
@@ -43,7 +43,7 @@ public class QdbIntegerGetExpiryTimeTest {
         QdbInteger integer = Helpers.createEmptyInteger();
 
         integer.put(42);
-        QdbExpiryTime result = integer.getExpiryTime();
+        QdbExpiryTime result = integer.expiryTime();
 
         Assert.assertEquals(QdbExpiryTime.NEVER_EXPIRES, result);
     }

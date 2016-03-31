@@ -24,7 +24,7 @@ public class QdbBlobGetTest {
         QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
 
         blob.put(content);
-        blob.setExpiryTime(expiry);
+        blob.expiryTime(expiry);
         Helpers.wait(1.5);
         blob.get(); // <- throws
     }
