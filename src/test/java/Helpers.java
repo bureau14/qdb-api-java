@@ -11,7 +11,7 @@ public class Helpers {
 
     private static QdbCluster createCluster() {
         try {
-            return new QdbCluster(DaemonRunner.getURI());
+            return new QdbCluster(DaemonRunner.uri());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -135,7 +135,7 @@ public class Helpers {
     }
 
     public static QdbNode getNode() {
-        return cluster.node(DaemonRunner.getURI());
+        return cluster.node(DaemonRunner.uri());
     }
 
     public static QdbStream getStream(String alias) {

@@ -12,6 +12,32 @@ public final class QdbTag extends QdbEntry {
     }
 
     /**
+     * Assigns the tag to an entry. The tag is created if it does not exist.
+     *
+     * @param entry The entry to tag.
+     * @return true if the tag has been set, false if it was already set
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public boolean addEntry(QdbEntry entry) {
+        return addEntry(entry.alias());
+    }
+
+    /**
+     * Assigns the tag to an entry. The tag is created if it does not exist.
+     *
+     * @param entry The alias of the entry to tag.
+     * @return true if the tag has been set, false if it was already set
+     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     */
+    public boolean addEntry(String entry) {
+        qdb_error_t err = qdb.add_tag(session.handle(), entry, alias);
+        QdbExceptionFactory.throwIfError(err);
+        return err != qdb_error_t.error_tag_already_set;
+    }
+
+    /**
      * Retrieves the list of tags of the entry
      *
      * @return A collection of alias.

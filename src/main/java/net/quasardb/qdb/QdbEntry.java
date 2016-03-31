@@ -28,7 +28,7 @@ public class QdbEntry {
      * Assigns a tag to the entry. The tag is created if it does not exist.
      *
      * @param tag The tag to add.
-     * @return true If the tag has been set, false if it was already set
+     * @return true if the tag has been set, false if it was already set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
@@ -40,7 +40,7 @@ public class QdbEntry {
      * Assigns a tag to the entry. The tag is created if it does not exist.
      *
      * @param tag The alias of the tag to add.
-     * @return true If the tag has been set, false if it was already set
+     * @return true if the tag has been set, false if it was already set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */

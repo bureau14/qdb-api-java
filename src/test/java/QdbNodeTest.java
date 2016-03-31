@@ -3,7 +3,7 @@ import org.junit.*;
 
 public class QdbNodeTest {
     @Test
-    public void getHostName_returnsExpectedValue() {
+    public void hostName_returnsExpectedValue() {
         QdbNode node = Helpers.getNode();
 
         String hostName = node.hostName();
@@ -12,12 +12,12 @@ public class QdbNodeTest {
     }
 
     @Test
-    public void getPort_returnsExpectedValue() {
+    public void port_returnsExpectedValue() {
         QdbNode node = Helpers.getNode();
 
         int port = node.port();
 
-        Assert.assertEquals(2836, port);
+        Assert.assertEquals(DaemonRunner.port(), port);
     }
 
     private static boolean looksLikeJson(String str) {

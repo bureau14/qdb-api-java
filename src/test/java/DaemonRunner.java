@@ -15,8 +15,12 @@ public class DaemonRunner {
         });
     }
 
-    public static String getURI() {
-        return "qdb://127.0.0.1:2836";
+    public static String uri() {
+        return "qdb://127.0.0.1:" + port();
+    }
+
+    public static int port() {
+        return 28360; // <- avoid default port to prevent conflict
     }
 
     private static String findDaemon() {
@@ -34,7 +38,7 @@ public class DaemonRunner {
         try {
             Runtime runtime = Runtime.getRuntime();
             System.out.println("Start " + path);
-            process = runtime.exec(new String[] {path, "--transient"});
+            process = runtime.exec(new String[] {path, "--transient", "-a", "127.0.0.1:" + port()});
             System.out.println(path + " started, waiting...");
             Thread.sleep(2000);
             System.out.println(path + " ready");

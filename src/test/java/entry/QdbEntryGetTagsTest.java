@@ -22,7 +22,7 @@ public class QdbEntryGetTagsTest {
     }
 
     @Test
-    public void returnsOnTag_afterCallingAddTag() {
+    public void returnsOneTag_afterCallingAddTag() {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
