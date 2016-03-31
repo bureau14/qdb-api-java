@@ -51,6 +51,20 @@ public class QdbEntry {
     }
 
     /**
+     * Check entry equivalence.
+     *
+     * @return true if entry type and alias are equals, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof QdbEntry && equals((QdbEntry)obj);
+    }
+
+    private boolean equals(QdbEntry entry) {
+        return entry != null && entry.getClass().equals(getClass()) && entry.alias.equals(alias);
+    }
+
+    /**
      * Retrieves the tags assigned to the entry.
      *
      * @return The tags assigned to the entry.
