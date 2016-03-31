@@ -13,7 +13,10 @@ final class QdbEntryFactory {
         error_carrier err = new error_carrier();
         qdb_entry_type_t type = qdb.get_type(session.handle(), alias, err);
         QdbExceptionFactory.throwIfError(err);
+        return createEntry(type, alias);
+    }
 
+    public QdbEntry createEntry(qdb_entry_type_t type, String alias) {
         if (type == qdb_entry_type_t.errorntry_blob)
             return new QdbBlob(session, alias);
 

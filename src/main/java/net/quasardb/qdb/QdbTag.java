@@ -38,30 +38,12 @@ public final class QdbTag extends QdbEntry {
     }
 
     /**
-     * Retrieves the list of tags of the entry
-     *
-     * @return A collection of alias.
-     * @deprecated This function will be removed from the API. Use entries() instead.
-     */
-    @Deprecated
-    public Iterable<String> entriesAlias() {
-        results_list res = qdb.get_tagged(session.handle(), alias);
-        QdbExceptionFactory.throwIfError(res.getError());
-        return QdbJniApi.resultsToList(res.getResults());
-    }
-
-    /**
      * Gets the entries tagged with this tag.
      *
      * @return A collection of subclasses of QdbEntry, whose types depends on the actual type of the entries in the database.
      */
     public Iterable<QdbEntry> entries() {
-        ArrayList<QdbEntry> entries = new ArrayList<QdbEntry>();
-        QdbEntryFactory factory = new QdbEntryFactory(session);
-        for (String alias : entriesAlias()) {
-            entries.add(factory.createEntry(alias));
-        }
-        return entries;
+        return new QdbTagEntries(session, alias);
     }
 
     /**
