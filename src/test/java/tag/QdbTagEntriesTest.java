@@ -67,11 +67,10 @@ public class QdbTagEntriesTest {
         Assert.assertTrue(resultAsList.get(0) instanceof QdbBlob);
     }
 
-    @Ignore("Case 1269 - qdb_tag_iterator_begin() should return qdb_e_reserved_alias")
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);
 
-        tag.entries(); // <- throws
+        tag.entries().iterator(); // <- throws
     }
 }

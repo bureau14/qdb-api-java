@@ -8,7 +8,7 @@ public class QdbEntryTagsTest {
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbEntry entry = Helpers.getBlob("qdb");
 
-        entry.tags(); // <- throws
+        entry.tags().iterator(); // <- throws
     }
 
     @Test

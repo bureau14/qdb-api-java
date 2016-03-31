@@ -30,16 +30,4 @@ class QdbJniApi {
             throw new RuntimeException("Unsupported operating system: " + os);
         }
     }
-
-    public static List<String> resultsToList(StringVec results) {
-        int vecSize = (int)results.size();
-
-        Vector<String> entries = new Vector<String>(vecSize, 2);
-
-        for (int i = 0; i < vecSize; i++) {
-            entries.add(results.get(i));
-        }
-
-        return entries;
-    }
 }
