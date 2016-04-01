@@ -28,14 +28,20 @@ public final class QdbBuffer implements AutoCloseable {
     }
 
     public ByteBuffer toByteBuffer() {
+        throwIfClosed();
         return buffer != null ? buffer.duplicate() : null;
     }
 
     @Override
     public String toString() {
         if (buffer == null)
-            return this.getClass().getSimpleName() + "[freed]";
+            return this.getClass().getName() + "[closed]";
         else
             return this.getClass().getName() + "[size=" + buffer.limit() + "]";
+    }
+
+    private void throwIfClosed() {
+        if (buffer == null)
+            throw new QdbBufferClosedException();
     }
 }
