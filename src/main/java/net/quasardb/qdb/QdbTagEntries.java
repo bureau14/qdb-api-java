@@ -19,8 +19,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
             hasNext = err == qdb_error_t.error_ok;
             // CAUTION: set hasNext before throwing
-            if (err != qdb_error_t.error_alias_not_found)
-                QdbExceptionFactory.throwIfError(err);
+            QdbExceptionFactory.throwIfError(err);
         }
 
         public boolean hasNext() {
@@ -34,8 +33,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
             hasNext = err == qdb_error_t.error_ok;
             // CAUTION: set hasNext before throwing
-            if (err != qdb_error_t.error_alias_not_found)
-                QdbExceptionFactory.throwIfError(err);
+            QdbExceptionFactory.throwIfError(err);
 
             return entry;
         }
