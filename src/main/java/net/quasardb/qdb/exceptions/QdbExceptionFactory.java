@@ -41,6 +41,9 @@ class QdbExceptionFactory {
         if (errorCode.origin() == qdb_error_origin_t.error_origin_system_remote)
             return createRemoteSystemException(errorCode);
 
+        if (errorCode.origin() == qdb_error_origin_t.error_origin_protocol)
+            return createProtocolException(errorCode);
+
         return new QdbException(errorCode.message());
     }
 
@@ -97,9 +100,14 @@ class QdbExceptionFactory {
     }
 
     private static QdbRemoteSystemException createRemoteSystemException(QdbErrorCode errorCode) {
+
+        return new QdbRemoteSystemException(errorCode.message());
+    }
+
+    private static QdbProtocolException createProtocolException(QdbErrorCode errorCode) {
         if (errorCode.equals(qdb_error_t.error_unexpected_reply))
             return new QdbUnexpectedReplyException();
 
-        return new QdbRemoteSystemException(errorCode.message());
+        return new QdbProtocolException(errorCode.message());
     }
 }
