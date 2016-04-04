@@ -4,6 +4,11 @@ import net.quasardb.qdb.jni.qdb_error_t;
 import org.junit.*;
 
 public class QdbExceptionFactoryTest {
+    @BeforeClass
+    public static void loadJniLibrary() {
+        QdbJniApi.load();
+    }
+
     @Test
     public void alias_already_exists() {
         Exception result = QdbExceptionFactory.createException(qdb_error_t.error_alias_already_exists);
