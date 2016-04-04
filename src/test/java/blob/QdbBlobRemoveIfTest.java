@@ -3,6 +3,17 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbBlobRemoveIfTest {
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer comparand = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbBlob blob = cluster.blob(alias);
+        cluster.close();
+        blob.removeIf(comparand); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

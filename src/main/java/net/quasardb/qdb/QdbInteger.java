@@ -17,10 +17,12 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @param delta The increment to add to the current value.
      * @return The resulting value after the operation.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long add(long delta) {
+        session.throwIfClosed();
         error_carrier err = new error_carrier();
         long res = qdb.int_add(session.handle(), alias, delta, err);
         QdbExceptionFactory.throwIfError(err);
@@ -32,10 +34,12 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @return The current value
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long get() {
+        session.throwIfClosed();
         error_carrier err = new error_carrier();
         long value = qdb.int_get(session.handle(), alias, err);
         QdbExceptionFactory.throwIfError(err);
@@ -47,6 +51,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param initialValue The value of the new integer.
      * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue) {
@@ -59,9 +64,11 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @param initialValue The value of the new integer.
      * @param expiryTime The expiry time of the entry.
      * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -70,6 +77,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      * Updates an existing integer or creates one if it does not exist.
      *
      * @param newValue The new value of the integer.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
@@ -82,10 +90,12 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param newValue The new value of the integer.
      * @param expiryTime The expiry time of the entry.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void update(long newValue, QdbExpiryTime expiryTime) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }

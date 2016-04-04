@@ -3,6 +3,16 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbDequeSizeTest {
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbDeque deque = cluster.deque(alias);
+        cluster.close();
+        deque.size(); // <- throws
+    }
+
     @Test
     public void returnsOne_afterCallingPushFront() {
         QdbDeque deque = Helpers.createEmptyDeque();

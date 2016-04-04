@@ -13,6 +13,16 @@ public class QdbIntegerGetTest {
         integer.get(); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbInteger integer = cluster.integer(alias);
+        cluster.close();
+        integer.get(); // <- throws
+    }
+
     @Test(expected = QdbAliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingRemove() {
         QdbInteger integer = Helpers.createEmptyInteger();

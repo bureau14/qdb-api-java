@@ -10,6 +10,16 @@ public class QdbIntegerAddTest {
         integer.add(666); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbInteger integer = cluster.integer(alias);
+        cluster.close();
+        integer.add(666); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType() {
         String alias = Helpers.createUniqueAlias();

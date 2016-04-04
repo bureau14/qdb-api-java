@@ -84,6 +84,17 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer content = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbBlob blob = cluster.blob(alias);
+        cluster.close();
+        blob.get(); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

@@ -7,8 +7,8 @@ import net.quasardb.qdb.jni.*;
 /**
  * A connection to a quasardb cluster.
  */
-public final class QdbCluster {
-    private transient QdbSession session;
+public final class QdbCluster implements AutoCloseable {
+    private final QdbSession session;
 
     /**
      * Connects to a quasardb cluster through the specified URI.
@@ -26,12 +26,21 @@ public final class QdbCluster {
     }
 
     /**
+     * Closes the connection to the cluster.
+     */
+    public void close() {
+        session.close();
+    }
+
+    /**
      * Gets a handle to a blob in the database.
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the blob.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbBlob blob(String alias) {
+        session.throwIfClosed();
         return new QdbBlob(session, alias);
     }
 
@@ -40,8 +49,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the deque.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbDeque deque(String alias) {
+        session.throwIfClosed();
         return new QdbDeque(session, alias);
     }
 
@@ -51,8 +62,10 @@ public final class QdbCluster {
      * @param alias The entry unique key/identifier in the database.
      * @return A subclass of QdbEntry depending on the type of entry currently in the database.
      * @throws QdbAliasNotFoundException If the entry does not exist.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbEntry entry(String alias) {
+        session.throwIfClosed();
         return new QdbEntryFactory(session).createEntry(alias);
     }
 
@@ -61,8 +74,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the hash-set.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbHashSet hashSet(String alias) {
+        session.throwIfClosed();
         return new QdbHashSet(session, alias);
     }
 
@@ -71,8 +86,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the integer.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbInteger integer(String alias) {
+        session.throwIfClosed();
         return new QdbInteger(session, alias);
     }
 
@@ -81,6 +98,7 @@ public final class QdbCluster {
      *
      * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
      * @return The node
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbNode node(String uri) {
         Pattern pattern = Pattern.compile("^qdb://(.*):(\\d+)/?$");
@@ -92,6 +110,7 @@ public final class QdbCluster {
         String hostName = matcher.group(1);
         int port = Integer.parseInt(matcher.group(2));
 
+        session.throwIfClosed();
         return new QdbNode(session, hostName, port);
     }
 
@@ -100,8 +119,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the stream.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbStream stream(String alias) {
+        session.throwIfClosed();
         return new QdbStream(session, alias);
     }
 
@@ -110,8 +131,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the tag.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbTag tag(String alias) {
+        session.throwIfClosed();
         return new QdbTag(session, alias);
     }
 
@@ -120,8 +143,10 @@ public final class QdbCluster {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbNode findNodeFor(String alias) {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         RemoteNode location = qdb.get_location(session.handle(), alias, error);
         QdbExceptionFactory.throwIfError(error);
@@ -131,17 +156,22 @@ public final class QdbCluster {
     /**
      * Remove all data from the cluster.
      *
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbOperationDisabledException If the operation has been disabled on the server.
      */
     public void purgeAll() {
+        session.throwIfClosed();
         qdb_error_t err = qdb.purge_all(session.handle());
         QdbExceptionFactory.throwIfError(err);
     }
 
     /**
      * Trim data from the cluster, that is, remove dead references and old versions.
+     *
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public void trimAll() {
+        session.throwIfClosed();
         qdb_error_t err = qdb.trim_all(session.handle());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -152,6 +182,7 @@ public final class QdbCluster {
      * @return An empty batch.
      */
     public QdbBatch createBatch() {
+        session.throwIfClosed();
         return new QdbBatch(session);
     }
 

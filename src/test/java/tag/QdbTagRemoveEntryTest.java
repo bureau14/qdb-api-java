@@ -19,6 +19,17 @@ public class QdbTagRemoveEntryTest {
         tag.removeEntry(entry); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+        QdbEntry entry = Helpers.createEmptyBlob();
+
+        QdbTag tag = cluster.tag(alias);
+        cluster.close();
+        tag.removeEntry(entry); // <- throws
+    }
+
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);

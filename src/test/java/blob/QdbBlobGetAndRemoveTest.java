@@ -10,6 +10,16 @@ public class QdbBlobGetAndRemoveTest {
         blob.getAndRemove(); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbBlob blob = cluster.blob(alias);
+        cluster.close();
+        blob.getAndRemove(); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

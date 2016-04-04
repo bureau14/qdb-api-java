@@ -67,6 +67,17 @@ public class QdbTagEntriesTest {
         Assert.assertTrue(resultAsList.get(0) instanceof QdbBlob);
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+        QdbEntry entry = Helpers.createEmptyBlob();
+
+        QdbTag tag = cluster.tag(alias);
+        cluster.close();
+        tag.entries().iterator(); // <- throws
+    }
+
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);

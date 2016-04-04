@@ -35,6 +35,7 @@ final class QdbEntryTags implements Iterable<QdbTag> {
     }
 
     public Iterator<QdbTag> iterator() {
+        session.throwIfClosed();
         results_list res = qdb.get_tags(session.handle(), alias);
         QdbExceptionFactory.throwIfError(res.getError());
         return new QdbEntryTagsIterator(res.getResults());

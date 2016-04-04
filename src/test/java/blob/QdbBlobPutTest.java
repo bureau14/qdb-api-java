@@ -12,6 +12,17 @@ public class QdbBlobPutTest {
         blob.put(content); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer content = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbBlob blob = cluster.blob(alias);
+        cluster.close();
+        blob.put(content); // <- throws
+    }
+
     @Test(expected = QdbInvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();

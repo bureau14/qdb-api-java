@@ -13,9 +13,25 @@ final class QdbSession {
         handle = qdb.open();
     }
 
+    public void close() {
+        if (handle != null) {
+            qdb.close(handle);
+            handle = null;
+        }
+    }
+
+    public boolean isClosed() {
+        return handle == null;
+    }
+
+    public void throwIfClosed() {
+        if (handle == null)
+            throw new QdbClusterClosedException();
+    }
+
     @Override
     protected void finalize() throws Throwable {
-        qdb.close(handle);
+        this.close();
         super.finalize();
     }
 

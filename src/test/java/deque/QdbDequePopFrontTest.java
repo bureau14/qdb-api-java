@@ -37,6 +37,16 @@ public class QdbDequePopFrontTest {
         deque.popFront(); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbDeque deque = cluster.deque(alias);
+        cluster.close();
+        deque.popFront(); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

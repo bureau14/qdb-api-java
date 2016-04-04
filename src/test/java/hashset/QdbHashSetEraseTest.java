@@ -11,6 +11,17 @@ public class QdbHashSetEraseTest {
         hset.erase(content); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer content = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbHashSet hset = cluster.hashSet(alias);
+        cluster.close();
+        hset.erase(content); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType() {
         String alias = Helpers.createUniqueAlias();

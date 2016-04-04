@@ -14,6 +14,17 @@ public class QdbHashSetInsertTest {
         hset.insert(content); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer content = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbHashSet hset = cluster.hashSet(alias);
+        cluster.close();
+        hset.insert(content); // <- throws
+    }
+
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();

@@ -16,9 +16,11 @@ public class QdbExpirableEntry extends QdbEntry {
      *
      * @param expiryTime The new expiry time of the entry.
      * @throws QdbAliasNotFoundException If the entry does not exist.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      */
     public void expiryTime(QdbExpiryTime expiryTime) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.expires_at(session.handle(), alias, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -26,10 +28,12 @@ public class QdbExpirableEntry extends QdbEntry {
     /**
      * Retrieves the expiry time of the entry. A value of zero means the entry never expires.
      *
-     * @return The absolute expiry time, in seconds since epoch.
+     * @return The expiry time of the entry.
      * @throws QdbAliasNotFoundException If the entry does not exist.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbExpiryTime expiryTime() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         long secondsSinceEpoch = qdb.get_expiry(session.handle(), alias, error);
         QdbExceptionFactory.throwIfError(error);

@@ -17,6 +17,7 @@ public final class QdbTag extends QdbEntry {
      * @param entry The entry to tag.
      * @return true if the tag has been set, false if it was already set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean addEntry(QdbEntry entry) {
@@ -29,9 +30,11 @@ public final class QdbTag extends QdbEntry {
      * @param entry The alias of the entry to tag.
      * @return true if the tag has been set, false if it was already set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean addEntry(String entry) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.add_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
         return err != qdb_error_t.error_tag_already_set;
@@ -41,6 +44,7 @@ public final class QdbTag extends QdbEntry {
      * Gets the entries tagged with this tag.
      *
      * @return A collection of subclasses of QdbEntry, whose types depends on the actual type of the entries in the database.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public Iterable<QdbEntry> entries() {
         return new QdbTagEntries(session, alias);
@@ -52,6 +56,7 @@ public final class QdbTag extends QdbEntry {
      * @param entry The entry to untag.
      * @return true if the tag has been removed, false if the tag was not set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeEntry(QdbEntry entry) {
@@ -64,9 +69,11 @@ public final class QdbTag extends QdbEntry {
      * @param entry The alias of the entry to untag.
      * @return true if the tag has been removed, false if the tag was not set
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeEntry(String entry) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.remove_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
         return err != qdb_error_t.error_tag_not_set;

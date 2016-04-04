@@ -3,6 +3,17 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbDequePushBackTest {
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+        ByteBuffer content = Helpers.createSampleData();
+
+        QdbDeque deque = cluster.deque(alias);
+        cluster.close();
+        deque.pushBack(content); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

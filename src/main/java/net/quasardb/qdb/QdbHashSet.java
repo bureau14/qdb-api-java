@@ -17,10 +17,12 @@ public final class QdbHashSet extends QdbEntry {
      * @param content The value to search for and compare against.
      * @return true if the value is in the hash-set, false if not.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean contains(ByteBuffer content) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.hset_contains(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_not_found)
@@ -35,10 +37,12 @@ public final class QdbHashSet extends QdbEntry {
      * @param content The value to search for and remove.
      * @return true if the value was in the hash-set, false if not.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean erase(ByteBuffer content) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.hset_erase(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_not_found)
@@ -52,10 +56,12 @@ public final class QdbHashSet extends QdbEntry {
      *
      * @param content The value to add in the hash-set.
      * @return true if the value has been added, false if it was already present.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean insert(ByteBuffer content) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.hset_insert(session.handle(), alias, content, content.limit());
 
         if (err == qdb_error_t.error_element_already_exists)

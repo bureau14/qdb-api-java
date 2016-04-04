@@ -5,7 +5,7 @@ import java.lang.AutoCloseable;
 import net.quasardb.qdb.jni.*;
 
 public final class QdbBuffer implements AutoCloseable {
-    QdbSession session;
+    final QdbSession session;
     ByteBuffer buffer;
 
     protected QdbBuffer(QdbSession session, ByteBuffer buffer) {
@@ -28,13 +28,14 @@ public final class QdbBuffer implements AutoCloseable {
     }
 
     public ByteBuffer toByteBuffer() {
-        throwIfClosed();
+        this.throwIfClosed();
+        session.throwIfClosed();
         return buffer != null ? buffer.duplicate() : null;
     }
 
     @Override
     public String toString() {
-        if (buffer == null)
+        if (buffer == null || session.isClosed())
             return this.getClass().getName() + "[closed]";
         else
             return this.getClass().getName() + "[size=" + buffer.limit() + "]";

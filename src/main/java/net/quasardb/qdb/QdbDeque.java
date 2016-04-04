@@ -18,10 +18,12 @@ public final class QdbDeque extends QdbEntry {
      *
      * @return The content of the item, or null if the deque was empty.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public QdbBuffer back() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
@@ -36,11 +38,13 @@ public final class QdbDeque extends QdbEntry {
      * @param index The zero-based index you wish to retrieve.
      * @return The content of the item.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbOutOfBoundsException If the index is negative, or greater or equal than deque size.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public QdbBuffer get(long index) {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_get_at(session.handle(), alias, index, error);
         QdbExceptionFactory.throwIfError(error);
@@ -52,10 +56,12 @@ public final class QdbDeque extends QdbEntry {
      *
      * @return The content of the item, or null if the deque was empty.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public QdbBuffer front() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
@@ -69,10 +75,12 @@ public final class QdbDeque extends QdbEntry {
      *
      * @return The content of the removed item, or null if the deque was empty.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public QdbBuffer popBack() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_pop_back(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
@@ -86,10 +94,12 @@ public final class QdbDeque extends QdbEntry {
      *
      * @return The content of the removed item, or null if the deque was empty.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public QdbBuffer popFront() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         ByteBuffer value = qdb.deque_pop_front(session.handle(), alias, error);
         if (error.getError() == qdb_error_t.error_container_empty)
@@ -102,10 +112,12 @@ public final class QdbDeque extends QdbEntry {
      * Inserts the content at the back of the queue. Creates the queue if it does not exist.
      *
      * @param content The content that will be added to the queue.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void pushBack(ByteBuffer content) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.deque_push_back(session.handle(), alias, content, content.limit());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -114,10 +126,12 @@ public final class QdbDeque extends QdbEntry {
      * Inserts the content at the front of the queue. Creates the queue if it does not exist.
      *
      * @param content The content that will be added to the queue.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void pushFront(ByteBuffer content) {
+        session.throwIfClosed();
         qdb_error_t err = qdb.deque_push_front(session.handle(), alias, content, content.limit());
         QdbExceptionFactory.throwIfError(err);
     }
@@ -127,10 +141,12 @@ public final class QdbDeque extends QdbEntry {
      *
      * @return The number of items in the deque.
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long size() {
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
         long value = qdb.deque_size(session.handle(), alias, error);
         QdbExceptionFactory.throwIfError(error);

@@ -33,6 +33,33 @@ public class QdbDequeGetTest {
         Assert.assertEquals(content1, result2.toByteBuffer());
     }
 
+    @Test(expected = QdbAliasNotFoundException.class)
+    public void throwsAliasNotFound() {
+        QdbDeque deque = Helpers.createEmptyDeque();
+
+        deque.get(0); // <- throws
+    }
+
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbDeque deque = cluster.deque(alias);
+        cluster.close();
+        deque.get(0); // <- throws
+    }
+
+    @Test(expected = QdbIncompatibleTypeException.class)
+    public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
+        String alias = Helpers.createUniqueAlias();
+        QdbInteger integer = Helpers.getInteger(alias);
+        QdbDeque deque = Helpers.getDeque(alias);
+
+        integer.put(666);
+        deque.get(0); // <- throws
+    }
+
     @Test(expected = QdbOutOfBoundsException.class)
     public void throwsOutOfBounds_whenIndexIsGreaterThanSize() {
         QdbDeque deque = Helpers.createEmptyDeque();
@@ -49,23 +76,6 @@ public class QdbDequeGetTest {
 
         deque.pushBack(content);
         deque.get(-2); // <- throws
-    }
-
-    @Test(expected = QdbAliasNotFoundException.class)
-    public void throwsAliasNotFound() {
-        QdbDeque deque = Helpers.createEmptyDeque();
-
-        deque.get(0); // <- throws
-    }
-
-    @Test(expected = QdbIncompatibleTypeException.class)
-    public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
-        String alias = Helpers.createUniqueAlias();
-        QdbInteger integer = Helpers.getInteger(alias);
-        QdbDeque deque = Helpers.getDeque(alias);
-
-        integer.put(666);
-        deque.get(0); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)

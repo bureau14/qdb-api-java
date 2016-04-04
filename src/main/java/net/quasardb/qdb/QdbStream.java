@@ -17,6 +17,11 @@ public final class QdbStream extends QdbEntry {
         super(session, alias);
     }
 
+    /**
+     * Opens a ByteChannel for the stream.
+     *
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     */
     public SeekableByteChannel open(Mode option) {
         qdb_stream_mode_t jniMode;
 
@@ -31,8 +36,8 @@ public final class QdbStream extends QdbEntry {
             throw new UnsupportedOperationException();
         }
 
+        session.throwIfClosed();
         error_carrier error = new error_carrier();
-
         SWIGTYPE_p_qdb_stream_session stream = qdb.stream_open(session.handle(), alias, jniMode, error);
         QdbExceptionFactory.throwIfError(error);
 

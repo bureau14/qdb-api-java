@@ -15,6 +15,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
         public QdbTagEntriesIterator() {
             iterator = new tag_iterator();
 
+            session.throwIfClosed();
             qdb_error_t err = iterator.begin(session.handle(), tag);
 
             hasNext = err == qdb_error_t.error_ok;
@@ -27,6 +28,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
         }
 
         public QdbEntry next() {
+            session.throwIfClosed();
             QdbEntry entry = factory.createEntry(iterator.type(), iterator.alias());
 
             qdb_error_t err = iterator.next();

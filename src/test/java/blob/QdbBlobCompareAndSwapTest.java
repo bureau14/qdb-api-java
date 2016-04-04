@@ -12,6 +12,18 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+        ByteBuffer comparand = Helpers.createSampleData();
+        ByteBuffer newContent = Helpers.createSampleData();
+
+        QdbBlob blob = cluster.blob(alias);
+        cluster.close();
+        blob.compareAndSwap(newContent, comparand); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();

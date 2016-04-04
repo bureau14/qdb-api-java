@@ -6,6 +6,6 @@ package net.quasardb.qdb;
 public final class QdbBufferClosedException extends QdbOperationException {
 
     public QdbBufferClosedException() {
-        super("Cannot perform operation on QdbBuffer after close() has been called");
+        super("Operation cannot be performed because QdbBuffer.close() was called");
     }
 }

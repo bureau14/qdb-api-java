@@ -11,8 +11,19 @@ public class QdbHashSetContainsTest {
         hset.contains(content); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingQdbClusterClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        ByteBuffer content = Helpers.createSampleData();
+        String alias = Helpers.createUniqueAlias();
+
+        QdbHashSet hset = cluster.hashSet(alias);
+        cluster.close();
+        hset.contains(content); // <- throws
+    }
+
     @Test(expected = QdbIncompatibleTypeException.class)
-    public void throwsIncompatibleType() {
+    public void throwsIncompatibleType_afterCallingBlobPut() {
         String alias = Helpers.createUniqueAlias();
         QdbBlob blob = Helpers.getBlob(alias);
         QdbHashSet hset = Helpers.getHashSet(alias);

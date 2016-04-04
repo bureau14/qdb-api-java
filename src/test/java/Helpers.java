@@ -9,7 +9,7 @@ public class Helpers {
     private static long n;
     public static final String RESERVED_ALIAS = "qdb.prefix.is.reserved";
 
-    private static QdbCluster createCluster() {
+    public static QdbCluster createCluster() {
         try {
             return new QdbCluster(DaemonRunner.uri());
         } catch (Exception e) {
@@ -151,5 +151,9 @@ public class Helpers {
         for (T item : source)
             list.add(item);
         return list;
+    }
+
+    public static boolean looksLikeJson(String str) {
+        return str.startsWith("{") && str.endsWith("}") && str.length() > 10;
     }
 }
