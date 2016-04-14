@@ -29,7 +29,7 @@ public class QdbBlobRemoveIfTest {
     public void throwsReservedAlias() {
         ByteBuffer comparand = Helpers.createSampleData();
 
-        QdbBlob blob = Helpers.getBlob("qdb");
+        QdbBlob blob = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         blob.removeIf(comparand); // <- throws
     }
 

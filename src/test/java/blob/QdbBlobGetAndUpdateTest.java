@@ -47,7 +47,7 @@ public class QdbBlobGetAndUpdateTest {
     public void throwsReservedAlias() {
         ByteBuffer newContent = Helpers.createSampleData();
 
-        QdbBlob blob = Helpers.getBlob("qdb");
+        QdbBlob blob = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         blob.getAndUpdate(newContent); // <- throws
     }
 

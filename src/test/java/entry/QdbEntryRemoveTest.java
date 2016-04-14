@@ -23,7 +23,7 @@ public class QdbEntryRemoveTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
-        QdbEntry entry = Helpers.getBlob("qdb");
+        QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 
         entry.remove(); // <- throws
     }

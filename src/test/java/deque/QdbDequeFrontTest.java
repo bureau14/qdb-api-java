@@ -59,7 +59,7 @@ public class QdbDequeFrontTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
-        QdbDeque deque = Helpers.getDeque("qdb");
+        QdbDeque deque = Helpers.getDeque(Helpers.RESERVED_ALIAS);
         deque.front(); // <- throws
     }
 }

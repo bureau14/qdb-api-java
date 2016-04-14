@@ -25,7 +25,7 @@ public class QdbEntryRemoveTagTest {
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         String tag = Helpers.createUniqueAlias();
-        QdbEntry entry = Helpers.getBlob("qdb");
+        QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 
         entry.removeTag(tag); // <- throws
     }
@@ -34,7 +34,7 @@ public class QdbEntryRemoveTagTest {
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        entry.removeTag("qdb"); // <- throws
+        entry.removeTag(Helpers.RESERVED_ALIAS); // <- throws
     }
 
     @Test

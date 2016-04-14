@@ -29,7 +29,7 @@ public class QdbDequePushFrontTest {
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 
-        QdbDeque deque = Helpers.getDeque("qdb");
+        QdbDeque deque = Helpers.getDeque(Helpers.RESERVED_ALIAS);
         deque.pushFront(content); // <- throws
     }
 }

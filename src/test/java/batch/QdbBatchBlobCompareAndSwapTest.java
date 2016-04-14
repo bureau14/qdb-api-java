@@ -65,7 +65,7 @@ public class QdbBatchBlobCompareAndSwapTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
-        result = batch.blob("qdb").compareAndSwap(newContent, comparand);
+        result = batch.blob(Helpers.RESERVED_ALIAS).compareAndSwap(newContent, comparand);
         batch.run();
         result.get(); // <- throws
     }

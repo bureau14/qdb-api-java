@@ -41,7 +41,7 @@ public class QdbTagRemoveEntryTest {
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbTag tag = Helpers.createTag();
 
-        tag.removeEntry("qdb"); // <- throws
+        tag.removeEntry(Helpers.RESERVED_ALIAS); // <- throws
     }
 
     @Test

@@ -29,7 +29,7 @@ public class QdbHashSetInsertTest {
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 
-        QdbHashSet hset = Helpers.getHashSet("qdb");
+        QdbHashSet hset = Helpers.getHashSet(Helpers.RESERVED_ALIAS);
         hset.insert(content); // <- throws
     }
 

@@ -36,7 +36,7 @@ public class QdbBlobPutTest {
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 
-        QdbBlob blob = Helpers.getBlob("qdb");
+        QdbBlob blob = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         blob.put(content); // <- throws
     }
 }

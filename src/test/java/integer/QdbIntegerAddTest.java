@@ -49,7 +49,7 @@ public class QdbIntegerAddTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias() {
-        QdbInteger integer = Helpers.getInteger("qdb");
+        QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.add(666); // <- throws
     }
 

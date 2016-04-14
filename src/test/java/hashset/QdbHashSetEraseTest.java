@@ -37,7 +37,7 @@ public class QdbHashSetEraseTest {
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 
-        QdbHashSet hset = Helpers.getHashSet("qdb");
+        QdbHashSet hset = Helpers.getHashSet(Helpers.RESERVED_ALIAS);
         hset.erase(content); // <- throws
     }
 

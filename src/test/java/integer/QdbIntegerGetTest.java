@@ -45,7 +45,7 @@ public class QdbIntegerGetTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
-        QdbInteger integer = Helpers.getInteger("qdb");
+        QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.get(); // <- throws
     }
 

@@ -23,7 +23,7 @@ public class QdbIntegerPutTest {
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwReservedAlias() {
-        QdbInteger integer = Helpers.getInteger("qdb");
+        QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.put(666); // <- throws
     }
 }

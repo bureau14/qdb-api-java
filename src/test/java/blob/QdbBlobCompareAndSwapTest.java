@@ -51,7 +51,7 @@ public class QdbBlobCompareAndSwapTest {
         ByteBuffer comparand = Helpers.createSampleData();
         ByteBuffer newContent = Helpers.createSampleData();
 
-        QdbBlob blob = Helpers.getBlob("qdb");
+        QdbBlob blob = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 

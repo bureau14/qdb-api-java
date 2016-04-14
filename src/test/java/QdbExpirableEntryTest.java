@@ -6,7 +6,7 @@ import org.junit.*;
 public class QdbExpirableEntryTest {
     @Test(expected = QdbReservedAliasException.class)
     public void getExpiryTime_throwsReservedAlias() {
-        QdbExpirableEntry entry = Helpers.getBlob("qdb");
+        QdbExpirableEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         entry.expiryTime(); // <- throws
     }
 
