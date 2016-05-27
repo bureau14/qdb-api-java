@@ -156,23 +156,27 @@ public final class QdbCluster implements AutoCloseable {
     /**
      * Remove all data from the cluster.
      *
+     * @param timeout The timeout of the operation, in seconds
+     *
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbOperationDisabledException If the operation has been disabled on the server.
      */
-    public void purgeAll() {
+    public void purgeAll(int timeout) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.purge_all(session.handle());
+        qdb_error_t err = qdb.purge_all(session.handle(), timeout);
         QdbExceptionFactory.throwIfError(err);
     }
 
     /**
      * Trim data from the cluster, that is, remove dead references and old versions.
      *
+     * @param timeout The timeout of the operation, in seconds
+     *
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
-    public void trimAll() {
+    public void trimAll(int timeout) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.trim_all(session.handle());
+        qdb_error_t err = qdb.trim_all(session.handle(), timeout);
         QdbExceptionFactory.throwIfError(err);
     }
 

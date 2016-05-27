@@ -103,7 +103,7 @@ public class QdbClusterTest {
     public void purgeAll_throwsOperationDisabled() {
         QdbCluster cluster = Helpers.createCluster();
 
-        cluster.purgeAll(); // <- throws
+        cluster.purgeAll(60); // <- throws
     }
 
     @Test(expected = QdbClusterClosedException.class)
@@ -111,7 +111,7 @@ public class QdbClusterTest {
         QdbCluster cluster = Helpers.createCluster();
 
         cluster.close();
-        cluster.purgeAll(); // <- throws
+        cluster.purgeAll(60); // <- throws
     }
 
     @Test(expected = QdbClusterClosedException.class)
@@ -137,7 +137,7 @@ public class QdbClusterTest {
         QdbCluster cluster = Helpers.createCluster();
 
         cluster.close();
-        cluster.trimAll(); // <- throws
+        cluster.trimAll(60); // <- throws
     }
 
     public void version_returnsNonEmptyString() {
