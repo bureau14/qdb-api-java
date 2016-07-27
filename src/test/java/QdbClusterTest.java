@@ -140,6 +140,28 @@ public class QdbClusterTest {
         cluster.trimAll(60); // <- throws
     }
 
+    @Test(expected = QdbClusterClosedException.class)
+    public void setTimeout_throwsClusterClosed_afterCallingClose() {
+        QdbCluster cluster = Helpers.createCluster();
+
+        cluster.close();
+        cluster.setTimeout(60 * 1000); // <- throws
+    }
+
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void setTimeout_throwsInvalidArgument_whenTimeoutIsLessThanOneSecond() {
+        QdbCluster cluster = Helpers.createCluster();
+
+        cluster.setTimeout(999); // <- throws
+    }
+
+    @Test()
+    public void setTimeout_ok_whenTimeoutIsOneSecond() {
+        QdbCluster cluster = Helpers.createCluster();
+
+        cluster.setTimeout(1000);
+    }
+
     public void version_returnsNonEmptyString() {
         String version = QdbCluster.version();
         Assert.assertTrue(version.length() > 5);

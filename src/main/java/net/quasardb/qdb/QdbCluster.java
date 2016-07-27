@@ -156,27 +156,27 @@ public final class QdbCluster implements AutoCloseable {
     /**
      * Remove all data from the cluster.
      *
-     * @param timeout The timeout of the operation, in seconds
+     * @param timeoutMillis The timeout of the operation, in milliseconds
      *
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbOperationDisabledException If the operation has been disabled on the server.
      */
-    public void purgeAll(int timeout) {
+    public void purgeAll(int timeoutMillis) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.purge_all(session.handle(), timeout);
+        qdb_error_t err = qdb.purge_all(session.handle(), timeoutMillis);
         QdbExceptionFactory.throwIfError(err);
     }
 
     /**
      * Trim data from the cluster, that is, remove dead references and old versions.
      *
-     * @param timeout The timeout of the operation, in seconds
+     * @param timeoutMillis The timeout of the operation, in milliseconds
      *
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
-    public void trimAll(int timeout) {
+    public void trimAll(int timeoutMillis) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.trim_all(session.handle(), timeout);
+        qdb_error_t err = qdb.trim_all(session.handle(), timeoutMillis);
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -188,6 +188,19 @@ public final class QdbCluster implements AutoCloseable {
     public QdbBatch createBatch() {
         session.throwIfClosed();
         return new QdbBatch(session);
+    }
+
+    /**
+     * Set network timeout for this client.
+     *
+     * @param timeoutMillis The timeout of the operation, in milliseconds
+     *
+     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     */
+    public void setTimeout(int timeoutMillis) {
+        session.throwIfClosed();
+        qdb_error_t err = qdb.option_set_timeout(session.handle(), timeoutMillis);
+        QdbExceptionFactory.throwIfError(err);
     }
 
     /**
