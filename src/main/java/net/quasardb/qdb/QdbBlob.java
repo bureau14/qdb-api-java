@@ -165,12 +165,13 @@ public final class QdbBlob extends QdbExpirableEntry {
      * Replaces the content of the blob.
      *
      * @param content The content of the blob to be set.
+     * @return true if the blob was created, or false it it was updated.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void update(ByteBuffer content) {
-        this.update(content, QdbExpiryTime.PRESERVE_EXPIRATION);
+    public boolean update(ByteBuffer content) {
+        return this.update(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
@@ -178,15 +179,17 @@ public final class QdbBlob extends QdbExpirableEntry {
      *
      * @param content The content of the blob to be set.
      * @param expiryTime The new expiry time of the blob.
+     * @return true if the blob was created, or false it it was updated.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void update(ByteBuffer content, QdbExpiryTime expiryTime) {
+    public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         qdb_error_t err = qdb.blob_update(session.handle(), alias, content, content.limit(), expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
+        return err == qdb_error_t.error_ok_created;
     }
 
     private QdbBuffer wrapBuffer(ByteBuffer nakedBuffer) {

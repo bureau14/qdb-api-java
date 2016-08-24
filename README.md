@@ -1,7 +1,9 @@
 Quasardb Java API
 =================
 
-Java API for [quasardb](http://www.quasardb.net/).
+Java API for [quasardb](https://www.quasardb.net/).
+
+See documentation at [doc.quasardb.net](https://doc.quasardb.net/2.0.0/api/java.html)
 
 ### Requirements
 
@@ -33,14 +35,3 @@ If you encounter strange build or test errors, try to clean the directory:
 
 You may verify as well that the given paths are absolute.
 On Windows, do not use symbolic links for `qdb_api.dll`, otherwise all the tests will fail.
-
-### Contact information
-
-> **quasardb**
->
-> 24, rue Feydeau
-> 75002 Paris, France
->
-> +33 (0)1 55 34 92 30
->
-> +33 (0)1 55 34 92 39

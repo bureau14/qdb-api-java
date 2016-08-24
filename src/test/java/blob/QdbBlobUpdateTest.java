@@ -41,4 +41,25 @@ public class QdbBlobUpdateTest {
         QdbBlob blob = Helpers.getBlob(Helpers.RESERVED_ALIAS);
         blob.update(newContent); // <- throws
     }
+
+    @Test
+    public void returnsTrue_whenCalledOnce() {
+        ByteBuffer newContent = Helpers.createSampleData();
+        QdbBlob blob = Helpers.createEmptyBlob();
+
+        boolean created = blob.update(newContent);
+
+        Assert.assertTrue(created);
+    }
+
+    @Test
+    public void returnsFalse_whenCalledOnce() {
+        ByteBuffer newContent = Helpers.createSampleData();
+        QdbBlob blob = Helpers.createEmptyBlob();
+
+        blob.update(newContent);
+        boolean created = blob.update(newContent);
+
+        Assert.assertFalse(created);
+    }
 }
