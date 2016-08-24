@@ -141,11 +141,11 @@ public class QdbExceptionFactoryTest {
     }
 
     @Test
-    public void unexpected_reply() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_unexpected_reply);
+    public void invalid_reply() {
+        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_invalid_reply);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbProtocolException);
-        Assert.assertTrue(result instanceof QdbUnexpectedReplyException);
+        Assert.assertTrue(result instanceof QdbInvalidReplyException);
     }
 }

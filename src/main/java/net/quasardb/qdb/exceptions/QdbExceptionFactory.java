@@ -105,8 +105,8 @@ class QdbExceptionFactory {
     }
 
     private static QdbProtocolException createProtocolException(QdbErrorCode errorCode) {
-        if (errorCode.equals(qdb_error_t.error_unexpected_reply))
-            return new QdbUnexpectedReplyException();
+        if (errorCode.equals(qdb_error_t.error_invalid_reply))
+            return new QdbInvalidReplyException();
 
         return new QdbProtocolException(errorCode.message());
     }

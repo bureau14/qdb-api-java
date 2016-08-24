@@ -58,7 +58,7 @@ public final class QdbNode {
         try {
             return utf8.decode(buffer).toString();
         } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
+            throw new QdbInvalidReplyException(e.getMessage());
         } finally {
             qdb.free_buffer(session.handle(), buffer);
             buffer = null;
@@ -83,7 +83,7 @@ public final class QdbNode {
         try {
             return utf8.decode(buffer).toString();
         } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
+            throw new QdbInvalidArgumentException(e.getMessage());
         } finally {
             qdb.free_buffer(session.handle(), buffer);
         }
@@ -118,7 +118,7 @@ public final class QdbNode {
         try {
             return utf8.decode(buffer).toString();
         } catch (CharacterCodingException e) {
-            throw new QdbUnexpectedReplyException(e.getMessage());
+            throw new QdbInvalidArgumentException(e.getMessage());
         } finally {
             qdb.free_buffer(session.handle(), buffer);
             buffer = null;
