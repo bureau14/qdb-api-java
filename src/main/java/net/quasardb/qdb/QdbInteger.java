@@ -77,12 +77,13 @@ public final class QdbInteger extends QdbExpirableEntry {
      * Updates an existing integer or creates one if it does not exist.
      *
      * @param newValue The new value of the integer.
+     * @return true if the integer was created, or false it it was updated.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void update(long newValue) {
-        update(newValue, QdbExpiryTime.PRESERVE_EXPIRATION);
+    public boolean update(long newValue) {
+        return update(newValue, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
     /**
@@ -90,13 +91,15 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param newValue The new value of the integer.
      * @param expiryTime The expiry time of the entry.
+     * @return true if the integer was created, or false it it was updated.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public void update(long newValue, QdbExpiryTime expiryTime) {
+    public boolean update(long newValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         qdb_error_t err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
+        return err == qdb_error_t.error_ok_created;
     }
 }
