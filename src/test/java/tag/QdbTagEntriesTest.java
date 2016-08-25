@@ -18,8 +18,8 @@ public class QdbTagEntriesTest {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        blob.addTag(tag);
-        blob.removeTag(tag);
+        blob.attachTag(tag);
+        blob.detachTag(tag);
         Iterable<QdbEntry> result = tag.entries();
 
         List<QdbEntry> resultAsList = Helpers.toList(result);
@@ -31,8 +31,8 @@ public class QdbTagEntriesTest {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        tag.addEntry(blob);
-        tag.removeEntry(blob);
+        tag.attachEntry(blob);
+        tag.detachEntry(blob);
         Iterable<QdbEntry> result = tag.entries();
 
         List<QdbEntry> resultAsList = Helpers.toList(result);
@@ -44,7 +44,7 @@ public class QdbTagEntriesTest {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        blob.addTag(tag);
+        blob.attachTag(tag);
         Iterable<QdbEntry> result = tag.entries();
 
         List<QdbEntry> resultAsList = Helpers.toList(result);
@@ -58,7 +58,7 @@ public class QdbTagEntriesTest {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        tag.addEntry(blob);
+        tag.attachEntry(blob);
         Iterable<QdbEntry> result = tag.entries();
 
         List<QdbEntry> resultAsList = Helpers.toList(result);

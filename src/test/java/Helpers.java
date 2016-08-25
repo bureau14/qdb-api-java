@@ -106,7 +106,7 @@ public class Helpers {
     public static QdbTag createTag() {
         QdbBlob blob = createBlob();
         QdbTag tag = createEmptyTag();
-        blob.addTag(tag.alias());
+        blob.attachTag(tag.alias());
         return tag;
     }
 

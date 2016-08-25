@@ -2,13 +2,13 @@ import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
-public class QdbTagAddEntryTest {
+public class QdbTagAttachEntryTest {
     @Test(expected = QdbAliasNotFoundException.class)
     public void throwsAliasNotFound_whenAliasDoesntExists() {
         QdbTag tag = Helpers.createEmptyTag();
         String alias = Helpers.createUniqueAlias();
 
-        tag.addEntry(alias); // <- throws
+        tag.attachEntry(alias); // <- throws
     }
 
     @Test(expected = QdbAliasNotFoundException.class)
@@ -16,7 +16,7 @@ public class QdbTagAddEntryTest {
         QdbTag tag = Helpers.createEmptyTag();
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        tag.addEntry(entry); // <- throws
+        tag.attachEntry(entry); // <- throws
     }
 
     @Test(expected = QdbClusterClosedException.class)
@@ -27,7 +27,7 @@ public class QdbTagAddEntryTest {
 
         QdbTag tag = cluster.tag(alias);
         cluster.close();
-        tag.addEntry(entry); // <- throws
+        tag.attachEntry(entry); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
@@ -35,7 +35,7 @@ public class QdbTagAddEntryTest {
         QdbTag tag = Helpers.createEmptyTag();
         String alias = Helpers.RESERVED_ALIAS;
 
-        tag.addEntry(alias); // <- throws
+        tag.attachEntry(alias); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
@@ -43,7 +43,7 @@ public class QdbTagAddEntryTest {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        tag.addEntry(entry); // <- throws
+        tag.attachEntry(entry); // <- throws
     }
 
     @Test
@@ -51,7 +51,7 @@ public class QdbTagAddEntryTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        boolean result = tag.addEntry(entry);
+        boolean result = tag.attachEntry(entry);
 
         Assert.assertTrue(result);
     }
@@ -61,8 +61,8 @@ public class QdbTagAddEntryTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        tag.addEntry(entry);
-        boolean result = tag.addEntry(entry);
+        tag.attachEntry(entry);
+        boolean result = tag.attachEntry(entry);
 
         Assert.assertFalse(result);
     }

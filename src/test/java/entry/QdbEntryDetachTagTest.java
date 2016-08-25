@@ -2,13 +2,13 @@ import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
-public class QdbEntryAddTagTest {
+public class QdbEntryDetachTagTest {
     @Test(expected = QdbAliasNotFoundException.class)
     public void throwsAliasNotFound_whenEntryDoesntExists() {
         String tag = Helpers.createUniqueAlias();
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        entry.addTag(tag); // <- throws
+        entry.detachTag(tag); // <- throws
     }
 
     @Test(expected = QdbClusterClosedException.class)
@@ -19,7 +19,7 @@ public class QdbEntryAddTagTest {
 
         QdbEntry entry = cluster.blob(alias);
         cluster.close();
-        entry.addTag(tag); // <- throws
+        entry.detachTag(tag); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
@@ -27,14 +27,14 @@ public class QdbEntryAddTagTest {
         String tag = Helpers.createUniqueAlias();
         QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 
-        entry.addTag(tag); // <- throws
+        entry.detachTag(tag); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        entry.addTag(Helpers.RESERVED_ALIAS); // <- throws
+        entry.detachTag(Helpers.RESERVED_ALIAS); // <- throws
     }
 
     @Test
@@ -42,7 +42,8 @@ public class QdbEntryAddTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        boolean result = entry.addTag(tag);
+        entry.attachTag(tag);
+        boolean result = entry.detachTag(tag);
 
         Assert.assertTrue(result);
     }
@@ -52,8 +53,9 @@ public class QdbEntryAddTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
-        boolean result = entry.addTag(tag);
+        entry.attachTag(tag);
+        entry.detachTag(tag);
+        boolean result = entry.detachTag(tag);
 
         Assert.assertFalse(result);
     }

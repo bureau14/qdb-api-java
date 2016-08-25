@@ -36,7 +36,7 @@ public class QdbEntryTagsTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
+        entry.attachTag(tag);
         Iterable<QdbTag> result = entry.tags();
 
         List<QdbTag> resultAsList = Helpers.toList(result);

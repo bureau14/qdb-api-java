@@ -52,8 +52,8 @@ public class QdbEntryHasTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
-        entry.removeTag(tag);
+        entry.attachTag(tag);
+        entry.detachTag(tag);
         boolean result = entry.hasTag(tag);
 
         Assert.assertFalse(result);
@@ -64,7 +64,7 @@ public class QdbEntryHasTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
+        entry.attachTag(tag);
         boolean result = entry.hasTag(tag);
 
         Assert.assertTrue(result);

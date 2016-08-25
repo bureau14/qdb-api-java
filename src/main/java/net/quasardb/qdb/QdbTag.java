@@ -12,30 +12,30 @@ public final class QdbTag extends QdbEntry {
     }
 
     /**
-     * Assigns the tag to an entry. The tag is created if it does not exist.
+     * Attaches the tag to an entry. The tag is created if it does not exist.
      *
-     * @param entry The entry to tag.
-     * @return true if the tag has been set, false if it was already set
+     * @param entry The entry to attach.
+     * @return true if the tag has been attached, false if it was already attached
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public boolean addEntry(QdbEntry entry) {
-        return addEntry(entry.alias());
+    public boolean attachEntry(QdbEntry entry) {
+        return attachEntry(entry.alias());
     }
 
     /**
-     * Assigns the tag to an entry. The tag is created if it does not exist.
+     * Attaches the tag to an entry. The tag is created if it does not exist.
      *
-     * @param entry The alias of the entry to tag.
-     * @return true if the tag has been set, false if it was already set
+     * @param entry The alias of the entry to attach.
+     * @return true if the tag has been attached, false if it was already attached
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public boolean addEntry(String entry) {
+    public boolean attachEntry(String entry) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.add_tag(session.handle(), entry, alias);
+        qdb_error_t err = qdb.attach_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
         return err != qdb_error_t.error_tag_already_set;
     }
@@ -51,30 +51,30 @@ public final class QdbTag extends QdbEntry {
     }
 
     /**
-     * Removes the tag assignment from an entry.
+     * Detaches the tag from an entry.
      *
-     * @param entry The entry to untag.
-     * @return true if the tag has been removed, false if the tag was not set
+     * @param entry The entry to detach.
+     * @return true if the tag has been detached, false if the tag was not attached
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public boolean removeEntry(QdbEntry entry) {
-        return removeEntry(entry.alias());
+    public boolean detachEntry(QdbEntry entry) {
+        return detachEntry(entry.alias());
     }
 
     /**
-     * Removes the tag assignment from an entry.
+     * Detaches the tag from an entry.
      *
-     * @param entry The alias of the entry to untag.
-     * @return true if the tag has been removed, false if the tag was not set
+     * @param entry The alias of the entry to detach.
+     * @return true if the tag has been detached, false if the tag was not attached
      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public boolean removeEntry(String entry) {
+    public boolean detachEntry(String entry) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.remove_tag(session.handle(), entry, alias);
+        qdb_error_t err = qdb.detach_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
         return err != qdb_error_t.error_tag_not_set;
     }

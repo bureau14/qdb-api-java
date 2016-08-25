@@ -2,13 +2,13 @@ import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
-public class QdbEntryRemoveTagTest {
+public class QdbEntryAttachTagTest {
     @Test(expected = QdbAliasNotFoundException.class)
     public void throwsAliasNotFound_whenEntryDoesntExists() {
         String tag = Helpers.createUniqueAlias();
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        entry.removeTag(tag); // <- throws
+        entry.attachTag(tag); // <- throws
     }
 
     @Test(expected = QdbClusterClosedException.class)
@@ -19,7 +19,7 @@ public class QdbEntryRemoveTagTest {
 
         QdbEntry entry = cluster.blob(alias);
         cluster.close();
-        entry.removeTag(tag); // <- throws
+        entry.attachTag(tag); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
@@ -27,14 +27,14 @@ public class QdbEntryRemoveTagTest {
         String tag = Helpers.createUniqueAlias();
         QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 
-        entry.removeTag(tag); // <- throws
+        entry.attachTag(tag); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbEntry entry = Helpers.createEmptyBlob();
 
-        entry.removeTag(Helpers.RESERVED_ALIAS); // <- throws
+        entry.attachTag(Helpers.RESERVED_ALIAS); // <- throws
     }
 
     @Test
@@ -42,8 +42,7 @@ public class QdbEntryRemoveTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
-        boolean result = entry.removeTag(tag);
+        boolean result = entry.attachTag(tag);
 
         Assert.assertTrue(result);
     }
@@ -53,9 +52,8 @@ public class QdbEntryRemoveTagTest {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
-        entry.addTag(tag);
-        entry.removeTag(tag);
-        boolean result = entry.removeTag(tag);
+        entry.attachTag(tag);
+        boolean result = entry.attachTag(tag);
 
         Assert.assertFalse(result);
     }
