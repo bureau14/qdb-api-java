@@ -35,9 +35,9 @@ public final class QdbTag extends QdbEntry {
      */
     public boolean attachEntry(String entry) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.attach_tag(session.handle(), entry, alias);
+        int err = qdb.attach_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
-        return err != qdb_error_t.error_tag_already_set;
+        return err != qdb_error.tag_already_set;
     }
 
     /**
@@ -74,8 +74,8 @@ public final class QdbTag extends QdbEntry {
      */
     public boolean detachEntry(String entry) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.detach_tag(session.handle(), entry, alias);
+        int err = qdb.detach_tag(session.handle(), entry, alias);
         QdbExceptionFactory.throwIfError(err);
-        return err != qdb_error_t.error_tag_not_set;
+        return err != qdb_error.tag_not_set;
     }
 }

@@ -1,17 +1,12 @@
 package net.quasardb.qdb;
 
-import net.quasardb.qdb.jni.qdb_error_t;
+import net.quasardb.qdb.jni.qdb_error;
 import org.junit.*;
 
 public class QdbExceptionFactoryTest {
-    @BeforeClass
-    public static void loadJniLibrary() {
-        QdbJniApi.load();
-    }
-
     @Test
     public void alias_already_exists() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_alias_already_exists);
+        Exception result = QdbExceptionFactory.createException(qdb_error.alias_already_exists);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -20,7 +15,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void alias_not_found() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_alias_not_found);
+        Exception result = QdbExceptionFactory.createException(qdb_error.alias_not_found);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -29,7 +24,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void connection_refused() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_connection_refused);
+        Exception result = QdbExceptionFactory.createException(qdb_error.connection_refused);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbConnectionException);
@@ -38,7 +33,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void host_not_found() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_host_not_found);
+        Exception result = QdbExceptionFactory.createException(qdb_error.host_not_found);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbConnectionException);
@@ -47,7 +42,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void incompatible_type() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_incompatible_type);
+        Exception result = QdbExceptionFactory.createException(qdb_error.incompatible_type);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -56,7 +51,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void invalid_protocol() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_invalid_protocol);
+        Exception result = QdbExceptionFactory.createException(qdb_error.invalid_protocol);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbProtocolException);
@@ -64,7 +59,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void invalid_argument() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_invalid_argument);
+        Exception result = QdbExceptionFactory.createException(qdb_error.invalid_argument);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbInvalidArgumentException);
@@ -72,7 +67,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void no_memory_local() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_no_memory_local);
+        Exception result = QdbExceptionFactory.createException(qdb_error.no_memory_local);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbSystemException);
@@ -81,7 +76,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void no_memory_remote() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_no_memory_remote);
+        Exception result = QdbExceptionFactory.createException(qdb_error.no_memory_remote);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbSystemException);
@@ -89,15 +84,8 @@ public class QdbExceptionFactoryTest {
     }
 
     @Test
-    public void ok() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_ok);
-
-        Assert.assertNull(result);
-    }
-
-    @Test
     public void operation_disabled() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_operation_disabled);
+        Exception result = QdbExceptionFactory.createException(qdb_error.operation_disabled);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -106,7 +94,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void out_of_bounds() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_out_of_bounds);
+        Exception result = QdbExceptionFactory.createException(qdb_error.out_of_bounds);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbInputException);
@@ -115,7 +103,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void overflow() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_overflow);
+        Exception result = QdbExceptionFactory.createException(qdb_error.overflow);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -124,7 +112,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void reserved_alias() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_reserved_alias);
+        Exception result = QdbExceptionFactory.createException(qdb_error.reserved_alias);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbInputException);
@@ -133,7 +121,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void underflow() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_underflow);
+        Exception result = QdbExceptionFactory.createException(qdb_error.underflow);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbOperationException);
@@ -142,7 +130,7 @@ public class QdbExceptionFactoryTest {
 
     @Test
     public void invalid_reply() {
-        Exception result = QdbExceptionFactory.createException(qdb_error_t.error_invalid_reply);
+        Exception result = QdbExceptionFactory.createException(qdb_error.invalid_reply);
 
         Assert.assertTrue(result instanceof QdbException);
         Assert.assertTrue(result instanceof QdbProtocolException);

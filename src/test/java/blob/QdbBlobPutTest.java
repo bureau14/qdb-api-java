@@ -3,6 +3,17 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbBlobPutTest {
+    @Test
+    public void doesntThrows_whenCalledTwice_withExpiry() {
+        QdbBlob blob = Helpers.createEmptyBlob();
+        ByteBuffer content = Helpers.createSampleData();
+        QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
+
+        blob.put(content, expiry);
+        Helpers.wait(1.5);
+        blob.put(content);
+    }
+
     @Test(expected = QdbAliasAlreadyExistsException.class)
     public void throwsAliasAlreadyExists_whenCalledTwice() {
         QdbBlob blob = Helpers.createEmptyBlob();

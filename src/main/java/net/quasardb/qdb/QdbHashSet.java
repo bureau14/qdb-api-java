@@ -23,12 +23,9 @@ public final class QdbHashSet extends QdbEntry {
      */
     public boolean contains(ByteBuffer content) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.hset_contains(session.handle(), alias, content, content.limit());
-
-        if (err == qdb_error_t.error_element_not_found)
-            return false;
+        int err = qdb.hset_contains(session.handle(), alias, content);
         QdbExceptionFactory.throwIfError(err);
-        return true;
+        return err != qdb_error.element_not_found;
     }
 
     /**
@@ -43,12 +40,9 @@ public final class QdbHashSet extends QdbEntry {
      */
     public boolean erase(ByteBuffer content) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.hset_erase(session.handle(), alias, content, content.limit());
-
-        if (err == qdb_error_t.error_element_not_found)
-            return false;
+        int err = qdb.hset_erase(session.handle(), alias, content);
         QdbExceptionFactory.throwIfError(err);
-        return true;
+        return err != qdb_error.element_not_found;
     }
 
     /**
@@ -62,11 +56,8 @@ public final class QdbHashSet extends QdbEntry {
      */
     public boolean insert(ByteBuffer content) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.hset_insert(session.handle(), alias, content, content.limit());
-
-        if (err == qdb_error_t.error_element_already_exists)
-            return false;
+        int err = qdb.hset_insert(session.handle(), alias, content);
         QdbExceptionFactory.throwIfError(err);
-        return true;
+        return err != qdb_error.element_already_exists;
     }
 }

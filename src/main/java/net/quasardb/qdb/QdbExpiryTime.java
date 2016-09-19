@@ -67,4 +67,9 @@ public final class QdbExpiryTime {
     public int hashCode() {
         return (new Long(secondsSinceEpoch)).hashCode();
     }
+
+    @Override
+    public String toString() {
+        return toDate().toString();
+    }
 }

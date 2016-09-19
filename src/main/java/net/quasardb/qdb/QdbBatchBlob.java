@@ -36,23 +36,22 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     public QdbFuture<ByteBuffer> compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         assertNotAlreadyRun();
 
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_cas);
-        op.setAlias(alias);
-        op.setContent(newContent);
-        op.setContent_size(newContent.limit());
-        op.setComparand(comparand);
-        op.setComparand_size(comparand.limit());
-        op.setExpiry_time(expiryTime.toSecondsSinceEpoch());
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<ByteBuffer>(batch, index) {
+        QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            protected ByteBuffer getResult(qdb_operation_t op) {
-                return op.getResult();
+            public void write(long batch, int index) {
+                qdb.batch_write_blob_compare_and_swap(batch, index, alias, newContent, comparand, expiryTime.toSecondsSinceEpoch());
+            }
+
+            @Override
+            public void read(long batch, int index) {
+                Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
+                error = qdb.batch_read_blob_compare_and_swap(batch, index, alias, originalContent);
+                result = originalContent.value;
             }
         };
+        batch.addOperation(op);
+
+        return new QdbBatchFuture<ByteBuffer>(batch, op);
     }
 
     /**
@@ -64,18 +63,22 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     public QdbFuture<ByteBuffer> get() {
         assertNotAlreadyRun();
 
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_get);
-        op.setAlias(alias);
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<ByteBuffer>(batch, index) {
+        QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            protected ByteBuffer getResult(qdb_operation_t op) {
-                return op.getResult();
+            public void write(long batch, int index) {
+                qdb.batch_write_blob_get(batch, index, alias);
+            }
+
+            @Override
+            public void read(long batch, int index) {
+                Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+                error = qdb.batch_read_blob_get(batch, index, alias, content);
+                result = content.value;
             }
         };
+        batch.addOperation(op);
+
+        return new QdbBatchFuture<ByteBuffer>(batch, op);
     }
 
     /**
@@ -100,21 +103,22 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     public QdbFuture<ByteBuffer> getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         assertNotAlreadyRun();
 
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_get_and_update);
-        op.setAlias(alias);
-        op.setContent(content);
-        op.setContent_size(content.limit());
-        op.setExpiry_time(expiryTime.toSecondsSinceEpoch());
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<ByteBuffer>(batch, index) {
+        QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            protected ByteBuffer getResult(qdb_operation_t op) {
-                return op.getResult();
+            public void write(long batch, int index) {
+                qdb.batch_write_blob_get_and_update(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+            }
+
+            @Override
+            public void read(long batch, int index) {
+                Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+                error = qdb.batch_read_blob_get_and_update(batch, index, alias, content);
+                result = content.value;
             }
         };
+        batch.addOperation(op);
+
+        return new QdbBatchFuture<ByteBuffer>(batch, op);
     }
 
     /**
@@ -139,21 +143,22 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     public QdbFuture<Void> put(ByteBuffer content, QdbExpiryTime expiryTime) {
         assertNotAlreadyRun();
 
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_put);
-        op.setAlias(alias);
-        op.setContent(content);
-        op.setContent_size(content.limit());
-        op.setExpiry_time(expiryTime.toSecondsSinceEpoch());
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<Void>(batch, index) {
+        QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            protected Void getResult(qdb_operation_t op) {
-                return null;
+            public void write(long batch, int index) {
+                qdb.batch_write_blob_put(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+            }
+
+            @Override
+            public void read(long batch, int index) {
+                Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+                error = qdb.batch_read_blob_put(batch, index, alias);
+                result = null;
             }
         };
+        batch.addOperation(op);
+
+        return new QdbBatchFuture<Void>(batch, op);
     }
 
     /**
@@ -178,20 +183,21 @@ public final class QdbBatchBlob extends QdbBatchEntry {
     public QdbFuture<Void> update(ByteBuffer content, QdbExpiryTime expiryTime) {
         assertNotAlreadyRun();
 
-        qdb_operation_t op = new qdb_operation_t();
-        op.setType(qdb_operation_type_t.qdb_op_blob_update);
-        op.setAlias(alias);
-        op.setContent(content);
-        op.setContent_size(content.limit());
-        op.setExpiry_time(expiryTime.toSecondsSinceEpoch());
-
-        int index = batch.addOperation(op);
-
-        return new QdbBatchFuture<Void>(batch, index) {
+        QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            protected Void getResult(qdb_operation_t op) {
-                return null;
+            public void write(long batch, int index) {
+                qdb.batch_write_blob_update(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+            }
+
+            @Override
+            public void read(long batch, int index) {
+                Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+                error = qdb.batch_read_blob_update(batch, index, alias);
+                result = null;
             }
         };
+        batch.addOperation(op);
+
+        return new QdbBatchFuture<Void>(batch, op);
     }
 }

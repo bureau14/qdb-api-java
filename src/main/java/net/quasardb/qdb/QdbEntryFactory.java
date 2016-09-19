@@ -10,31 +10,34 @@ final class QdbEntryFactory {
     }
 
     public QdbEntry createEntry(String alias) {
-        error_carrier err = new error_carrier();
-        qdb_entry_type_t type = qdb.get_type(session.handle(), alias, err);
+        Reference<Integer> type = new Reference<Integer>();
+        int err = qdb.get_type(session.handle(), alias, type);
         QdbExceptionFactory.throwIfError(err);
-        return createEntry(type, alias);
+        return createEntry(type.value, alias);
     }
 
-    public QdbEntry createEntry(qdb_entry_type_t type, String alias) {
-        if (type == qdb_entry_type_t.errorntry_blob)
+    public QdbEntry createEntry(int type, String alias) {
+        switch (type) {
+        case qdb_entry_type.blob:
             return new QdbBlob(session, alias);
 
-        if (type == qdb_entry_type_t.errorntry_deque)
+        case qdb_entry_type.deque:
             return new QdbDeque(session, alias);
 
-        if (type == qdb_entry_type_t.errorntry_hset)
+        case qdb_entry_type.hset:
             return new QdbHashSet(session, alias);
 
-        if (type == qdb_entry_type_t.errorntry_integer)
+        case qdb_entry_type.integer:
             return new QdbInteger(session, alias);
 
-        if (type == qdb_entry_type_t.errorntry_stream)
+        case qdb_entry_type.stream:
             return new QdbStream(session, alias);
 
-        if (type == qdb_entry_type_t.errorntry_tag)
+        case qdb_entry_type.tag:
             return new QdbTag(session, alias);
 
-        return new QdbEntry(session, alias);
+        default:
+            return new QdbEntry(session, alias);
+        }
     }
 }

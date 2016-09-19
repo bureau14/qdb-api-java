@@ -9,16 +9,17 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
     String tag;
 
     class QdbTagEntriesIterator implements Iterator<QdbEntry> {
-        final tag_iterator iterator;
+        final long handle;
         boolean hasNext;
 
         public QdbTagEntriesIterator() {
-            iterator = new tag_iterator();
+            Reference<Long> iterator = new Reference<Long>();
 
             session.throwIfClosed();
-            qdb_error_t err = iterator.begin(session.handle(), tag);
+            int err = qdb.tag_iterator_begin(session.handle(), tag, iterator);
+            handle = iterator.value;
 
-            hasNext = err == qdb_error_t.error_ok;
+            hasNext = err == qdb_error.ok;
             // CAUTION: set hasNext before throwing
             QdbExceptionFactory.throwIfError(err);
         }
@@ -29,11 +30,11 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
         public QdbEntry next() {
             session.throwIfClosed();
-            QdbEntry entry = factory.createEntry(iterator.type(), iterator.alias());
+            QdbEntry entry = factory.createEntry(qdb.tag_iterator_type(handle), qdb.tag_iterator_alias(handle));
 
-            qdb_error_t err = iterator.next();
+            int err = qdb.tag_iterator_next(handle);
 
-            hasNext = err == qdb_error_t.error_ok;
+            hasNext = err == qdb_error.ok;
             // CAUTION: set hasNext before throwing
             QdbExceptionFactory.throwIfError(err);
 
@@ -46,7 +47,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
         @Override
         protected void finalize() throws Throwable {
-            iterator.close();
+            qdb.tag_iterator_close(handle);
             super.finalize();
         }
     }

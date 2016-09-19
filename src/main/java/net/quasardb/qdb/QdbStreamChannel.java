@@ -6,30 +6,30 @@ import java.io.IOException;
 import net.quasardb.qdb.jni.*;
 
 final class QdbStreamChannel implements SeekableByteChannel {
-    private SWIGTYPE_p_qdb_stream_session stream;
+    private long handle;
 
-    protected QdbStreamChannel(SWIGTYPE_p_qdb_stream_session stream) {
-        this.stream = stream;
+    protected QdbStreamChannel(long handle) {
+        this.handle = handle;
     }
 
     public void close() throws IOException {
-        if (stream == null)
+        if (handle == 0)
             return;
-        qdb_error_t err = qdb.stream_close(stream);
+        int err = qdb.stream_close(handle);
         throwIfError(err);
-        stream = null;
+        handle = 0;
     }
 
     public boolean isOpen() {
-        return stream != null;
+        return handle != 0;
     }
 
     public long position() throws IOException {
         throwIfClosed();
-        long[] pos = {0};
-        qdb_error_t err = qdb.stream_getpos(stream, pos);
+        Reference<Long> position = new Reference<Long>();
+        int err = qdb.stream_getpos(handle, position);
         throwIfError(err);
-        return pos[0];
+        return position.value;
     }
 
     public SeekableByteChannel position(long newPosition) throws IOException {
@@ -37,7 +37,7 @@ final class QdbStreamChannel implements SeekableByteChannel {
             throw new IllegalArgumentException("New position must be positive");
 
         throwIfClosed();
-        qdb_error_t err = qdb.stream_setpos(stream, newPosition);
+        int err = qdb.stream_setpos(handle, newPosition);
         throwIfError(err);
         return this;
     }
@@ -51,14 +51,13 @@ final class QdbStreamChannel implements SeekableByteChannel {
         if (dst.remaining() == 0)
             return 0;
 
-        ByteBuffer dstSlice = dst.slice();
-        int[] sz = {dstSlice.limit()};
-        qdb_error_t err = qdb.stream_read(stream, dstSlice.slice(), sz);
+        Reference<Long> bytesRead = new Reference<Long>();
+        int err = qdb.stream_read(handle, dst.slice(), bytesRead);
         throwIfError(err);
 
-        if (sz[0] > 0) {
-            dst.position(dst.position() + sz[0]);
-            return sz[0];
+        if (bytesRead.value > 0) {
+            dst.position(dst.position() + bytesRead.value.intValue());
+            return bytesRead.value.intValue();
         } else {
             return -1;
         }
@@ -66,10 +65,10 @@ final class QdbStreamChannel implements SeekableByteChannel {
 
     public long size() throws IOException {
         throwIfClosed();
-        long[] sz = {0};
-        qdb_error_t err = qdb.stream_size(stream, sz);
+        Reference<Long> size = new Reference<Long>();
+        int err = qdb.stream_size(handle, size);
         throwIfError(err);
-        return sz[0];
+        return size.value;
     }
 
     public SeekableByteChannel truncate(long size) throws IOException {
@@ -78,10 +77,10 @@ final class QdbStreamChannel implements SeekableByteChannel {
 
         throwIfClosed();
 
-        qdb_error_t err = qdb.stream_truncate(stream, size);
-        if (err == qdb_error_t.error_operation_not_permitted)
+        int err = qdb.stream_truncate(handle, size);
+        if (err == qdb_error.operation_not_permitted)
             throw new NonWritableChannelException();
-        if (err != qdb_error_t.error_out_of_bounds)
+        if (err != qdb_error.out_of_bounds)
             throwIfError(err);
         return this;
     }
@@ -92,8 +91,8 @@ final class QdbStreamChannel implements SeekableByteChannel {
 
         throwIfClosed();
 
-        qdb_error_t err = qdb.stream_write(stream, src.slice(), src.remaining());
-        if (err == qdb_error_t.error_operation_not_permitted)
+        int err = qdb.stream_write(handle, src.slice());
+        if (err == qdb_error.operation_not_permitted)
             throw new NonWritableChannelException();
 
         throwIfError(err);
@@ -102,13 +101,13 @@ final class QdbStreamChannel implements SeekableByteChannel {
     }
 
     private void throwIfClosed() throws IOException {
-        if (stream == null)
+        if (handle == 0)
             throw new ClosedChannelException();
     }
 
-    private void throwIfError(qdb_error_t err) throws IOException {
-        QdbException exception = QdbExceptionFactory.createException(err);
-        if (exception != null)
-            throw new IOException(exception);
+    private void throwIfError(int err) throws IOException {
+        if (qdb_error.severity(err) == qdb_err_severity.info)
+            return;
+        throw new IOException(QdbExceptionFactory.createException(err));
     }
 }

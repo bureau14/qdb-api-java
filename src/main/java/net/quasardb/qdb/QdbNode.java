@@ -1,14 +1,11 @@
 package net.quasardb.qdb;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.*;
 import net.quasardb.qdb.jni.*;
 
 /**
  * A node in the quasardb cluster.
  */
 public final class QdbNode {
-    private static CharsetDecoder utf8 = Charset.forName("UTF-8").newDecoder();
     private transient QdbSession session;
     private final String hostName;
     private final int port;
@@ -42,27 +39,16 @@ public final class QdbNode {
 
     /**
      * Retrieve the configuration node.
-     *     
+     *
      * @return A JSON string containing the configuration of the node.
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
     public String config() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_config(session.handle(), uri, error);
-        QdbExceptionFactory.throwIfError(error);
-
-        // workaround: remove null terminator:
-        buffer.limit(buffer.limit() - 1);
-
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbInvalidReplyException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session.handle(), buffer);
-            buffer = null;
-        }
+        Reference<String> config = new Reference<String>();
+        int err = qdb.node_config(session.handle(), uri, config);
+        QdbExceptionFactory.throwIfError(err);
+        return config.value;
     }
 
     /**
@@ -73,20 +59,10 @@ public final class QdbNode {
      */
     public String status() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_status(session.handle(), uri, error);
-        QdbExceptionFactory.throwIfError(error);
-
-        // workaround: remove null terminator:
-        buffer.limit(buffer.limit() - 1);
-
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbInvalidArgumentException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session.handle(), buffer);
-        }
+        Reference<String> status = new Reference<String>();
+        int err = qdb.node_status(session.handle(), uri, status);
+        QdbExceptionFactory.throwIfError(err);
+        return status.value;
     }
 
     /**
@@ -96,7 +72,7 @@ public final class QdbNode {
      */
     public void stop(String reason) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.node_stop(session.handle(), uri, reason);
+        int err = qdb.node_stop(session.handle(), uri, reason);
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -108,20 +84,9 @@ public final class QdbNode {
      */
     public String topology() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer buffer = qdb.node_topology(session.handle(), uri, error);
-        QdbExceptionFactory.throwIfError(error);
-
-        // workaround: remove null terminator:
-        buffer.limit(buffer.limit() - 1);
-
-        try {
-            return utf8.decode(buffer).toString();
-        } catch (CharacterCodingException e) {
-            throw new QdbInvalidArgumentException(e.getMessage());
-        } finally {
-            qdb.free_buffer(session.handle(), buffer);
-            buffer = null;
-        }
+        Reference<String> topology = new Reference<String>();
+        int err = qdb.node_topology(session.handle(), uri, topology);
+        QdbExceptionFactory.throwIfError(err);
+        return topology.value;
     }
 }

@@ -21,7 +21,7 @@ public class QdbExpirableEntry extends QdbEntry {
      */
     public void expiryTime(QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.expires_at(session.handle(), alias, expiryTime.toSecondsSinceEpoch());
+        int err = qdb.expires_at(session.handle(), alias, expiryTime.toSecondsSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -34,9 +34,9 @@ public class QdbExpirableEntry extends QdbEntry {
      */
     public QdbExpiryTime expiryTime() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        long secondsSinceEpoch = qdb.get_expiry(session.handle(), alias, error);
-        QdbExceptionFactory.throwIfError(error);
-        return QdbExpiryTime.makeSecondsSinceEpoch(secondsSinceEpoch);
+        Reference<Long> expiry = new Reference<Long>();
+        int err = qdb.get_expiry_time(session.handle(), alias, expiry);
+        QdbExceptionFactory.throwIfError(err);
+        return QdbExpiryTime.makeSecondsSinceEpoch(expiry.value);
     }
 }

@@ -1,31 +1,28 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
+import java.nio.ByteBuffer;
 
 final class QdbSession {
-    private transient SWIGTYPE_p_qdb_session handle;
-
-    static {
-        QdbJniApi.load();
-    }
+    private transient long handle;
 
     public QdbSession() {
-        handle = qdb.open();
+        handle = qdb.open_tcp();
     }
 
     public void close() {
-        if (handle != null) {
+        if (handle != 0) {
             qdb.close(handle);
-            handle = null;
+            handle = 0;
         }
     }
 
     public boolean isClosed() {
-        return handle == null;
+        return handle == 0;
     }
 
     public void throwIfClosed() {
-        if (handle == null)
+        if (handle == 0)
             throw new QdbClusterClosedException();
     }
 
@@ -35,7 +32,15 @@ final class QdbSession {
         super.finalize();
     }
 
-    public SWIGTYPE_p_qdb_session handle() {
+    public long handle() {
         return handle;
+    }
+
+    public QdbBuffer wrapBuffer(Reference<ByteBuffer> ref) {
+        return wrapBuffer(ref.value);
+    }
+
+    private QdbBuffer wrapBuffer(ByteBuffer buffer) {
+        return buffer != null ? new QdbBuffer(this, buffer) : null;
     }
 }

@@ -8,20 +8,20 @@ final class QdbEntryTags implements Iterable<QdbTag> {
     String alias;
 
     class QdbEntryTagsIterator implements Iterator<QdbTag> {
-        final StringVec tags;
+        final String[] tags;
         int index;
 
-        public QdbEntryTagsIterator(StringVec tags) {
+        public QdbEntryTagsIterator(String[] tags) {
             this.tags = tags;
             index = 0;
         }
 
         public boolean hasNext() {
-            return index < tags.size();
+            return index < tags.length;
         }
 
         public QdbTag next() {
-            return new QdbTag(session, tags.get(index++));
+            return new QdbTag(session, tags[index++]);
         }
 
         public void remove() {
@@ -36,8 +36,9 @@ final class QdbEntryTags implements Iterable<QdbTag> {
 
     public Iterator<QdbTag> iterator() {
         session.throwIfClosed();
-        results_list res = qdb.get_tags(session.handle(), alias);
-        QdbExceptionFactory.throwIfError(res.getError());
-        return new QdbEntryTagsIterator(res.getResults());
+        Reference<String[]> tags = new Reference<String[]>();
+        int err = qdb.get_tags(session.handle(), alias, tags);
+        QdbExceptionFactory.throwIfError(err);
+        return new QdbEntryTagsIterator(tags.value);
     }
 }

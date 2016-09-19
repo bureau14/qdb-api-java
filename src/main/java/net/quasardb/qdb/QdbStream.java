@@ -9,8 +9,14 @@ import net.quasardb.qdb.jni.*;
 public final class QdbStream extends QdbEntry {
 
     public enum Mode {
-        READ,
-        APPEND
+        READ(qdb_stream_mode.read)
+        ,
+        APPEND(qdb_stream_mode.append);
+
+        protected final int value;
+        Mode(int value) {
+            this.value = value;
+        }
     }
 
     protected QdbStream(QdbSession session, String alias) {
@@ -20,27 +26,17 @@ public final class QdbStream extends QdbEntry {
     /**
      * Opens a ByteChannel for the stream.
      *
+     * @param mode How to open the stream: READ or APPEND
+     * @return A SeekableByteChannel
      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
      */
-    public SeekableByteChannel open(Mode option) {
-        qdb_stream_mode_t jniMode;
-
-        switch (option) {
-        case READ:
-            jniMode = qdb_stream_mode_t.qdb_stream_mode_read;
-            break;
-        case APPEND:
-            jniMode = qdb_stream_mode_t.qdb_stream_mode_append;
-            break;
-        default:
-            throw new UnsupportedOperationException();
-        }
-
+    public SeekableByteChannel open(Mode mode) {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        SWIGTYPE_p_qdb_stream_session stream = qdb.stream_open(session.handle(), alias, jniMode, error);
-        QdbExceptionFactory.throwIfError(error);
 
-        return new QdbStreamChannel(stream);
+        Reference<Long> stream = new Reference<Long>();
+        int err = qdb.stream_open(session.handle(), alias, mode.value, stream);
+        QdbExceptionFactory.throwIfError(err);
+
+        return new QdbStreamChannel(stream.value);
     }
 }

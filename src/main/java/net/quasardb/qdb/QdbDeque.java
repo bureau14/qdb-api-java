@@ -24,12 +24,12 @@ public final class QdbDeque extends QdbEntry {
      */
     public QdbBuffer back() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer value = qdb.deque_back(session.handle(), alias, error);
-        if (error.getError() == qdb_error_t.error_container_empty)
+        Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+        int err = qdb.deque_back(session.handle(), alias, content);
+        if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(error);
-        return new QdbBuffer(session, value);
+        QdbExceptionFactory.throwIfError(err);
+        return session.wrapBuffer(content);
     }
 
     /**
@@ -45,10 +45,10 @@ public final class QdbDeque extends QdbEntry {
      */
     public QdbBuffer get(long index) {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer value = qdb.deque_get_at(session.handle(), alias, index, error);
-        QdbExceptionFactory.throwIfError(error);
-        return new QdbBuffer(session, value);
+        Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+        int err = qdb.deque_get_at(session.handle(), alias, index, content);
+        QdbExceptionFactory.throwIfError(err);
+        return session.wrapBuffer(content);
     }
 
     /**
@@ -62,12 +62,12 @@ public final class QdbDeque extends QdbEntry {
      */
     public QdbBuffer front() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer value = qdb.deque_front(session.handle(), alias, error);
-        if (error.getError() == qdb_error_t.error_container_empty)
+        Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+        int err = qdb.deque_front(session.handle(), alias, content);
+        if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(error);
-        return new QdbBuffer(session, value);
+        QdbExceptionFactory.throwIfError(err);
+        return session.wrapBuffer(content);
     }
 
     /**
@@ -81,12 +81,12 @@ public final class QdbDeque extends QdbEntry {
      */
     public QdbBuffer popBack() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer value = qdb.deque_pop_back(session.handle(), alias, error);
-        if (error.getError() == qdb_error_t.error_container_empty)
+        Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+        int err = qdb.deque_pop_back(session.handle(), alias, content);
+        if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(error);
-        return new QdbBuffer(session, value);
+        QdbExceptionFactory.throwIfError(err);
+        return session.wrapBuffer(content);
     }
 
     /**
@@ -100,12 +100,12 @@ public final class QdbDeque extends QdbEntry {
      */
     public QdbBuffer popFront() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        ByteBuffer value = qdb.deque_pop_front(session.handle(), alias, error);
-        if (error.getError() == qdb_error_t.error_container_empty)
+        Reference<ByteBuffer> content = new Reference<ByteBuffer>();
+        int err = qdb.deque_pop_front(session.handle(), alias, content);
+        if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(error);
-        return new QdbBuffer(session, value);
+        QdbExceptionFactory.throwIfError(err);
+        return session.wrapBuffer(content);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class QdbDeque extends QdbEntry {
      */
     public void pushBack(ByteBuffer content) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.deque_push_back(session.handle(), alias, content, content.limit());
+        int err = qdb.deque_push_back(session.handle(), alias, content);
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -132,7 +132,7 @@ public final class QdbDeque extends QdbEntry {
      */
     public void pushFront(ByteBuffer content) {
         session.throwIfClosed();
-        qdb_error_t err = qdb.deque_push_front(session.handle(), alias, content, content.limit());
+        int err = qdb.deque_push_front(session.handle(), alias, content);
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -147,9 +147,9 @@ public final class QdbDeque extends QdbEntry {
      */
     public long size() {
         session.throwIfClosed();
-        error_carrier error = new error_carrier();
-        long value = qdb.deque_size(session.handle(), alias, error);
-        QdbExceptionFactory.throwIfError(error);
-        return value;
+        Reference<Long> size = new Reference<Long>();
+        int err = qdb.deque_size(session.handle(), alias, size);
+        QdbExceptionFactory.throwIfError(err);
+        return size.value.longValue();
     }
 }
