@@ -3,10 +3,10 @@ package net.quasardb.qdb;
 import java.util.*;
 
 public final class QdbExpiryTime {
-    private final long secondsSinceEpoch;
+    private final long millisecondsSinceEpoch;
 
-    private QdbExpiryTime(long secondsSinceEpoch) {
-        this.secondsSinceEpoch = secondsSinceEpoch;
+    private QdbExpiryTime(long millisecondsSinceEpoch) {
+        this.millisecondsSinceEpoch = millisecondsSinceEpoch;
     }
 
     public static final QdbExpiryTime NEVER_EXPIRES = new QdbExpiryTime(0);
@@ -21,15 +21,15 @@ public final class QdbExpiryTime {
     }
 
     public static QdbExpiryTime makeSecondsSinceEpoch(long value) {
-        return new QdbExpiryTime(value);
+        return makeMillisSinceEpoch(value * 1000);
     }
 
     public static QdbExpiryTime makeMillisSinceEpoch(long value) {
-        return makeSecondsSinceEpoch(value / 1000);
+        return new QdbExpiryTime(value);
     }
 
     public static QdbExpiryTime makeSecondsFromNow(long delayInSeconds) {
-        return makeSecondsSinceEpoch(System.currentTimeMillis() / 1000 + delayInSeconds);
+        return makeMillisFromNow(delayInSeconds * 1000);
     }
 
     public static QdbExpiryTime makeMillisFromNow(long delayInMillis) {
@@ -41,11 +41,11 @@ public final class QdbExpiryTime {
     }
 
     public long toSecondsSinceEpoch() {
-        return secondsSinceEpoch;
+        return millisecondsSinceEpoch / 1000;
     }
 
     public long toMillisSinceEpoch() {
-        return secondsSinceEpoch * 1000;
+        return millisecondsSinceEpoch;
     }
 
     public Date toDate() {
@@ -60,12 +60,12 @@ public final class QdbExpiryTime {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof QdbExpiryTime && ((QdbExpiryTime)obj).secondsSinceEpoch == secondsSinceEpoch;
+        return obj instanceof QdbExpiryTime && ((QdbExpiryTime)obj).millisecondsSinceEpoch == millisecondsSinceEpoch;
     }
 
     @Override
     public int hashCode() {
-        return (new Long(secondsSinceEpoch)).hashCode();
+        return (new Long(millisecondsSinceEpoch)).hashCode();
     }
 
     @Override

@@ -44,7 +44,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
-        int err = qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toSecondsSinceEpoch(), originalContent);
+        int err = qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toMillisSinceEpoch(), originalContent);
         QdbExceptionFactory.throwIfError(err);
         return session.wrapBuffer(originalContent);
     }
@@ -111,7 +111,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public QdbBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
-        int err = qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toSecondsSinceEpoch(), originalContent);
+        int err = qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch(), originalContent);
         QdbExceptionFactory.throwIfError(err);
         return session.wrapBuffer(originalContent);
     }
@@ -140,7 +140,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.blob_put(session.handle(), alias, content, expiryTime.toSecondsSinceEpoch());
+        int err = qdb.blob_put(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -187,7 +187,7 @@ public final class QdbBlob extends QdbExpirableEntry {
       */
     public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.blob_update(session.handle(), alias, content, expiryTime.toSecondsSinceEpoch());
+        int err = qdb.blob_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }

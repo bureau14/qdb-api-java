@@ -39,7 +39,7 @@ public final class QdbBatchBlob extends QdbBatchEntry {
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
             public void write(long batch, int index) {
-                qdb.batch_write_blob_compare_and_swap(batch, index, alias, newContent, comparand, expiryTime.toSecondsSinceEpoch());
+                qdb.batch_write_blob_compare_and_swap(batch, index, alias, newContent, comparand, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
@@ -106,7 +106,7 @@ public final class QdbBatchBlob extends QdbBatchEntry {
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
             public void write(long batch, int index) {
-                qdb.batch_write_blob_get_and_update(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+                qdb.batch_write_blob_get_and_update(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
@@ -146,7 +146,7 @@ public final class QdbBatchBlob extends QdbBatchEntry {
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
             public void write(long batch, int index) {
-                qdb.batch_write_blob_put(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+                qdb.batch_write_blob_put(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
@@ -186,7 +186,7 @@ public final class QdbBatchBlob extends QdbBatchEntry {
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
             public void write(long batch, int index) {
-                qdb.batch_write_blob_update(batch, index, alias, content, expiryTime.toSecondsSinceEpoch());
+                qdb.batch_write_blob_update(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override

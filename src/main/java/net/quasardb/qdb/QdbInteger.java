@@ -69,7 +69,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toSecondsSinceEpoch());
+        int err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toMillisSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
     }
 
@@ -98,7 +98,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public boolean update(long newValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toSecondsSinceEpoch());
+        int err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toMillisSinceEpoch());
         QdbExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }
