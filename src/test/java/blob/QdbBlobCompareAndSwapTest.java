@@ -40,10 +40,10 @@ public class QdbBlobCompareAndSwapTest {
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
         blob.put(content);
-        blob.compareAndSwap(content, content, fiveMinutesAgo); // <- throws
+        blob.compareAndSwap(content, content, fewMinutesAgo); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)

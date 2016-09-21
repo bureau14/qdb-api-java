@@ -55,9 +55,9 @@ public class QdbBatchBlobCompareAndSwapTest {
 
     @Test(expected = QdbInvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
-        result = batch.blob(alias).compareAndSwap(originalContent, originalContent, fiveMinutesAgo);
+        result = batch.blob(alias).compareAndSwap(originalContent, originalContent, fewMinutesAgo);
         blob.put(originalContent);
         batch.run();
         result.get(); // <- throws

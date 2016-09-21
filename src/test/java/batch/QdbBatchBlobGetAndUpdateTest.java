@@ -54,9 +54,9 @@ public class QdbBatchBlobGetAndUpdateTest {
 
     @Test(expected = QdbInvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
-        result = batch.blob(alias).getAndUpdate(newContent, fiveMinutesAgo);
+        result = batch.blob(alias).getAndUpdate(newContent, fewMinutesAgo);
         blob.put(originalContent);
         batch.run();
         result.get(); // <- throws

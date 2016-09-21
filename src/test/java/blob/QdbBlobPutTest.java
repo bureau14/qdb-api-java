@@ -38,9 +38,9 @@ public class QdbBlobPutTest {
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
-        blob.put(content, fiveMinutesAgo); // <- throws
+        blob.put(content, fewMinutesAgo); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)

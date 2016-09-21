@@ -26,7 +26,7 @@ public class QdbExpirableEntryTest {
     public void setExpiryTime_throwsInvalidArgument_whenDateIsInThePast() {
         QdbExpirableEntry entry = Helpers.createBlob();
 
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
-        entry.expiryTime(fiveMinutesAgo);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
+        entry.expiryTime(fewMinutesAgo);
     }
 }

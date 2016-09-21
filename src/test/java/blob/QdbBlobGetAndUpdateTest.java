@@ -37,10 +37,10 @@ public class QdbBlobGetAndUpdateTest {
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
-        QdbExpiryTime fiveMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-5);
+        QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
         blob.put(content);
-        blob.getAndUpdate(content, fiveMinutesAgo); // <- throws
+        blob.getAndUpdate(content, fewMinutesAgo); // <- throws
     }
 
     @Test(expected = QdbReservedAliasException.class)
