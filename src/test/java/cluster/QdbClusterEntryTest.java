@@ -1,27 +1,35 @@
-import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbClusterEntryTest {
+    @Test(expected = QdbClusterClosedException.class)
+    public void throwsClusterClosed_afterCallingClose() {
+        QdbCluster cluster = Helpers.createCluster();
+        String alias = Helpers.createUniqueAlias();
+
+        cluster.close();
+        cluster.entry(alias); // <- throws
+    }
+
     @Test(expected = QdbAliasNotFoundException.class)
-    public void entry_throwsAliasNotFound_whenAliasIsRandom() {
+    public void throwsAliasNotFound_whenAliasIsRandom() {
         String alias = Helpers.createUniqueAlias();
 
         Helpers.getEntry(alias); // <- throws
     }
 
     @Test(expected = QdbInvalidArgumentException.class)
-    public void entry_throwsInvalidArgument_whenAliasIsEmpty() {
+    public void throwsInvalidArgument_whenAliasIsEmpty() {
         Helpers.getEntry(""); // <- throws
     }
 
     @Test(expected = QdbInvalidArgumentException.class)
-    public void entry_throwsInvalidArgument_whenAliasIsNull() {
+    public void throwsInvalidArgument_whenAliasIsNull() {
         Helpers.getEntry(null); // <- throws
     }
 
     @Test
-    public void entry_returnsQdbBlob_whenEntryIsBlob() {
+    public void returnsQdbBlob_whenEntryIsBlob() {
         QdbBlob blob = Helpers.createBlob();
 
         String alias = blob.alias();
@@ -31,7 +39,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void entry_returnsQdbDeque_whenEntryIsDeque() {
+    public void returnsQdbDeque_whenEntryIsDeque() {
         QdbDeque deque = Helpers.createDeque();
 
         String alias = deque.alias();
@@ -41,7 +49,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void entry_returnsQdbHashSet_whenEntryIsHashSet() {
+    public void returnsQdbHashSet_whenEntryIsHashSet() {
         QdbHashSet hset = Helpers.createHashSet();
 
         String alias = hset.alias();
@@ -51,7 +59,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void entry_returnsQdbInteger_whenEntryIsInteger() {
+    public void returnsQdbInteger_whenEntryIsInteger() {
         QdbInteger integer = Helpers.createInteger();
 
         String alias = integer.alias();
@@ -61,7 +69,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void entry_returnsQdbStream_whenEntryIsStream() throws Exception {
+    public void returnsQdbStream_whenEntryIsStream() throws Exception {
         QdbStream stream = Helpers.createStream();
 
         String alias = stream.alias();
@@ -71,7 +79,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void entry_returnsQdbTag_whenEntryIsTag() throws Exception {
+    public void returnsQdbTag_whenEntryIsTag() throws Exception {
         QdbTag tag = Helpers.createTag();
 
         String alias = tag.alias();
