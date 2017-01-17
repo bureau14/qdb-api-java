@@ -1,5 +1,8 @@
 package net.quasardb.qdb;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.time.Instant;
 import java.util.*;
 import net.quasardb.qdb.jni.*;
 
@@ -163,5 +166,21 @@ public class QdbEntry {
    */
     public Iterable<QdbTag> tags() {
         return new QdbEntryTags(session, alias);
+    }
+
+    public QdbEntryMetadata metadata() {
+        ByteBuffer meta = ByteBuffer.allocateDirect(80);
+
+        int err = qdb.get_metadata(session.handle(), alias, meta);
+        QdbExceptionFactory.throwIfError(err);
+
+        meta.order(ByteOrder.LITTLE_ENDIAN);
+
+        QdbId reference = new QdbId(meta.getLong(0), meta.getLong(8), meta.getLong(16), meta.getLong(24));
+        long size = meta.getLong(40);
+        Instant lastModification = Instant.ofEpochSecond(meta.getLong(48), meta.getLong(56));
+        Instant expiry = Instant.ofEpochSecond(meta.getLong(64), meta.getLong(72));
+
+        return new QdbEntryMetadata(reference, size, lastModification, expiry);
     }
 }
