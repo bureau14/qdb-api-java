@@ -63,7 +63,7 @@ public class QdbEntry {
        */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof QdbEntry && equals((QdbEntry)obj);
+        return obj instanceof QdbEntry && equals((QdbEntry) obj);
     }
 
     /**
@@ -158,12 +158,12 @@ public class QdbEntry {
     }
 
     /**
-   * Retrieves the tags attached to the entry.
-   *
-   * @return The tags attached to the entry.
-   * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-   * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-   */
+    * Retrieves the tags attached to the entry.
+    *
+    * @return The tags attached to the entry.
+    * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
+    * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+    */
     public Iterable<QdbTag> tags() {
         return new QdbEntryTags(session, alias);
     }
@@ -182,5 +182,14 @@ public class QdbEntry {
         Instant expiry = Instant.ofEpochSecond(meta.getLong(64), meta.getLong(72));
 
         return new QdbEntryMetadata(reference, size, lastModification, expiry);
+    }
+
+    public QdbNode node() {
+        session.throwIfClosed();
+        Reference<String> address = new Reference<String>();
+        Reference<Integer> port = new Reference<Integer>();
+        int err = qdb.get_location(session.handle(), alias, address, port);
+        QdbExceptionFactory.throwIfError(err);
+        return new QdbNode(session, address.value, port.value);
     }
 }

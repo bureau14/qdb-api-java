@@ -146,12 +146,8 @@ public final class QdbCluster implements AutoCloseable {
        * @throws QdbClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbNode findNodeFor(String alias) {
-        session.throwIfClosed();
-        Reference<String> address = new Reference<String>();
-        Reference<Integer> port = new Reference<Integer>();
-        int err = qdb.get_location(session.handle(), alias, address, port);
-        QdbExceptionFactory.throwIfError(err);
-        return new QdbNode(session, address.value, port.value);
+        QdbEntry e = new QdbEntry(session, alias);
+        return e.node();
     }
 
     /**
