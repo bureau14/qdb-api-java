@@ -83,7 +83,7 @@ public final class QdbBatch implements AutoCloseable {
      */
     public void close() {
         if (batch != 0) {
-            delete_batch(session, batch, operations.size());
+            delete_batch(session, batch);
             batch = 0;
         }
         operations = null;
@@ -168,8 +168,8 @@ public final class QdbBatch implements AutoCloseable {
         return batch.value;
     }
 
-    private static void delete_batch(QdbSession session, long batch, int count) {
-        int err = qdb.free_operations(session.handle(), batch, count);
+    private static void delete_batch(QdbSession session, long batch) {
+        int err = qdb.delete_batch(session.handle(), batch);
         QdbExceptionFactory.throwIfError(err);
     }
 

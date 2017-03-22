@@ -22,7 +22,7 @@ public final class QdbBuffer implements AutoCloseable {
     @Override
     public void close() {
         if (buffer != null) {
-            qdb.free_buffer(session.handle(), buffer);
+            qdb.release(session.handle(), buffer);
             buffer = null;
         }
     }
