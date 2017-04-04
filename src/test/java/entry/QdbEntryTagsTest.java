@@ -22,7 +22,7 @@ public class QdbEntryTagsTest {
     }
 
     @Test
-    public void returnsEmptyCollection_beforeCallingAddTag() {
+    public void returnsEmptyCollection_beforeCallingAttachTag() {
         QdbEntry entry = Helpers.createBlob();
 
         Iterable<QdbTag> result = entry.tags();
@@ -32,7 +32,7 @@ public class QdbEntryTagsTest {
     }
 
     @Test
-    public void returnsOneTag_afterCallingAddTag() {
+    public void returnsOneTag_afterCallingAttachTag() {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 

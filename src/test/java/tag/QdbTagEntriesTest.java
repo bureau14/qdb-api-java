@@ -14,7 +14,7 @@ public class QdbTagEntriesTest {
     }
 
     @Test
-    public void returnsEmptyCollection_afterCallingRemoveTag() {
+    public void returnsEmptyCollection_afterCallingDetachTag() {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
@@ -40,7 +40,7 @@ public class QdbTagEntriesTest {
     }
 
     @Test
-    public void returnsABlob_afterCallingAddTag() {
+    public void returnsABlob_afterCallingAttachTag() {
         QdbBlob blob = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 

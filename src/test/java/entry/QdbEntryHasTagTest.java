@@ -38,7 +38,7 @@ public class QdbEntryHasTagTest {
     }
 
     @Test
-    public void returnsFalse_beforeCallingAddTag() {
+    public void returnsFalse_beforeCallingAttachTag() {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
@@ -48,7 +48,7 @@ public class QdbEntryHasTagTest {
     }
 
     @Test
-    public void returnsFalse_afterCallingRemoveTag() {
+    public void returnsFalse_afterCallingDetachTag() {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
@@ -60,7 +60,7 @@ public class QdbEntryHasTagTest {
     }
 
     @Test
-    public void returnsTrue_afterCallingAddTag() {
+    public void returnsTrue_afterCallingAttachTag() {
         QdbEntry entry = Helpers.createBlob();
         QdbTag tag = Helpers.createEmptyTag();
 
