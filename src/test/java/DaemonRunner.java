@@ -38,7 +38,7 @@ public class DaemonRunner {
         try {
             Runtime runtime = Runtime.getRuntime();
             System.out.println("Start " + path);
-            process = runtime.exec(new String[] {path, "--transient", "-a", "127.0.0.1:" + port()});
+            process = runtime.exec(new String[] {path, "--security=false", "--transient", "-a", "127.0.0.1:" + port()});
             System.out.println(path + " started, waiting...");
             Thread.sleep(2000);
             System.out.println(path + " ready");
