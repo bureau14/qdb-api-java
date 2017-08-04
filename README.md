@@ -3,7 +3,7 @@ Quasardb Java API
 
 Java API for [quasardb](https://www.quasardb.net/).
 
-See documentation at [doc.quasardb.net](https://doc.quasardb.net/2.0.0/api/java.html)
+See documentation at [doc.quasardb.net](https://doc.quasardb.net/2.1.0/api/java.html)
 
 ### Requirements
 
