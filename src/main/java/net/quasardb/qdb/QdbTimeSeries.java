@@ -1,12 +1,18 @@
 package net.quasardb.qdb;
 
+import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import net.quasardb.qdb.jni.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a timeseries inside quasardb
  */
 public final class QdbTimeSeries {
+
+    QdbSession session;
+    String name;
 
     public enum ColumnType {
         UNINITIALIZED(qdb_ts_column_type.uninitialized),
@@ -30,13 +36,17 @@ public final class QdbTimeSeries {
             this.name = name;
             this.type = type;
         }
+
+        public qdb_ts_column_info toColumnInfo () {
+            return new qdb_ts_column_info(this.name, this.type.ordinal());
+        }
     }
 
     /**
      * Describes a time-series column that contains blobs
      */
     public static class BlobColumnDefinition extends ColumnDefinition {
-        BlobColumnDefinition(String name) {
+        public BlobColumnDefinition(String name) {
             super(name, ColumnType.BLOB);
         }
     }
@@ -45,16 +55,62 @@ public final class QdbTimeSeries {
      * Describes a time-series column that contains double precision floating point values
      */
     public static class DoubleColumnDefinition extends ColumnDefinition {
-        DoubleColumnDefinition(String name) {
+        public DoubleColumnDefinition(String name) {
             super(name, ColumnType.DOUBLE);
         }
     }
 
 
     /**
-     * A collection of columns.
+     * A column of a time series
      */
-    static class ColumnCollection {
+    public abstract static class Column {
+        QdbTimeSeries series;
+        String name;
+
+        Column(QdbTimeSeries series, String name) {
+            this.series = series;
+            this.name = name;
+        }
+
+        public QdbTimeSeries getTimeSeries() {
+            return this.series;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+    }
+
+    public static class UnknownColumn extends Column {
+        ColumnType type;
+
+        UnknownColumn(QdbTimeSeries series, String  name, ColumnType type) {
+            super(series, name);
+
+            this.type = type;
+        }
+
+        public ColumnType getType() {
+            return this.type;
+        }
+    }
+
+    QdbTimeSeries(QdbSession session, String name) {
+        this.session = session;
+        this.name = name;
+    }
+
+    public void create(List<ColumnDefinition> columns) {
+        qdb_ts_column_info[] columnArray = new qdb_ts_column_info[columns.size()];
+        List<qdb_ts_column_info> columnList = new ArrayList<qdb_ts_column_info> ();
+
+        for (ColumnDefinition column : columns) {
+            columnList.add(column.toColumnInfo());
+        }
+        columnList.toArray(columnArray);
+
+        qdb.ts_create(this.session.handle(), this.name, columnArray);
     }
 
 }

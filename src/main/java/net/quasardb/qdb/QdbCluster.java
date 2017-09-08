@@ -2,6 +2,7 @@ package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
 import java.util.regex.*;
+import java.util.List;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -136,6 +137,32 @@ public final class QdbCluster implements AutoCloseable {
     public QdbTag tag(String alias) {
         session.throwIfClosed();
         return new QdbTag(session, alias);
+    }
+
+    /**
+      * Gets a handle to a timeseries in the database.
+      *
+      * @param alias The timeseries unique key/identifier in the database.
+      * @return A handle to perform operations on the timeseries.
+      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+      */
+    public QdbTimeSeries timeSeries(String alias) {
+        session.throwIfClosed();
+        return new QdbTimeSeries(session, alias);
+    }
+
+    /**
+      * Gets creates a new timeseries in the database and returns handle.
+      *
+      * @param alias The timeseries unique key/identifier in the database.
+      * @return A handle to perform operations on the timeseries.
+      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+      */
+    public QdbTimeSeries createTimeSeries(String alias, List<QdbTimeSeries.ColumnDefinition> columns) {
+        session.throwIfClosed();
+        QdbTimeSeries series = new QdbTimeSeries(session, alias);
+        series.create(columns);
+        return series;
     }
 
     /**
