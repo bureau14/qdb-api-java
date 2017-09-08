@@ -3,8 +3,7 @@ package net.quasardb.qdb;
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import net.quasardb.qdb.jni.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a timeseries inside quasardb
@@ -19,9 +18,9 @@ public final class QdbTimeSeries {
         DOUBLE(qdb_ts_column_type.double_),
         BLOB(qdb_ts_column_type.blob);
 
-        protected final int type;
+        protected final int value;
         ColumnType(int type) {
-            this.type = type;
+            this.value = type;
         }
     }
 
@@ -38,7 +37,11 @@ public final class QdbTimeSeries {
         }
 
         public qdb_ts_column_info toColumnInfo () {
-            return new qdb_ts_column_info(this.name, this.type.ordinal());
+            return new qdb_ts_column_info(this.name, this.type.value);
+        }
+
+        public static ColumnDefinition fromNative (qdb_ts_column_info info) {
+            return new ColumnDefinition(info.name, ColumnType.values()[info.type]);
         }
     }
 
@@ -110,7 +113,21 @@ public final class QdbTimeSeries {
         }
         columnList.toArray(columnArray);
 
-        qdb.ts_create(this.session.handle(), this.name, columnArray);
+        int err = qdb.ts_create(this.session.handle(), this.name, columnArray);
+        QdbExceptionFactory.throwIfError(err);
     }
 
+    public List<ColumnDefinition> listColumns () {
+        Reference<qdb_ts_column_info[]> nativeColumns = new Reference<qdb_ts_column_info[]>();
+
+        int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
+        QdbExceptionFactory.throwIfError(err);
+
+        List<ColumnDefinition> columns = new ArrayList<ColumnDefinition> ();
+        for (qdb_ts_column_info column : nativeColumns.value) {
+            columns.add(ColumnDefinition.fromNative(column));
+        }
+
+        return columns;
+    }
 }
