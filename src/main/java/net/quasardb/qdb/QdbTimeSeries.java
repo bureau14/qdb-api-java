@@ -27,9 +27,9 @@ public final class QdbTimeSeries {
     }
 
     public void insertColumns(Collection<QdbColumn.Definition> columns) {
-        int err = qdb.ts_create(this.session.handle(),
-                                this.name,
-                                QdbColumn.Definition.toNative(columns));
+        int err = qdb.ts_insert_columns(this.session.handle(),
+                                        this.name,
+                                        QdbColumn.Definition.toNative(columns));
         QdbExceptionFactory.throwIfError(err);
     }
 
