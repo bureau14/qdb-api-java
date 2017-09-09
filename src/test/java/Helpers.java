@@ -118,6 +118,40 @@ public class Helpers {
         return cluster.timeSeries(alias);
     }
 
+    public static QdbBlobColumn createBlobColumn(String alias) {
+        return new QdbBlobColumn(alias, createSampleData());
+    }
+
+    public static Collection<QdbBlobColumn> createBlobColumnCollection(String alias) {
+        return createBlobColumnCollection(alias, 10);
+    }
+
+    public static Collection<QdbBlobColumn> createBlobColumnCollection(String alias, int n) {
+        List<QdbBlobColumn> v = new ArrayList<QdbBlobColumn>();
+        for (int i = 0; i < new Random().nextInt(n); ++i) {
+            v.add(createBlobColumn(alias));
+        }
+
+        return v;
+    }
+
+    public static QdbDoubleColumn createDoubleColumn(String alias) {
+        return new QdbDoubleColumn(alias, new Random(n++).nextDouble());
+    }
+
+    public static Collection<QdbDoubleColumn> createDoubleColumnCollection(String alias) {
+        return createDoubleColumnCollection(alias, 10);
+    }
+
+    public static Collection<QdbDoubleColumn> createDoubleColumnCollection(String alias, int n) {
+        List<QdbDoubleColumn> v = new ArrayList<QdbDoubleColumn>();
+        for (int i = 0; i < new Random().nextInt(n); ++i) {
+            v.add(createDoubleColumn(alias));
+        }
+
+        return v;
+    }
+
     public static QdbBlob getBlob(String alias) {
         return cluster.blob(alias);
     }
