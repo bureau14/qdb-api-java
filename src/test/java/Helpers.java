@@ -118,35 +118,28 @@ public class Helpers {
         return cluster.timeSeries(alias);
     }
 
-    public static QdbBlobColumn createBlobColumn(String alias) {
-        return new QdbBlobColumn(alias, createSampleData());
-    }
-
-    public static Collection<QdbBlobColumn> createBlobColumnCollection(String alias) {
+    public static QdbBlobColumnCollection createBlobColumnCollection(String alias) {
         return createBlobColumnCollection(alias, 10);
     }
 
-    public static Collection<QdbBlobColumn> createBlobColumnCollection(String alias, int n) {
-        List<QdbBlobColumn> v = new ArrayList<QdbBlobColumn>();
-        for (int i = 0; i < new Random().nextInt(n); ++i) {
-            v.add(createBlobColumn(alias));
+    public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
+        QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
+
+        for (int i = 0; i < new Random(n++).nextInt(max); ++i) {
+            v.add(createSampleData());
         }
 
         return v;
     }
 
-    public static QdbDoubleColumn createDoubleColumn(String alias) {
-        return new QdbDoubleColumn(alias, new Random(n++).nextDouble());
-    }
-
-    public static Collection<QdbDoubleColumn> createDoubleColumnCollection(String alias) {
+    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias) {
         return createDoubleColumnCollection(alias, 10);
     }
 
-    public static Collection<QdbDoubleColumn> createDoubleColumnCollection(String alias, int n) {
-        List<QdbDoubleColumn> v = new ArrayList<QdbDoubleColumn>();
-        for (int i = 0; i < new Random().nextInt(n); ++i) {
-            v.add(createDoubleColumn(alias));
+    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
+        QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
+        for (int i = 0; i < new Random(n++).nextInt(max); ++i) {
+            v.add(new Random(n++).nextDouble());
         }
 
         return v;

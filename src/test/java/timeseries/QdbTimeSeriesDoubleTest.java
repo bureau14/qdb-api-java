@@ -14,7 +14,7 @@ public class QdbTimeSeriesDoubleTest {
         QdbTimeSeries series =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
 
-        Collection<QdbDoubleColumn> data = Helpers.createDoubleColumnCollection(alias);
-        series.insert(data);
+        QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
+        series.insertDoubles(data);
     }
 }
