@@ -9,10 +9,10 @@ import static org.junit.Assert.*;
 public class QdbColumnTest {
     @Test
     public void canCompareEquality() throws Exception {
-        List<QdbColumn.Definition> definitions = Arrays.asList(new QdbColumn.Definition.Blob ("b1"),
-                                                                new QdbColumn.Definition.Double ("d1"));
+        List<QdbColumnDefinition> definitions = Arrays.asList(new QdbColumnDefinition.Blob ("b1"),
+                                                              new QdbColumnDefinition.Double ("d1"));
 
-        assertThat(definitions, (hasItems(new QdbColumn.Definition.Blob ("b1"),
-                                          new QdbColumn.Definition.Double ("d1"))));
+        assertThat(definitions, (hasItems(new QdbColumnDefinition.Blob ("b1"),
+                                          new QdbColumnDefinition.Double ("d1"))));
     }
 }

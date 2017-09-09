@@ -18,27 +18,27 @@ public final class QdbTimeSeries {
         this.name = name;
     }
 
-    public void create(Collection<QdbColumn.Definition> columns) {
+    public void create(Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
-                                QdbColumn.Definition.toNative(columns));
+                                QdbColumnDefinition.toNative(columns));
 
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public void insertColumns(Collection<QdbColumn.Definition> columns) {
+    public void insertColumns(Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_insert_columns(this.session.handle(),
                                         this.name,
-                                        QdbColumn.Definition.toNative(columns));
+                                        QdbColumnDefinition.toNative(columns));
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public Iterable<QdbColumn.Definition> listColumns() {
+    public Iterable<QdbColumnDefinition> listColumns() {
         Reference<qdb_ts_column_info[]> nativeColumns = new Reference<qdb_ts_column_info[]>();
 
         int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
         QdbExceptionFactory.throwIfError(err);
 
-        return QdbColumn.Definition.fromNative(nativeColumns.value);
+        return QdbColumnDefinition.fromNative(nativeColumns.value);
     }
 }
