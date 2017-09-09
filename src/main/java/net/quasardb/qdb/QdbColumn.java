@@ -43,8 +43,20 @@ public final class QdbColumn {
             this.type = type;
         }
 
-        public qdb_ts_column_info toColumnInfo () {
-            return new qdb_ts_column_info(this.name, this.type.value);
+        public static qdb_ts_column_info toNative (Definition d) {
+            return new qdb_ts_column_info(d.name, d.type.value);
+        }
+
+        public static qdb_ts_column_info[] toNative (Collection<Definition> columns) {
+            qdb_ts_column_info[] columnArray = new qdb_ts_column_info[columns.size()];
+            List<qdb_ts_column_info> columnList = new ArrayList<qdb_ts_column_info> ();
+
+            for (QdbColumn.Definition column : columns) {
+                columnList.add(toNative(column));
+            }
+            columnList.toArray(columnArray);
+
+            return columnArray;
         }
 
         public static Definition fromNative (qdb_ts_column_info info) {
@@ -56,6 +68,14 @@ public final class QdbColumn {
             default:
                 throw new IllegalArgumentException("invalid column type: " + info.type);
             }
+        }
+
+        public static Iterable<Definition> fromNative (qdb_ts_column_info[] nativeColumns) {
+            Collection<QdbColumn.Definition> columns = new ArrayList<QdbColumn.Definition> ();
+            for (qdb_ts_column_info column : nativeColumns) {
+                columns.add(fromNative(column));
+            }
+            return columns;
         }
 
         @Override

@@ -19,29 +19,26 @@ public final class QdbTimeSeries {
     }
 
     public void create(Collection<QdbColumn.Definition> columns) {
-        qdb_ts_column_info[] columnArray = new qdb_ts_column_info[columns.size()];
-        List<qdb_ts_column_info> columnList = new ArrayList<qdb_ts_column_info> ();
+        int err = qdb.ts_create(this.session.handle(),
+                                this.name,
+                                QdbColumn.Definition.toNative(columns));
 
-        for (QdbColumn.Definition column : columns) {
-            columnList.add(column.toColumnInfo());
-        }
-        columnList.toArray(columnArray);
-
-        int err = qdb.ts_create(this.session.handle(), this.name, columnArray);
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public Iterable<QdbColumn.Definition> listColumns () {
+    public void insertColumns(Collection<QdbColumn.Definition> columns) {
+        int err = qdb.ts_create(this.session.handle(),
+                                this.name,
+                                QdbColumn.Definition.toNative(columns));
+        QdbExceptionFactory.throwIfError(err);
+    }
+
+    public Iterable<QdbColumn.Definition> listColumns() {
         Reference<qdb_ts_column_info[]> nativeColumns = new Reference<qdb_ts_column_info[]>();
 
         int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
         QdbExceptionFactory.throwIfError(err);
 
-        Collection<QdbColumn.Definition> columns = new ArrayList<QdbColumn.Definition> ();
-        for (qdb_ts_column_info column : nativeColumns.value) {
-            columns.add(QdbColumn.Definition.fromNative(column));
-        }
-
-        return columns;
+        return QdbColumn.Definition.fromNative(nativeColumns.value);
     }
 }
