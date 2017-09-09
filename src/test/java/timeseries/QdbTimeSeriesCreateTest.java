@@ -52,4 +52,26 @@ public class QdbTimeSeriesCreateTest {
 
         assertThat(result2, (is(allDefinitions)));
     }
+
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void throws_afterCreatingDuplicateColumns() throws Exception {
+        List<QdbColumn.Definition> definitions =
+            Arrays.asList(new QdbColumn.Definition.Blob ("b1"),
+                          new QdbColumn.Definition.Double ("b1"));
+
+        QdbTimeSeries series = Helpers.createTimeSeries(definitions);
+    }
+
+    @Test(expected = QdbInvalidArgumentException.class)
+    public void throws_afterInsertingDuplicateColumns() throws Exception {
+        List<QdbColumn.Definition> definitions1 =
+            Arrays.asList(new QdbColumn.Definition.Blob ("b2"));
+
+        QdbTimeSeries series = Helpers.createTimeSeries(definitions1);
+
+        List<QdbColumn.Definition> definitions2 =
+            Arrays.asList(new QdbColumn.Definition.Double ("b2"));
+        series.insertColumns(definitions2);
+
+    }
 }
