@@ -27,6 +27,18 @@ public final class QdbColumn {
         String name;
         Type type;
 
+        public static class Blob extends Definition {
+            public Blob(String name) {
+                super(name, Type.BLOB);
+            }
+        }
+
+        public static class Double extends Definition {
+            public Double(String name) {
+                super(name, Type.DOUBLE);
+            }
+        }
+
         Definition(String name, Type type) {
             this.name = name;
             this.type = type;
@@ -37,15 +49,18 @@ public final class QdbColumn {
         }
 
         public static Definition fromNative (qdb_ts_column_info info) {
-            return new Definition(info.name, Type.values()[info.type]);
+            switch (info.type) {
+            case qdb_ts_column_type.double_:
+                return new Double(info.name);
+            case qdb_ts_column_type.blob:
+                return new Blob(info.name);
+            default:
+                throw new IllegalArgumentException("invalid column type: " + info.type);
+            }
         }
 
-        public static Definition createBlob(String name) {
-            return new Definition(name, Type.BLOB);
-        }
-
-        public static Definition createDouble(String name) {
-            return new Definition(name, Type.DOUBLE);
+        public String toString() {
+            return "QdbColumn.Definition (name: '" + this.name + "', type: " + this.type + ")";
         }
     }
 
