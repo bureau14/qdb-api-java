@@ -43,26 +43,15 @@ public final class QdbTimeSeries {
         public static ColumnDefinition fromNative (qdb_ts_column_info info) {
             return new ColumnDefinition(info.name, ColumnType.values()[info.type]);
         }
-    }
 
-    /**
-     * Describes a time-series column that contains blobs
-     */
-    public static class BlobColumnDefinition extends ColumnDefinition {
-        public BlobColumnDefinition(String name) {
-            super(name, ColumnType.BLOB);
+        public static ColumnDefinition createBlob(String name) {
+            return new ColumnDefinition(name, ColumnType.BLOB);
+        }
+
+        public static ColumnDefinition createDouble(String name) {
+            return new ColumnDefinition(name, ColumnType.DOUBLE);
         }
     }
-
-    /**
-     * Describes a time-series column that contains double precision floating point values
-     */
-    public static class DoubleColumnDefinition extends ColumnDefinition {
-        public DoubleColumnDefinition(String name) {
-            super(name, ColumnType.DOUBLE);
-        }
-    }
-
 
     /**
      * A column of a time series
