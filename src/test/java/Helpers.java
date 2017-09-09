@@ -110,7 +110,7 @@ public class Helpers {
         return tag;
     }
 
-    public static QdbTimeSeries createTimeSeries(List<QdbTimeSeries.ColumnDefinition> columns) throws IOException {
+    public static QdbTimeSeries createTimeSeries(List<QdbColumn.Definition> columns) throws IOException {
         System.out.println("Helpers.createTimeSeries");
         return cluster.createTimeSeries(createUniqueAlias(), columns);
     }
