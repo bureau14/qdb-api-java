@@ -10,7 +10,6 @@ public class QdbColumnDefinition {
     protected String name;
     protected Type type;
 
-
     public enum Type {
         UNINITIALIZED(qdb_ts_column_type.uninitialized),
         DOUBLE(qdb_ts_column_type.double_),

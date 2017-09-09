@@ -1,14 +1,10 @@
 package net.quasardb.qdb;
 
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import net.quasardb.qdb.jni.*;
-import java.util.*;
 
-/**
- * Represents a columnar datapoint inside qdb
- */
-public class QdbBlobColumn extends QdbColumn  {
-    QdbBlobColumn(String alias, String value) {
-        super(new QdbColumnDefinition.Blob(alias), value);
+public class QdbBlobColumn extends QdbColumn<ByteBuffer> {
+    public QdbBlobColumn(String alias, ByteBuffer value) {
+        super (new QdbColumnDefinition.Blob (alias), value);
     }
 }

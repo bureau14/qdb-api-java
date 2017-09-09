@@ -8,11 +8,12 @@ import static org.junit.Assert.*;
 
 public class QdbColumnTest {
     @Test
-    public void canCompareEquality() throws Exception {
-        List<QdbColumnDefinition> definitions = Arrays.asList(new QdbColumnDefinition.Blob ("b1"),
-                                                              new QdbColumnDefinition.Double ("d1"));
+    public void creatingDoubleColumn_doesNotThrow() throws Exception {
+        QdbDoubleColumn x = new QdbDoubleColumn("d1", 1.23);
+    }
 
-        assertThat(definitions, (hasItems(new QdbColumnDefinition.Blob ("b1"),
-                                          new QdbColumnDefinition.Double ("d1"))));
+    @Test
+    public void creatingBlobColumn_doesNotThrow() throws Exception {
+        QdbBlobColumn x = new QdbBlobColumn("b1", Helpers.createSampleData());
     }
 }
