@@ -2,26 +2,29 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
+import org.hamcrest.Matcher;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class QdbTimeSeriesCreateTest {
     @Test
     public void doesNotThrow_afterCreation() throws Exception {
         QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumn.Definition.Double ("d1"),
-                                                   new QdbColumn.Definition.Blob ("b1")));
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumn.Definition.Blob (Helpers.createUniqueAlias()),
+                                                   new QdbColumn.Definition.Double (Helpers.createUniqueAlias())));
     }
 
     @Test
     public void listsColumns_afterCreation() throws Exception {
-        Collection<QdbColumn.Definition> definitions = Arrays.asList(new QdbColumn.Definition.Double ("d1"),
-                                                                     new QdbColumn.Definition.Blob ("b1"));
+        List<QdbColumn.Definition> definitions =
+            Arrays.asList(new QdbColumn.Definition.Blob (Helpers.createUniqueAlias()),
+                          new QdbColumn.Definition.Double (Helpers.createUniqueAlias()));
+
         QdbTimeSeries series = Helpers.createTimeSeries(definitions);
 
         Iterable<QdbColumn.Definition> result = series.listColumns();
-        List<QdbColumn.Definition> resultAsList = Helpers.toList(result);
 
-        Assert.assertEquals(resultAsList.size(), 2);
-
-        System.out.println("columns = " + resultAsList.toString());
+        assertThat(result, (is(definitions)));
     }
 }

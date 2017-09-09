@@ -58,6 +58,14 @@ public final class QdbColumn {
             }
         }
 
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Definition)) return false;
+            Definition rhs = (Definition)obj;
+
+            return this.name.compareTo(rhs.name) == 0 && this.type == rhs.type;
+        }
+
         public String toString() {
             return "QdbColumn.Definition (name: '" + this.name + "', type: " + this.type + ")";
         }
