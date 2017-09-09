@@ -22,7 +22,6 @@ public final class QdbColumn {
         }
     }
 
-
     public static class Definition {
         String name;
         Type type;

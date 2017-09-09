@@ -13,9 +13,9 @@ public class QdbTimeSeriesCreateTest {
 
     @Test
     public void listsColumns_afterCreation() throws Exception {
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumn.Definition.Double ("d1"),
-                                                   new QdbColumn.Definition.Blob ("b1")));
+        Collection<QdbColumn.Definition> definitions = Arrays.asList(new QdbColumn.Definition.Double ("d1"),
+                                                                     new QdbColumn.Definition.Blob ("b1"));
+        QdbTimeSeries series = Helpers.createTimeSeries(definitions);
 
         Iterable<QdbColumn.Definition> result = series.listColumns();
         List<QdbColumn.Definition> resultAsList = Helpers.toList(result);
