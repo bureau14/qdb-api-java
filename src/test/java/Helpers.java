@@ -139,7 +139,7 @@ public class Helpers {
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
         QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
         for (int i = 0; i < new Random(n++).nextInt(max); ++i) {
-            v.add(new Random(n++).nextDouble());
+            v.insert(new Random(n++).nextDouble());
         }
 
         return v;

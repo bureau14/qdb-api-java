@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import net.quasardb.qdb.jni.*;
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 public class QdbColumnDefinition {
     protected String name;
@@ -38,20 +38,22 @@ public class QdbColumnDefinition {
         this.type = type;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
     public static qdb_ts_column_info toNative (QdbColumnDefinition d) {
         return new qdb_ts_column_info(d.name, d.type.value);
     }
 
     public static qdb_ts_column_info[] toNative (Collection<QdbColumnDefinition> columns) {
-        qdb_ts_column_info[] columnArray = new qdb_ts_column_info[columns.size()];
-        List<qdb_ts_column_info> columnList = new ArrayList<qdb_ts_column_info> ();
-
-        for (QdbColumnDefinition column : columns) {
-            columnList.add(toNative(column));
-        }
-        columnList.toArray(columnArray);
-
-        return columnArray;
+        return columns.stream()
+            .map(QdbColumnDefinition::toNative)
+            .toArray(qdb_ts_column_info[]::new);
     }
 
     public static QdbColumnDefinition fromNative (qdb_ts_column_info info) {
@@ -66,11 +68,10 @@ public class QdbColumnDefinition {
     }
 
     public static Iterable<QdbColumnDefinition> fromNative (qdb_ts_column_info[] nativeColumns) {
-        Collection<QdbColumnDefinition> columns = new ArrayList<QdbColumnDefinition> ();
-        for (qdb_ts_column_info column : nativeColumns) {
-            columns.add(fromNative(column));
-        }
-        return columns;
+        return Arrays.asList(nativeColumns).stream()
+            .map(QdbColumnDefinition::fromNative)
+            .collect(Collectors.toList())
+            ;
     }
 
     @Override

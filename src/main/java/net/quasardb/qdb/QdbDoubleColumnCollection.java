@@ -2,24 +2,22 @@ package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
-public class QdbDoubleColumnCollection extends ArrayList<Double> {
+
+public class QdbDoubleColumnCollection extends QdbColumnCollection<Double> {
     QdbColumnDefinition column;
 
     public QdbDoubleColumnCollection (String alias) {
-        super();
-        this.column = new QdbColumnDefinition.Double(alias);
+        super(new QdbColumnDefinition.Double(alias));
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof QdbDoubleColumnCollection)) return false;
-        QdbDoubleColumnCollection rhs = (QdbDoubleColumnCollection)obj;
-
-        return super.equals(obj) && this.column == rhs.column;
-    }
-
-    public String toString() {
-        return "QdbDoubleColumnCollection (column: '" + this.column.toString() + ")";
+    double[] toNative() {
+        return this.stream()
+            .map(QdbColumnValue::getValue)
+            .map(java.lang.Double::doubleValue)
+            .flatMapToDouble(n -> DoubleStream.of(n))
+            .toArray();
     }
 }

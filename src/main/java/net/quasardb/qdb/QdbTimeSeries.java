@@ -43,9 +43,10 @@ public final class QdbTimeSeries {
     }
 
     public void insertDoubles(QdbDoubleColumnCollection points) {
-        //int err = qdb.ts_double_insert(this.session.handle(),
-        //this.name,
-        //QdbColumnDefinition.toNative(columns));
-        //QdbExceptionFactory.throwIfError(err);
+        int err = qdb.ts_double_insert(this.session.handle(),
+                                       this.name,
+                                       points.getColumn().getName(),
+                                       points.toNative());
+        QdbExceptionFactory.throwIfError(err);
     }
 }
