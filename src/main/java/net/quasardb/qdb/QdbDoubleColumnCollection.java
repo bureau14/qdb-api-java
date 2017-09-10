@@ -9,8 +9,6 @@ import java.util.stream.DoubleStream;
 
 
 public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColumnValue> {
-    QdbColumnDefinition column;
-
     public QdbDoubleColumnCollection (String alias) {
         super(new QdbColumnDefinition.Double(alias));
     }
@@ -27,8 +25,6 @@ public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColu
         List<QdbDoubleColumnValue> values =  Arrays.asList(input).stream()
             .map(QdbDoubleColumnValue::fromNative)
             .collect(Collectors.toCollection(() -> v));
-
-        System.out.println("collection = " + v.toString());
 
         return v;
     }
