@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class QdbTimespec {
 
-    LocalDateTime value;
+    protected LocalDateTime value;
 
     public QdbTimespec (LocalDateTime value) {
         this.value = value;
