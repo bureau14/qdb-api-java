@@ -50,12 +50,14 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection range) {
+    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection ranges) {
         Reference<qdb_ts_double_point[]> points  = new Reference<qdb_ts_double_point[]>();
+
+        System.out.println("querying native ts_double_get_ranges for column: " + column + ", ranges: " + ranges.toString());
         int err = qdb.ts_double_get_ranges(this.session.handle(),
                                            this.name,
                                            column,
-                                           range.toNative(),
+                                           ranges.toNative(),
                                            points);
         QdbExceptionFactory.throwIfError(err);
 

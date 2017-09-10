@@ -12,6 +12,13 @@ public class QdbTimeRange {
         this.end = end;
     }
 
+    public QdbTimespec getBegin() {
+        return this.begin;
+    }
+
+    public QdbTimespec getEnd() {
+        return this.end;
+    }
     public qdb_ts_range toNative() {
         return new qdb_ts_range(begin.toNative(), end.toNative());
     }

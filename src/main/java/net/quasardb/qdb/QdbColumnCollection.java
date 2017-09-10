@@ -3,7 +3,7 @@ package net.quasardb.qdb;
 import net.quasardb.qdb.jni.*;
 import java.util.ArrayList;
 
-public class QdbColumnCollection <T> extends ArrayList<QdbColumnValue <T> > {
+public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T> {
     QdbColumnDefinition column;
 
     protected QdbColumnCollection (QdbColumnDefinition column) {
@@ -21,7 +21,7 @@ public class QdbColumnCollection <T> extends ArrayList<QdbColumnValue <T> > {
     public QdbTimeRange range() {
         QdbTimeRange cur = null;
 
-        for (QdbColumnValue <T> val : this) {
+        for (T val : this) {
             if (cur == null ){
                 cur = new QdbTimeRange(val.getTimestamp(), val.getTimestamp());
             } else {
@@ -35,14 +35,7 @@ public class QdbColumnCollection <T> extends ArrayList<QdbColumnValue <T> > {
             }
         }
 
-        System.out.println("cur = " + cur.toString());
-
-
         return cur;
-    }
-
-    public void insert(T value) {
-        this.add(new QdbColumnValue <T>(value));
     }
 
     @Override
