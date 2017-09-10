@@ -12,6 +12,11 @@ public class QdbDoubleAggregation extends QdbAggregation {
         super(type, range);
     }
 
+
+    public QdbDoubleAggregation (Type type, QdbTimeRange range, long count, QdbDoubleColumnValue value) {
+        super(type, range, count, value);
+    }
+
     /**
      * Converts this object to JNI-compatible representation.
      */
@@ -22,4 +27,13 @@ public class QdbDoubleAggregation extends QdbAggregation {
                                               QdbDoubleColumnValue.toNative(input.result));
     }
 
+    /**
+     * Creates this object from JNI-compatible representation.
+     */
+    protected static QdbDoubleAggregation fromNative(qdb_ts_double_aggregation input) {
+        return new QdbDoubleAggregation(Type.values()[(int)input.getAggregationType()],
+                                        QdbTimeRange.fromNative(input.getRange()),
+                                        input.getCount(),
+                                        QdbDoubleColumnValue.fromNative(input.getResult()));
+    }
 }

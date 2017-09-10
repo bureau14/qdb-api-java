@@ -15,7 +15,14 @@ public class QdbDoubleAggregationCollection extends ArrayList<QdbDoubleAggregati
             .toArray(qdb_ts_double_aggregation[]::new);
     }
 
+
     public static QdbDoubleAggregationCollection fromNative(qdb_ts_double_aggregation[] input) {
-        return new QdbDoubleAggregationCollection();
+        QdbDoubleAggregationCollection v = new QdbDoubleAggregationCollection();
+
+        Arrays.asList(input).stream()
+            .map(QdbDoubleAggregation::fromNative)
+            .collect(Collectors.toCollection(() -> v));
+
+        return v;
     }
 }

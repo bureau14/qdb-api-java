@@ -23,6 +23,11 @@ public class QdbTimeRange {
         return new qdb_ts_range(input.begin.toNative(), input.end.toNative());
     }
 
+    public static QdbTimeRange fromNative(qdb_ts_range input) {
+        return new QdbTimeRange(QdbTimespec.fromNative(input.getBegin()),
+                                QdbTimespec.fromNative(input.getEnd()));
+    }
+
     public String toString() {
         return "QdbTimeRange (begin: " + this.begin.toString() + ", end: " + this.end.toString() + ")";
     }

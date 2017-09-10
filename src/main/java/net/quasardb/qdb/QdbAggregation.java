@@ -45,4 +45,32 @@ public class QdbAggregation {
         this.result = new QdbDoubleColumnValue();
     }
 
+    public QdbAggregation (Type type, QdbTimeRange range, long count, QdbDoubleColumnValue value) {
+        this.type = type;
+        this.range = range;
+        this.count = count;
+        this.result = value;
+    }
+
+    public String toString() {
+        return "QdbAggregation (type: " + this.type + ", range: " + this.range.toString() + ", count: " + this.count + ", result: " + this.result.toString();
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public long getCount() {
+        return this.count;
+    }
+
+    public QdbTimeRange getRange() {
+        return this.range;
+    }
+
+    public QdbDoubleColumnValue getResult() {
+        return this.result;
+    }
+
+
 }
