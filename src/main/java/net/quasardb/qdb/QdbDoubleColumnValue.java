@@ -26,4 +26,12 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
     public String toString() {
         return "QdbDoubleColumnValue (timestamp: " + this.timestamp.toString() + ", value: " + this.value.toString() + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QdbDoubleColumnValue)) return false;
+        QdbDoubleColumnValue rhs = (QdbDoubleColumnValue)obj;
+
+        return true;
+    }
 }

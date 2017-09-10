@@ -33,6 +33,7 @@ public class QdbTimeSeriesDoubleTest {
                                     new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
+
         assertThat(results, (is(data)));
 
     }

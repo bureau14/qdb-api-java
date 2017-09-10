@@ -28,6 +28,15 @@ public class QdbTimespec {
                                                        ZoneId.systemDefault()));
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof QdbTimespec)) return false;
+        QdbTimespec rhs = (QdbTimespec)obj;
+
+        System.out.println("lhs = " + this.toString() + ", rhs = " + rhs.toString());
+        return true;
+    }
+
     public String toString() {
         return "QdbTimespec (value: " + this.value.toString() + ")";
     }
