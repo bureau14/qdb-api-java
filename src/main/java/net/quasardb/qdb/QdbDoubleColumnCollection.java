@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-
 
 public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColumnValue> {
     public QdbDoubleColumnCollection (String alias) {

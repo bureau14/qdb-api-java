@@ -63,4 +63,18 @@ public final class QdbTimeSeries {
 
         return QdbDoubleColumnCollection.fromNative(column, points.value);
     }
+
+    public QdbDoubleAggregationCollection doubleAggregate(String column, QdbDoubleAggregationCollection input) {
+        Reference<qdb_ts_double_aggregation[]> aggregations  = new Reference<qdb_ts_double_aggregation[]>();
+
+        System.out.println("querying native ts_double_aggregate for column: " + column + ", aggregates: " + input.toString());
+        int err = qdb.ts_double_aggregate(this.session.handle(),
+                                          this.name,
+                                          column,
+                                          QdbDoubleAggregationCollection.toNative(input),
+                                          aggregations);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbDoubleAggregationCollection.fromNative(aggregations.value);
+    }
 }
