@@ -43,7 +43,7 @@ public class QdbTimeSeriesDoubleTest {
     }
 
     @Test
-    public void canGetAgregates_afterInsert() throws Exception {
+    public void canAgregate_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
@@ -52,8 +52,6 @@ public class QdbTimeSeriesDoubleTest {
         QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
         data.add(new QdbDoubleColumnValue(1.00));
         data.add(new QdbDoubleColumnValue(2.00));
-
-        System.out.println("data2 = " + data.toString());
 
         QdbTimeRange dataRange = data.range();
         series.insertDoubles(data);
@@ -65,10 +63,78 @@ public class QdbTimeSeriesDoubleTest {
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
+    }
 
-        //QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
+    @Test
+    public void canAgregateFirst_afterInsert() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
 
-        //assertThat(results, (is(data)));
 
+        QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
+        data.add(new QdbDoubleColumnValue(1.00));
+        data.add(new QdbDoubleColumnValue(2.00));
+
+        QdbTimeRange dataRange = data.range();
+        series.insertDoubles(data);
+
+        QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
+        aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.FIRST,
+                                                  new QdbTimeRange(dataRange.getBegin(),
+                                                                   new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
+
+        QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
+        assertEquals(result.size(), aggregations.size());
+        assertEquals(result.get(0).getResult().getValue().doubleValue(), 1.00, 0.01);
+    }
+
+
+    @Test
+    public void canAgregateLast_afterInsert() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+
+
+        QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
+        data.add(new QdbDoubleColumnValue(1.00));
+        data.add(new QdbDoubleColumnValue(2.00));
+
+        QdbTimeRange dataRange = data.range();
+        series.insertDoubles(data);
+
+        QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
+        aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.LAST,
+                                                  new QdbTimeRange(dataRange.getBegin(),
+                                                                   new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
+
+        QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
+        assertEquals(result.size(), aggregations.size());
+        assertEquals(result.get(0).getResult().getValue().doubleValue(), 2.00, 0.01);
+    }
+
+    @Test
+    public void canAgregateCount_afterInsert() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+
+
+        QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
+        data.add(new QdbDoubleColumnValue(1.00));
+        data.add(new QdbDoubleColumnValue(2.00));
+
+        QdbTimeRange dataRange = data.range();
+        series.insertDoubles(data);
+
+        QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
+        aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.COUNT,
+                                                  new QdbTimeRange(dataRange.getBegin(),
+                                                                   new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
+
+        QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
+        assertEquals(result.size(), aggregations.size());
+        assertEquals(result.get(0).getCount(), 2);
     }
 }
