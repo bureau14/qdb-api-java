@@ -13,11 +13,13 @@ public class QdbDoubleColumnCollection extends QdbColumnCollection<Double> {
         super(new QdbColumnDefinition.Double(alias));
     }
 
-    double[] toNative() {
+    qdb_ts_double_point[] toNative() {
         return this.stream()
-            .map(QdbColumnValue::getValue)
-            .map(java.lang.Double::doubleValue)
-            .flatMapToDouble(n -> DoubleStream.of(n))
-            .toArray();
+            .map(QdbDoubleColumnCollection::pointToNative)
+            .toArray(qdb_ts_double_point[]::new);
+    }
+
+    private static qdb_ts_double_point pointToNative(QdbColumnValue<Double> point) {
+        return new qdb_ts_double_point(point.getTimestamp().toNative(), point.getValue());
     }
 }

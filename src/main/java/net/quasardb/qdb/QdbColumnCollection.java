@@ -27,8 +27,7 @@ public class QdbColumnCollection <T> extends ArrayList<QdbColumnValue <T> > {
         return super.equals(obj) && this.column == rhs.column;
     }
 
-
     public String toString() {
-        return "QdbColumnCollection (column: '" + this.column.toString() + ")";
+        return "QdbColumnCollection (column: '" + this.column.toString() + ", values: " + super.toString() + ")";
     }
 }

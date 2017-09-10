@@ -2,29 +2,35 @@ package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
 import java.util.ArrayList;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class QdbColumnValue <T> {
 
-    LocalTime time;
+    QdbTimespec timestamp;
     T value;
 
     public QdbColumnValue (T value) {
-        this.time = LocalTime.now();
+        this(LocalDateTime.now(), value);
+    }
+
+    public QdbColumnValue (LocalDateTime timestamp, T value) {
+        this(new QdbTimespec(timestamp), value);
+    }
+
+    public QdbColumnValue (QdbTimespec timestamp, T value) {
+        this.timestamp = timestamp;
         this.value = value;
     }
 
-    public QdbColumnValue (LocalTime time, T value) {
-        this.time = time;
-        this.value = value;
-    }
-
-    public LocalTime getTime() {
-        return this.time;
+    public QdbTimespec getTimestamp() {
+        return this.timestamp;
     }
 
     public T getValue() {
         return this.value;
     }
 
+    public String toString() {
+        return "QdbColumnValue (timestamp: " + this.timestamp.toString() + ", value: " + this.value.toString() + ")";
+    }
 }
