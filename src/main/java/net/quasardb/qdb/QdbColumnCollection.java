@@ -15,6 +15,32 @@ public class QdbColumnCollection <T> extends ArrayList<QdbColumnValue <T> > {
         return this.column;
     }
 
+    /**
+     * Returns the interval that contains all values within this column.
+     */
+    public QdbTimeRange range() {
+        QdbTimeRange cur = null;
+
+        for (QdbColumnValue <T> val : this) {
+            if (cur == null ){
+                cur = new QdbTimeRange(val.getTimestamp(), val.getTimestamp());
+            } else {
+                if (val.getTimestamp().value.isBefore(cur.begin.value)) {
+                    cur.begin = val.getTimestamp();
+                }
+
+                if (val.getTimestamp().value.isAfter(cur.end.value)) {
+                    cur.end = val.getTimestamp();
+                }
+            }
+        }
+
+        System.out.println("cur = " + cur.toString());
+
+
+        return cur;
+    }
+
     public void insert(T value) {
         this.add(new QdbColumnValue <T>(value));
     }
