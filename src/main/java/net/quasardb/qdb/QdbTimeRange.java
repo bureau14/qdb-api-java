@@ -19,8 +19,8 @@ public class QdbTimeRange {
     public QdbTimespec getEnd() {
         return this.end;
     }
-    public qdb_ts_range toNative() {
-        return new qdb_ts_range(begin.toNative(), end.toNative());
+    public static qdb_ts_range toNative(QdbTimeRange input) {
+        return new qdb_ts_range(input.begin.toNative(), input.end.toNative());
     }
 
     public String toString() {

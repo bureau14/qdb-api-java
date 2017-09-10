@@ -6,6 +6,8 @@ import java.util.*;
 public class QdbAggregation {
     protected Type type;
     protected QdbTimeRange range;
+    protected long count;
+    protected QdbDoubleColumnValue result;
 
     public enum Type {
         FIRST(qdb_ts_aggregation_type.qdb_agg_first),
@@ -39,6 +41,8 @@ public class QdbAggregation {
     public QdbAggregation (Type type, QdbTimeRange range) {
         this.type = type;
         this.range = range;
+        this.count = 0;
+        this.result = new QdbDoubleColumnValue();
     }
 
 }

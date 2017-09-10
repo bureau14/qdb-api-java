@@ -12,8 +12,14 @@ public class QdbDoubleAggregation extends QdbAggregation {
         super(type, range);
     }
 
-    public static qdb_ts_double_aggregation toNative(QdbDoubleAggregation input) {
-        return null;
+    /**
+     * Converts this object to JNI-compatible representation.
+     */
+    protected static qdb_ts_double_aggregation toNative(QdbDoubleAggregation input) {
+        return new qdb_ts_double_aggregation (QdbTimeRange.toNative(input.range),
+                                              input.type.value,
+                                              input.count,
+                                              QdbDoubleColumnValue.toNative(input.result));
     }
 
 }

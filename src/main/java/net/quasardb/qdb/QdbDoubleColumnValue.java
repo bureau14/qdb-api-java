@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 
 public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
 
+    public QdbDoubleColumnValue() {
+        super(-1.0);
+    }
+
     public QdbDoubleColumnValue(Double value) {
         super(value);
     }
@@ -21,6 +25,10 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
     protected static QdbDoubleColumnValue fromNative(qdb_ts_double_point input) {
         return new QdbDoubleColumnValue(QdbTimespec.fromNative(input.getTimestamp()),
                                         input.getValue());
+    }
+
+    protected static qdb_ts_double_point toNative(QdbColumnValue<Double> point) {
+        return new qdb_ts_double_point(point.getTimestamp().toNative(), point.getValue());
     }
 
     public String toString() {

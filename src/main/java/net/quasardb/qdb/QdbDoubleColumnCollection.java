@@ -13,7 +13,7 @@ public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColu
 
     qdb_ts_double_point[] toNative() {
         return this.stream()
-            .map(QdbDoubleColumnCollection::pointToNative)
+            .map(QdbDoubleColumnValue::toNative)
             .toArray(qdb_ts_double_point[]::new);
     }
 
@@ -25,9 +25,5 @@ public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColu
             .collect(Collectors.toCollection(() -> v));
 
         return v;
-    }
-
-    private static qdb_ts_double_point pointToNative(QdbColumnValue<Double> point) {
-        return new qdb_ts_double_point(point.getTimestamp().toNative(), point.getValue());
     }
 }
