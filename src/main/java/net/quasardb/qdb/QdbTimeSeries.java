@@ -49,4 +49,16 @@ public final class QdbTimeSeries {
                                        points.toNative());
         QdbExceptionFactory.throwIfError(err);
     }
+
+    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection range) {
+        Reference<qdb_ts_double_point[]> points  = new Reference<qdb_ts_double_point[]>();
+        int err = qdb.ts_double_get_ranges(this.session.handle(),
+                                           this.name,
+                                           column,
+                                           range.toNative(),
+                                           points);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbDoubleColumnCollection.fromNative(column, points.value);
+    }
 }
