@@ -43,7 +43,7 @@ public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T>
         if (!(obj instanceof QdbDoubleColumnCollection)) return false;
         QdbColumnCollection rhs = (QdbColumnCollection)obj;
 
-        return super.equals(obj) && this.column == rhs.column;
+        return super.equals(rhs) && this.column.equals(rhs.column);
     }
 
     public String toString() {
