@@ -23,6 +23,7 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
 
 
     protected static QdbDoubleColumnValue fromNative(qdb_ts_double_point input) {
+        System.out.println("converting double column value: " + input.getValue());
         return new QdbDoubleColumnValue(QdbTimespec.fromNative(input.getTimestamp()),
                                         input.getValue());
     }
