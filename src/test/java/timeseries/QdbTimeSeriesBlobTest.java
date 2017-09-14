@@ -19,25 +19,27 @@ public class QdbTimeSeriesBlobTest {
         series.insertBlobs(data);
     }
 
-    // @Test
-    // public void canGetResults_afterInsert() throws Exception {
-    //     String alias = Helpers.createUniqueAlias();
-    //     QdbTimeSeries series =
-    //         Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
+    @Test
+    public void canGetResults_afterInsert() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
 
-    //     QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
+        QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
 
-    //     QdbTimeRange dataRange = data.range();
-    //     series.insertBlobs(data);
+        QdbTimeRange dataRange = data.range();
+        series.insertBlobs(data);
 
-    //     QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-    //     ranges.add(new QdbTimeRange(dataRange.getBegin(),
-    //                                 new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
+        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
+        ranges.add(new QdbTimeRange(dataRange.getBegin(),
+                                    new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
 
-    //     QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
+        QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
 
-    //     assertThat(results, (is(data)));
-    // }
+        for(QdbBlobColumnValue value : data) {
+            assertThat(results, hasItem(value));
+        }
+    }
 
     // @Test
     // public void canAgregate_afterInsert() throws Exception {

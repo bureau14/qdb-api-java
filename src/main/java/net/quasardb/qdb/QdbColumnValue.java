@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 public class QdbColumnValue <T> {
 
     QdbTimespec timestamp;
-    T value;
+    protected T value;
+
+    public QdbColumnValue () {
+    }
 
     public QdbColumnValue (T value) {
         this(LocalDateTime.now(), value);

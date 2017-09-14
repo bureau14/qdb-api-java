@@ -84,4 +84,17 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
+    public QdbBlobColumnCollection getBlobs(String column, QdbTimeRangeCollection ranges) {
+        Reference<qdb_ts_blob_point[]> points  = new Reference<qdb_ts_blob_point[]>();
+
+        int err = qdb.ts_blob_get_ranges(this.session.handle(),
+                                         this.name,
+                                         column,
+                                         ranges.toNative(),
+                                         points);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbBlobColumnCollection.fromNative(column, points.value);
+    }
+
 }

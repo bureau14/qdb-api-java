@@ -7,20 +7,22 @@ import net.quasardb.qdb.jni.*;
 public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
 
     public QdbBlobColumnValue(ByteBuffer value) {
-        super(value);
+        this(LocalDateTime.now(),
+             value);
     }
 
     public QdbBlobColumnValue(LocalDateTime timestamp, ByteBuffer value) {
-        super(timestamp, value);
+        this(new QdbTimespec(timestamp), value);
     }
 
     public QdbBlobColumnValue(QdbTimespec timestamp, ByteBuffer value) {
-        super(timestamp, value);
+        super.timestamp = timestamp;
+        super.value = value;
     }
 
     protected static QdbBlobColumnValue fromNative(qdb_ts_blob_point input) {
         return new QdbBlobColumnValue(QdbTimespec.fromNative(input.getTimestamp()),
-                                        input.getValue());
+                                      input.getValue());
     }
 
     protected static qdb_ts_blob_point toNative(QdbColumnValue<ByteBuffer> point) {
@@ -28,7 +30,7 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
     }
 
     public String toString() {
-        return "QdbBlobColumnValue (timestamp: " + this.timestamp.toString() + ", value: " + this.value.toString() + ")";
+        return "QdbBlobColumnValue (timestamp: " + this.timestamp.toString() + ", value: " + this.value.hashCode() + ")";
     }
 
     @Override
@@ -36,6 +38,6 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
         if (!(obj instanceof QdbBlobColumnValue)) return false;
         QdbBlobColumnValue rhs = (QdbBlobColumnValue)obj;
 
-        return true;
+        return super.getValue().compareTo(rhs.getValue()) == 0;
     }
 }
