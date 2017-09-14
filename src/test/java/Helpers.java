@@ -6,7 +6,7 @@ import net.quasardb.qdb.*;
 
 public class Helpers {
     private static QdbCluster cluster = createCluster();
-    private static long n;
+    private static long n = 1;
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
 
     public static QdbCluster createCluster() {
