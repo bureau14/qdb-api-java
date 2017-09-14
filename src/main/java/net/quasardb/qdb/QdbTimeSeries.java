@@ -19,7 +19,6 @@ public final class QdbTimeSeries {
     }
 
     public void create(Collection<QdbColumnDefinition> columns) {
-        System.out.println("creating timeseries with name: " + this.name + ", columns: " + columns.toString());
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
                                 QdbColumnDefinition.toNative(columns));
@@ -54,7 +53,6 @@ public final class QdbTimeSeries {
     public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection ranges) {
         Reference<qdb_ts_double_point[]> points  = new Reference<qdb_ts_double_point[]>();
 
-        System.out.println("querying native ts_double_get_ranges for column: " + column + ", ranges: " + ranges.toString());
         int err = qdb.ts_double_get_ranges(this.session.handle(),
                                            this.name,
                                            column,
@@ -68,7 +66,6 @@ public final class QdbTimeSeries {
     public QdbDoubleAggregationCollection doubleAggregate(String column, QdbDoubleAggregationCollection input) {
         Reference<qdb_ts_double_aggregation[]> aggregations  = new Reference<qdb_ts_double_aggregation[]>();
 
-        System.out.println("querying native ts_double_aggregate for column: " + column + ", aggregates: " + input.toString());
         int err = qdb.ts_double_aggregate(this.session.handle(),
                                           this.name,
                                           column,

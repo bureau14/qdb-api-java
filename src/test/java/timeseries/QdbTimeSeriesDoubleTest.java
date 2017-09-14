@@ -15,7 +15,6 @@ public class QdbTimeSeriesDoubleTest {
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
 
         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
-        System.out.println("data0 = " + data.toString());
 
         series.insertDoubles(data);
     }
@@ -27,8 +26,6 @@ public class QdbTimeSeriesDoubleTest {
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
 
         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
-
-        System.out.println("data1 = " + data.toString());
 
         QdbTimeRange dataRange = data.range();
         series.insertDoubles(data);

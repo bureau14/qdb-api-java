@@ -33,7 +33,6 @@ public class QdbTimespec {
         if (!(obj instanceof QdbTimespec)) return false;
         QdbTimespec rhs = (QdbTimespec)obj;
 
-        System.out.println("lhs = " + this.toString() + ", rhs = " + rhs.toString());
         return true;
     }
 
