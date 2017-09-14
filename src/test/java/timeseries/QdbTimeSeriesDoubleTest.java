@@ -86,7 +86,7 @@ public class QdbTimeSeriesDoubleTest {
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
-        assertEquals(result.get(0).getResult().getValue().doubleValue(), 1.00, 0.01);
+        assertEquals(1.00, result.get(0).getResult().getValue().doubleValue(), 0.01);
     }
 
 
@@ -111,7 +111,7 @@ public class QdbTimeSeriesDoubleTest {
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
-        assertEquals(result.get(0).getResult().getValue().doubleValue(), 2.00, 0.01);
+        assertEquals(2.00, result.get(0).getResult().getValue().doubleValue(), 0.01);
     }
 
     @Test
@@ -135,6 +135,6 @@ public class QdbTimeSeriesDoubleTest {
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
-        assertEquals(result.get(0).getCount(), 2);
+        assertEquals(2, result.get(0).getCount());
     }
 }
