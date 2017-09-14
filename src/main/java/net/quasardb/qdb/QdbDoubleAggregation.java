@@ -6,10 +6,10 @@ import net.quasardb.qdb.jni.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class QdbDoubleAggregation extends QdbAggregation {
+public class QdbDoubleAggregation extends QdbAggregation<QdbDoubleColumnValue> {
 
     public QdbDoubleAggregation (Type type, QdbTimeRange range) {
-        super(type, range);
+        super(type, range, 0, new QdbDoubleColumnValue());
     }
 
 

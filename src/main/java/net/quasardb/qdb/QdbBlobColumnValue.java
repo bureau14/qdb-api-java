@@ -6,18 +6,20 @@ import net.quasardb.qdb.jni.*;
 
 public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
 
+    public QdbBlobColumnValue() {
+        super(ByteBuffer.allocateDirect(0));
+    }
+
     public QdbBlobColumnValue(ByteBuffer value) {
-        this(LocalDateTime.now(),
-             value);
+        super(value);
     }
 
     public QdbBlobColumnValue(LocalDateTime timestamp, ByteBuffer value) {
-        this(new QdbTimespec(timestamp), value);
+        super(timestamp, value);
     }
 
     public QdbBlobColumnValue(QdbTimespec timestamp, ByteBuffer value) {
-        super.timestamp = timestamp;
-        super.value = value;
+        super(timestamp, value);
     }
 
     protected static QdbBlobColumnValue fromNative(qdb_ts_blob_point input) {

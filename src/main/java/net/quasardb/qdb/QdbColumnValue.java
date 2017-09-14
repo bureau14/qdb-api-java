@@ -9,9 +9,6 @@ public class QdbColumnValue <T> {
     QdbTimespec timestamp;
     protected T value;
 
-    public QdbColumnValue () {
-    }
-
     public QdbColumnValue (T value) {
         this(LocalDateTime.now(), value);
     }

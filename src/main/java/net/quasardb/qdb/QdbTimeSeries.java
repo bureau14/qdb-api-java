@@ -97,4 +97,16 @@ public final class QdbTimeSeries {
         return QdbBlobColumnCollection.fromNative(column, points.value);
     }
 
+    public QdbBlobAggregationCollection blobAggregate(String column, QdbBlobAggregationCollection input) {
+        Reference<qdb_ts_blob_aggregation[]> aggregations  = new Reference<qdb_ts_blob_aggregation[]>();
+
+        int err = qdb.ts_blob_aggregate(this.session.handle(),
+                                        this.name,
+                                        column,
+                                        QdbBlobAggregationCollection.toNative(input),
+                                        aggregations);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbBlobAggregationCollection.fromNative(aggregations.value);
+    }
 }

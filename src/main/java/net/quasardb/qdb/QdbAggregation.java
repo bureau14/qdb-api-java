@@ -3,11 +3,11 @@ package net.quasardb.qdb;
 import net.quasardb.qdb.jni.*;
 import java.util.*;
 
-public class QdbAggregation {
+public class QdbAggregation <T extends QdbColumnValue> {
     protected Type type;
     protected QdbTimeRange range;
     protected long count;
-    protected QdbDoubleColumnValue result;
+    protected T result;
 
     public enum Type {
         FIRST(qdb_ts_aggregation_type.qdb_agg_first),
@@ -38,14 +38,7 @@ public class QdbAggregation {
         }
     }
 
-    public QdbAggregation (Type type, QdbTimeRange range) {
-        this.type = type;
-        this.range = range;
-        this.count = 0;
-        this.result = new QdbDoubleColumnValue();
-    }
-
-    public QdbAggregation (Type type, QdbTimeRange range, long count, QdbDoubleColumnValue value) {
+    public QdbAggregation (Type type, QdbTimeRange range, long count, T value) {
         this.type = type;
         this.range = range;
         this.count = count;
@@ -68,7 +61,7 @@ public class QdbAggregation {
         return this.range;
     }
 
-    public QdbDoubleColumnValue getResult() {
+    public T getResult() {
         return this.result;
     }
 

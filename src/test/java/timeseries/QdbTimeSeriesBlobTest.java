@@ -41,50 +41,26 @@ public class QdbTimeSeriesBlobTest {
         }
     }
 
-    // @Test
-    // public void canAgregate_afterInsert() throws Exception {
-    //     String alias = Helpers.createUniqueAlias();
-    //     QdbTimeSeries series =
-    //         Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
+    @Test
+    public void canAgregateCount_afterInsert() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
 
+        QdbBlobColumnCollection data = new QdbBlobColumnCollection(alias);
+        data.add(new QdbBlobColumnValue(Helpers.createSampleData()));
+        data.add(new QdbBlobColumnValue(Helpers.createSampleData()));
 
-    //     QdbBlobColumnCollection data = new QdbBlobColumnCollection(alias);
-    //     data.add(new QdbBlobColumnValue(1.00));
-    //     data.add(new QdbBlobColumnValue(2.00));
+        QdbTimeRange dataRange = data.range();
+        series.insertBlobs(data);
 
-    //     QdbTimeRange dataRange = data.range();
-    //     series.insertBlobs(data);
+        QdbBlobAggregationCollection aggregations = new QdbBlobAggregationCollection();
+        aggregations.add(new QdbBlobAggregation(QdbAggregation.Type.COUNT,
+                                                  new QdbTimeRange(dataRange.getBegin(),
+                                                                   new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
 
-    //     QdbBlobAggregationCollection aggregations = new QdbBlobAggregationCollection();
-    //     aggregations.add(new QdbBlobAggregation(QdbAggregation.Type.FIRST,
-    //                                               new QdbTimeRange(dataRange.getBegin(),
-    //                                                                new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
-
-    //     QdbBlobAggregationCollection result = series.blobAggregate(alias, aggregations);
-    //     assertEquals(result.size(), aggregations.size());
-    // }
-
-    // @Test
-    // public void canAgregateCount_afterInsert() throws Exception {
-    //     String alias = Helpers.createUniqueAlias();
-    //     QdbTimeSeries series =
-    //         Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
-
-
-    //     QdbBlobColumnCollection data = new QdbBlobColumnCollection(alias);
-    //     data.add(new QdbBlobColumnValue(1.00));
-    //     data.add(new QdbBlobColumnValue(2.00));
-
-    //     QdbTimeRange dataRange = data.range();
-    //     series.insertBlobs(data);
-
-    //     QdbBlobAggregationCollection aggregations = new QdbBlobAggregationCollection();
-    //     aggregations.add(new QdbBlobAggregation(QdbAggregation.Type.COUNT,
-    //                                               new QdbTimeRange(dataRange.getBegin(),
-    //                                                                new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
-
-    //     QdbBlobAggregationCollection result = series.blobAggregate(alias, aggregations);
-    //     assertEquals(result.size(), aggregations.size());
-    //     assertEquals(2, result.get(0).getCount());
-    // }
+        QdbBlobAggregationCollection result = series.blobAggregate(alias, aggregations);
+        assertEquals(result.size(), aggregations.size());
+        assertEquals(2, result.get(0).getCount());
+    }
 }
