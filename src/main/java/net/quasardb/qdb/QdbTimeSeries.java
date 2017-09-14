@@ -19,6 +19,7 @@ public final class QdbTimeSeries {
     }
 
     public void create(Collection<QdbColumnDefinition> columns) {
+        System.out.println("creating timeseries with name: " + this.name + ", columns: " + columns.toString());
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
                                 QdbColumnDefinition.toNative(columns));
