@@ -6,7 +6,7 @@ import net.quasardb.qdb.*;
 
 public class Helpers {
     private static QdbCluster cluster = createCluster();
-    private static long n;
+    private static long n = 1;
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
 
     public static QdbCluster createCluster() {
@@ -44,7 +44,7 @@ public class Helpers {
     }
 
     public static String createUniqueAlias() {
-        return String.format("test.%d", n++);
+        return UUID.randomUUID().toString();
     }
 
     public static QdbBlob createEmptyBlob() {
@@ -108,6 +108,44 @@ public class Helpers {
         QdbTag tag = createEmptyTag();
         blob.attachTag(tag.alias());
         return tag;
+    }
+
+    public static QdbTimeSeries createTimeSeries(Collection<QdbColumnDefinition> columns) throws IOException {
+        return cluster.createTimeSeries(createUniqueAlias(), columns);
+    }
+
+    public static QdbTimeSeries getTimeSeries(String alias) throws IOException {
+        return cluster.timeSeries(alias);
+    }
+
+    public static QdbBlobColumnCollection createBlobColumnCollection(String alias) {
+        return createBlobColumnCollection(alias, 10);
+    }
+
+    public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
+        QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
+
+        int rnd = new Random(n++).nextInt(max);
+
+        for (int i = 0; i < (rnd + 1); ++i) {
+            v.add(createSampleData());
+        }
+
+        return v;
+    }
+
+    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias) {
+        return createDoubleColumnCollection(alias, 10);
+    }
+
+    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
+        QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
+        int rnd = new Random(n++).nextInt(max);
+        for (int i = 0; i < (rnd + 1); ++i) {
+            v.add(new QdbDoubleColumnValue(new Random(n++).nextDouble()));
+        }
+
+        return v;
     }
 
     public static QdbBlob getBlob(String alias) {
