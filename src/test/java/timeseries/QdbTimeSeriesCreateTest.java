@@ -25,7 +25,9 @@ public class QdbTimeSeriesCreateTest {
 
         Iterable<QdbColumnDefinition> result = series.listColumns();
 
-        assertThat(result, (is(definitions)));
+        for (QdbColumnDefinition definition : definitions) {
+            assertThat(result, hasItem(definition));
+        }
     }
 
     @Test
@@ -37,7 +39,9 @@ public class QdbTimeSeriesCreateTest {
         QdbTimeSeries series = Helpers.createTimeSeries(definitions1);
 
         Iterable<QdbColumnDefinition> result1 = series.listColumns();
-        assertThat(result1, (is(definitions1)));
+        for (QdbColumnDefinition definition : definitions1) {
+            assertThat(result1, hasItem(definition));
+        }
 
         List<QdbColumnDefinition> definitions2 =
             Arrays.asList(new QdbColumnDefinition.Blob (Helpers.createUniqueAlias()),
@@ -50,7 +54,9 @@ public class QdbTimeSeriesCreateTest {
         allDefinitions.addAll(definitions1);
         allDefinitions.addAll(definitions2);
 
-        assertThat(result2, (is(allDefinitions)));
+        for (QdbColumnDefinition definition : allDefinitions) {
+            assertThat(result2, hasItem(definition));
+        }
     }
 
     @Test(expected = QdbInvalidArgumentException.class)
