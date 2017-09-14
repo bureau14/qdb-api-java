@@ -44,7 +44,7 @@ public class Helpers {
     }
 
     public static String createUniqueAlias() {
-        return String.format("test.%d", n++);
+        return UUID.randomUUID().toString();
     }
 
     public static QdbBlob createEmptyBlob() {
@@ -125,7 +125,9 @@ public class Helpers {
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
         QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
 
-        for (int i = 0; i < new Random(n++).nextInt(max); ++i) {
+        int rnd = new Random(n++).nextInt(max);
+
+        for (int i = 0; i < (rnd + 1); ++i) {
             v.add(createSampleData());
         }
 
@@ -138,7 +140,8 @@ public class Helpers {
 
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
         QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
-        for (int i = 0; i < new Random(n++).nextInt(max); ++i) {
+        int rnd = new Random(n++).nextInt(max);
+        for (int i = 0; i < (rnd + 1); ++i) {
             v.add(new QdbDoubleColumnValue(new Random(n++).nextDouble()));
         }
 
