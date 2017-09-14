@@ -31,6 +31,7 @@ public class QdbDoubleAggregation extends QdbAggregation {
      * Creates this object from JNI-compatible representation.
      */
     protected static QdbDoubleAggregation fromNative(qdb_ts_double_aggregation input) {
+        System.out.println("converting double aggregation, count: " + input.getCount() + ", value: " + input.getResult());
         return new QdbDoubleAggregation(Type.values()[(int)input.getAggregationType()],
                                         QdbTimeRange.fromNative(input.getRange()),
                                         input.getCount(),

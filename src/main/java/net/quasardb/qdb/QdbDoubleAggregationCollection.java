@@ -19,6 +19,9 @@ public class QdbDoubleAggregationCollection extends ArrayList<QdbDoubleAggregati
     public static QdbDoubleAggregationCollection fromNative(qdb_ts_double_aggregation[] input) {
         QdbDoubleAggregationCollection v = new QdbDoubleAggregationCollection();
 
+
+        System.out.println("converting double aggregation collection, length: " + Arrays.asList(input).size());
+
         Arrays.asList(input).stream()
             .map(QdbDoubleAggregation::fromNative)
             .collect(Collectors.toCollection(() -> v));
