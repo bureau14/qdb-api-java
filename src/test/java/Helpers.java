@@ -124,11 +124,10 @@ public class Helpers {
 
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
         QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
-
         int rnd = new Random(n++).nextInt(max);
 
         for (int i = 0; i < (rnd + 1); ++i) {
-            v.add(createSampleData());
+            v.add(new QdbBlobColumnValue(createSampleData()));
         }
 
         return v;

@@ -75,4 +75,13 @@ public final class QdbTimeSeries {
 
         return QdbDoubleAggregationCollection.fromNative(aggregations.value);
     }
+
+    public void insertBlobs(QdbBlobColumnCollection points) {
+        int err = qdb.ts_blob_insert(this.session.handle(),
+                                     this.name,
+                                     points.getColumn().getName(),
+                                     points.toNative());
+        QdbExceptionFactory.throwIfError(err);
+    }
+
 }
