@@ -1,10 +1,11 @@
 package net.quasardb.qdb;
 
+import java.io.Serializable;
 import net.quasardb.qdb.jni.*;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 
-public class QdbColumnValue <T> {
+public class QdbColumnValue <T> implements Serializable {
 
     QdbTimespec timestamp;
     protected T value;
