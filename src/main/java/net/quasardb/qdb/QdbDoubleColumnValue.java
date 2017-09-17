@@ -1,5 +1,6 @@
 package net.quasardb.qdb;
 
+import java.io.*;
 import net.quasardb.qdb.jni.*;
 import java.time.LocalDateTime;
 
@@ -42,10 +43,11 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
         return true;
     }
 
-    protected void writeValue(java.io.ObjectOutputStream stream, Double value) {
+    protected void writeValue(java.io.ObjectOutputStream stream, Double value) throws IOException {
+        stream.writeObject(value);
     }
-    protected Double readValue(java.io.ObjectInputStream stream) {
-        return null;
+    protected Double readValue(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        return (Double)(stream.readObject());
     }
 
 }
