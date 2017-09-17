@@ -41,4 +41,11 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
 
         return true;
     }
+
+    protected void writeValue(java.io.ObjectOutputStream stream, Double value) {
+    }
+    protected Double readValue(java.io.ObjectInputStream stream) {
+        return null;
+    }
+
 }

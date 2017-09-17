@@ -1,5 +1,6 @@
 package net.quasardb.qdb;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import net.quasardb.qdb.jni.*;
@@ -41,5 +42,36 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
         QdbBlobColumnValue rhs = (QdbBlobColumnValue)obj;
 
         return super.getValue().compareTo(rhs.getValue()) == 0;
+    }
+
+    protected void writeValue(java.io.ObjectOutputStream stream, ByteBuffer value)
+        throws IOException
+    {
+        System.out.println("writing value: " + value.toString());
+
+        // :TOOD: if value.hasArray() == true, we can write value.array() directly
+        int size = value.capacity();
+        byte[] buffer = new byte[size];
+        value.get(buffer, 0, size);
+
+        stream.writeInt(value.capacity());
+        stream.write(buffer, 0, size);
+
+    }
+    protected ByteBuffer readValue(java.io.ObjectInputStream stream)
+        throws IOException, ClassNotFoundException {
+        int size = stream.readInt();
+
+        System.out.println("reading value. size: " + size);
+
+        byte[] buffer = new byte[size];
+        stream.read(buffer, 0, size);
+
+        System.out.println("done reading!");
+
+        ByteBuffer bb = ByteBuffer.allocateDirect(size);
+        bb.put(buffer);
+
+        return bb;
     }
 }

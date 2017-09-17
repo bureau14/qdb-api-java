@@ -1,3 +1,4 @@
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import net.quasardb.qdb.*;
@@ -8,6 +9,17 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class QdbTimeSeriesBlobTest {
+    @Test
+    public void canSerialize_andDeserialize() throws Exception {
+        ByteBuffer data = Helpers.createSampleData();
+        QdbBlobColumnValue vBefore = new QdbBlobColumnValue(data);
+
+        byte[] serialized = Helpers.serialize(vBefore);
+        QdbBlobColumnValue vAfter = (QdbBlobColumnValue)Helpers.deserialize(serialized, vBefore.getClass());
+
+        assertEquals(vBefore, vAfter);
+    }
+
     @Test
     public void doesNotThrow_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
