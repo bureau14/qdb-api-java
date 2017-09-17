@@ -49,11 +49,14 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
     {
         // :TOOD: if value.hasArray() == true, we can write value.array() directly
         int size = value.capacity();
+
         byte[] buffer = new byte[size];
         value.get(buffer, 0, size);
 
         stream.writeInt(value.capacity());
         stream.write(buffer, 0, size);
+
+        value.rewind();
 
     }
     protected ByteBuffer readValue(java.io.ObjectInputStream stream)
@@ -64,8 +67,9 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
         stream.read(buffer, 0, size);
 
         ByteBuffer bb = ByteBuffer.allocateDirect(size);
-        bb.put(buffer);
+        bb.put(buffer, 0, size);
+        bb.rewind();
 
-        return bb;
+        return bb.duplicate();
     }
 }
