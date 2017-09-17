@@ -47,8 +47,6 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
     protected void writeValue(java.io.ObjectOutputStream stream, ByteBuffer value)
         throws IOException
     {
-        System.out.println("writing value: " + value.toString());
-
         // :TOOD: if value.hasArray() == true, we can write value.array() directly
         int size = value.capacity();
         byte[] buffer = new byte[size];
@@ -62,12 +60,8 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
         throws IOException, ClassNotFoundException {
         int size = stream.readInt();
 
-        System.out.println("reading value. size: " + size);
-
         byte[] buffer = new byte[size];
         stream.read(buffer, 0, size);
-
-        System.out.println("done reading!");
 
         ByteBuffer bb = ByteBuffer.allocateDirect(size);
         bb.put(buffer);
