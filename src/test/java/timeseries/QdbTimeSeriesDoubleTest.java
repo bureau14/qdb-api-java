@@ -9,6 +9,17 @@ import static org.junit.Assert.*;
 
 public class QdbTimeSeriesDoubleTest {
     @Test
+    public void canSerialize_andDeserialize() throws Exception {
+        double data = Helpers.randomDouble();
+        QdbDoubleColumnValue vBefore = new QdbDoubleColumnValue(data);
+
+        byte[] serialized = Helpers.serialize(vBefore);
+        QdbDoubleColumnValue vAfter = (QdbDoubleColumnValue)Helpers.deserialize(serialized, vBefore.getClass());
+
+        assertEquals(vBefore, vAfter);
+    }
+
+    @Test
     public void doesNotThrow_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series =

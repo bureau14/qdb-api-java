@@ -1,11 +1,13 @@
 package net.quasardb.qdb;
 
-import net.quasardb.qdb.jni.*;
+import java.io.Serializable;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.Instant;
 
-public class QdbTimespec {
+import net.quasardb.qdb.jni.*;
+
+public class QdbTimespec implements Serializable{
 
     protected LocalDateTime value;
 

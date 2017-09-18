@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
@@ -27,6 +27,25 @@ public class Helpers {
 
     public static ByteBuffer createSampleData() {
         return createSampleData(0);
+    }
+
+    public static <T extends Serializable> byte[] serialize(T obj)
+        throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(obj);
+        oos.close();
+        return baos.toByteArray();
+    }
+
+    public static <T extends Serializable> T deserialize(byte[] b, Class<T> cl)
+        throws IOException, ClassNotFoundException
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(b);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Object o = ois.readObject();
+        return cl.cast(o);
     }
 
     public static ByteBuffer createSampleData(int size) {
@@ -124,11 +143,10 @@ public class Helpers {
 
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
         QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
-
         int rnd = new Random(n++).nextInt(max);
 
         for (int i = 0; i < (rnd + 1); ++i) {
-            v.add(createSampleData());
+            v.add(new QdbBlobColumnValue(createSampleData()));
         }
 
         return v;
@@ -138,11 +156,15 @@ public class Helpers {
         return createDoubleColumnCollection(alias, 10);
     }
 
+    public static double randomDouble() {
+        return new Random(n++).nextDouble();
+    }
+
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
         QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
         int rnd = new Random(n++).nextInt(max);
         for (int i = 0; i < (rnd + 1); ++i) {
-            v.add(new QdbDoubleColumnValue(new Random(n++).nextDouble()));
+            v.add(new QdbDoubleColumnValue(randomDouble()));
         }
 
         return v;

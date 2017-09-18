@@ -75,4 +75,38 @@ public final class QdbTimeSeries {
 
         return QdbDoubleAggregationCollection.fromNative(aggregations.value);
     }
+
+    public void insertBlobs(QdbBlobColumnCollection points) {
+        int err = qdb.ts_blob_insert(this.session.handle(),
+                                     this.name,
+                                     points.getColumn().getName(),
+                                     points.toNative());
+        QdbExceptionFactory.throwIfError(err);
+    }
+
+    public QdbBlobColumnCollection getBlobs(String column, QdbTimeRangeCollection ranges) {
+        Reference<qdb_ts_blob_point[]> points  = new Reference<qdb_ts_blob_point[]>();
+
+        int err = qdb.ts_blob_get_ranges(this.session.handle(),
+                                         this.name,
+                                         column,
+                                         ranges.toNative(),
+                                         points);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbBlobColumnCollection.fromNative(column, points.value);
+    }
+
+    public QdbBlobAggregationCollection blobAggregate(String column, QdbBlobAggregationCollection input) {
+        Reference<qdb_ts_blob_aggregation[]> aggregations  = new Reference<qdb_ts_blob_aggregation[]>();
+
+        int err = qdb.ts_blob_aggregate(this.session.handle(),
+                                        this.name,
+                                        column,
+                                        QdbBlobAggregationCollection.toNative(input),
+                                        aggregations);
+        QdbExceptionFactory.throwIfError(err);
+
+        return QdbBlobAggregationCollection.fromNative(aggregations.value);
+    }
 }

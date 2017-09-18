@@ -1,8 +1,9 @@
 package net.quasardb.qdb;
 
+import java.io.Serializable;
 import net.quasardb.qdb.jni.*;
 
-public class QdbTimeRange {
+public class QdbTimeRange implements Serializable {
 
     protected QdbTimespec begin;
     protected QdbTimespec end;
