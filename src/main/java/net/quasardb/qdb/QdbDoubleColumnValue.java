@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.io.*;
+import java.sql.Timestamp;
 import net.quasardb.qdb.jni.*;
 import java.time.LocalDateTime;
 
@@ -12,6 +13,10 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
 
     public QdbDoubleColumnValue(Double value) {
         super(value);
+    }
+
+    public QdbDoubleColumnValue(Timestamp timestamp, Double value) {
+        super(timestamp, value);
     }
 
     public QdbDoubleColumnValue(LocalDateTime timestamp, Double value) {

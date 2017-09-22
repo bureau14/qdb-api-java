@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.LocalDateTime;
 import java.time.Instant;
@@ -10,6 +11,10 @@ import net.quasardb.qdb.jni.*;
 public class QdbTimespec implements Serializable{
 
     protected LocalDateTime value;
+
+    public QdbTimespec (Timestamp value) {
+        this(value.toLocalDateTime());
+    }
 
     public QdbTimespec (LocalDateTime value) {
         this.value = value;

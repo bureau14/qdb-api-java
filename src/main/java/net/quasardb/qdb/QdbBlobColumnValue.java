@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import net.quasardb.qdb.jni.*;
@@ -13,6 +14,10 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
 
     public QdbBlobColumnValue(ByteBuffer value) {
         super(value);
+    }
+
+    public QdbBlobColumnValue(Timestamp timestamp, ByteBuffer value) {
+        super(timestamp, value);
     }
 
     public QdbBlobColumnValue(LocalDateTime timestamp, ByteBuffer value) {

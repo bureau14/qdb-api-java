@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import net.quasardb.qdb.jni.*;
@@ -12,6 +13,10 @@ public abstract class QdbColumnValue <T> implements Serializable {
 
     public QdbColumnValue (T value) {
         this(LocalDateTime.now(), value);
+    }
+
+    public QdbColumnValue (Timestamp timestamp, T value) {
+        this(new QdbTimespec(timestamp), value);
     }
 
     public QdbColumnValue (LocalDateTime timestamp, T value) {
