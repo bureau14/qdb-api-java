@@ -20,13 +20,19 @@ public class QdbTimeRange implements Serializable {
     public QdbTimespec getEnd() {
         return this.end;
     }
-    public static qdb_ts_range toNative(QdbTimeRange input) {
-        return new qdb_ts_range(input.begin.toNative(), input.end.toNative());
+    public static qdb_ts_filtered_range toNative(QdbTimeRange input) {
+        // :TODO: implement filters, we're always assuming 'no filter' here
+
+        return new qdb_ts_filtered_range(new qdb_ts_range(input.begin.toNative(), input.end.toNative()),
+                                         new qdb_ts_no_filter());
     }
 
-    public static QdbTimeRange fromNative(qdb_ts_range input) {
-        return new QdbTimeRange(QdbTimespec.fromNative(input.getBegin()),
-                                QdbTimespec.fromNative(input.getEnd()));
+    public static QdbTimeRange fromNative(qdb_ts_filtered_range input) {
+        // :TODO: implement filters, we're always assuming 'no filter' here
+        assert (input.getFilter().getType() == 0);
+
+        return new QdbTimeRange(QdbTimespec.fromNative(input.getRange().getBegin()),
+                                QdbTimespec.fromNative(input.getRange().getEnd()));
     }
 
     public String toString() {

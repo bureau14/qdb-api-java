@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 public class QdbTimeRangeCollection extends ArrayList<QdbTimeRange> {
 
-    public qdb_ts_range[] toNative() {
+    public qdb_ts_filtered_range[] toNative() {
         return this.stream()
             .map(QdbTimeRange::toNative)
-            .toArray(qdb_ts_range[]::new);
+            .toArray(qdb_ts_filtered_range[]::new);
     }
 }
