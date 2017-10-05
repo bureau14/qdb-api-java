@@ -18,6 +18,10 @@ public final class QdbTimeSeries {
         this.name = name;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void create(Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,

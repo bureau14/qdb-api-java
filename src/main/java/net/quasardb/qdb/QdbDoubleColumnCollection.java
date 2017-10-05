@@ -26,4 +26,5 @@ public class QdbDoubleColumnCollection extends QdbColumnCollection<QdbDoubleColu
 
         return v;
     }
+
 }

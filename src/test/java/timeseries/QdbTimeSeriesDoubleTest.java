@@ -1,5 +1,6 @@
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
@@ -48,6 +49,64 @@ public class QdbTimeSeriesDoubleTest {
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
         assertThat(results, (is(data)));
+    }
+
+    @Test
+    public void canGetResults_afterParallelInsert() throws Exception {
+        String columnAlias = Helpers.createUniqueAlias();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double(columnAlias)));
+
+        String seriesAlias = series.getName();
+
+        Callable<QdbDoubleColumnCollection> insertTask = () -> {
+            Boolean success = false;
+            QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(columnAlias);
+
+            while (success == false) {
+                try {
+                    QdbTimeSeries taskSeries = Helpers.getTimeSeries(seriesAlias);
+                    taskSeries.insertDoubles(data);
+                    success = true;
+                } catch (Exception e) {
+                    System.out.println("caught exception: " + e.toString());
+                }
+            }
+
+            return data;
+        };
+
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        Future<QdbDoubleColumnCollection> task1 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task2 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task3 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task4 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task5 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task6 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task7 = executor.submit(insertTask);
+        Future<QdbDoubleColumnCollection> task8 = executor.submit(insertTask);
+
+        QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(columnAlias);
+        data.addAll(task1.get());
+        data.addAll(task2.get());
+        data.addAll(task3.get());
+        data.addAll(task4.get());
+        data.addAll(task5.get());
+        data.addAll(task6.get());
+        data.addAll(task7.get());
+        data.addAll(task8.get());
+
+        QdbTimeRange dataRange = data.range();
+        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
+        ranges.add(new QdbTimeRange(dataRange.getBegin(),
+                                    new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
+
+        QdbDoubleColumnCollection results = series.getDoubles(columnAlias, ranges);
+        System.out.println("results = " + results.toString());
+        for (QdbDoubleColumnValue expected : data) {
+            assertThat(results, hasItem(expected));
+        }
+
     }
 
     @Test

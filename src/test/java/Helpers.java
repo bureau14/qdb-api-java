@@ -138,7 +138,7 @@ public class Helpers {
     }
 
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias) {
-        return createBlobColumnCollection(alias, 10);
+        return createBlobColumnCollection(alias, 100);
     }
 
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
@@ -153,7 +153,7 @@ public class Helpers {
     }
 
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias) {
-        return createDoubleColumnCollection(alias, 10);
+        return createDoubleColumnCollection(alias, 10000);
     }
 
     public static double randomDouble() {
