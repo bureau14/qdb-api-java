@@ -1,5 +1,6 @@
 package net.quasardb.qdb;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.regex.*;
 import java.util.Collection;
@@ -11,7 +12,7 @@ import net.quasardb.qdb.jni.*;
 public class QdbCluster implements AutoCloseable {
     private final QdbSession session;
 
-    public static class SecurityOptions {
+    public static class SecurityOptions implements Serializable {
         protected String userName;
         protected String userPrivateKey;
         protected String clusterPublicKey;
