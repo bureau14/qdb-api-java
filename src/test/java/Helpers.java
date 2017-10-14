@@ -17,6 +17,14 @@ public class Helpers {
         }
     }
 
+    public static QdbCluster createSecureCluster() {
+        try {
+            return new QdbCluster(DaemonRunner.uri());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void wait(double seconds) {
         try {
             Thread.sleep((long)(seconds * 1000));
