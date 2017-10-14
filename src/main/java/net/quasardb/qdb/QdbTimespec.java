@@ -8,7 +8,7 @@ import java.time.Instant;
 
 import net.quasardb.qdb.jni.*;
 
-public class QdbTimespec implements Serializable{
+public class QdbTimespec implements Serializable {
 
     protected LocalDateTime value;
 
