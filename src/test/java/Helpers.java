@@ -8,6 +8,10 @@ public class Helpers {
     private static QdbCluster cluster = createCluster();
     private static long n = 1;
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
+    public static final QdbCluster.SecurityOptions SECURITRY_OPTIONS =
+        new QdbCluster.SecurityOptions("qdb-api-python",
+                                       "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
+                                       "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 
     public static QdbCluster createCluster() {
         try {
@@ -19,7 +23,8 @@ public class Helpers {
 
     public static QdbCluster createSecureCluster() {
         try {
-            return new QdbCluster(DaemonRunner.uri());
+            return new QdbCluster(DaemonRunner.secureUri(),
+                                  SECURITRY_OPTIONS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

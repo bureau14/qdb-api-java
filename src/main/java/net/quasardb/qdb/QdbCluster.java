@@ -8,11 +8,31 @@ import net.quasardb.qdb.jni.*;
 /**
  * A connection to a quasardb cluster.
  */
-public final class QdbCluster implements AutoCloseable {
+public class QdbCluster implements AutoCloseable {
     private final QdbSession session;
 
+    public static class SecurityOptions {
+        protected String userName;
+        protected String userPrivateKey;
+        protected String clusterPublicKey;
+
+        public SecurityOptions (String userName,
+                                String userPrivateKey,
+                                String clusterPublicKey) {
+            this.userName = userName;
+            this.userPrivateKey = userPrivateKey;
+            this.clusterPublicKey = clusterPublicKey;
+        }
+
+        static qdb_cluster_security_options toNative(SecurityOptions options) {
+          return new qdb_cluster_security_options(options.userName,
+                                                  options.userPrivateKey,
+                                                  options.clusterPublicKey);
+        }
+    }
+
     /**
-     * Connects to a quasardb cluster through the specified URI.
+     * Connects to a quasardb cluster through the specified URI. Requires security settings to be disabled.
      * The URI contains the addresses of the bootstrapping nodes, other nodes are discovered during the first connection.
      * Having more than one node in the URI allows to connect to the cluster even if the first node is down.
      *
@@ -23,6 +43,23 @@ public final class QdbCluster implements AutoCloseable {
     public QdbCluster(String uri) {
         session = new QdbSession();
         int err = qdb.connect(session.handle(), uri);
+        QdbExceptionFactory.throwIfError(err);
+    }
+
+    /**
+     * Connects to a quasardb secure cluster through the specified URI.
+     * The URI contains the addresses of the bootstrapping nodes, other nodes are discovered during the first connection.
+     * Having more than one node in the URI allows to connect to the cluster even if the first node is down.
+     *
+     * @param uri a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
+     * @param securityOptions An instance of QdbCluster.SecurityOptions for authentication.
+     * @throws QdbConnectionRefusedException If the connection to the cluster is refused.
+     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
+     */
+    public QdbCluster(String uri,
+                      SecurityOptions securityOptions) {
+        session = new QdbSession();
+        int err = qdb.secure_connect(session.handle(), uri, SecurityOptions.toNative(securityOptions));
         QdbExceptionFactory.throwIfError(err);
     }
 
