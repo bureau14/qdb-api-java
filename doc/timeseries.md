@@ -1,7 +1,7 @@
 
 # Timeseries API
 
-This document will show several examples on how to interact with timeseries using the QuasarDB Java API. For the sake of clarity it will show the usage of double data types only; the blob interface mirros the double interface exactly, and you should use the respective blob classes you find in the [https://doc.quasardb.net/java/][(JavaDoc).
+This document will show several examples on how to interact with timeseries using the QuasarDB Java API. For the sake of clarity it will show the usage of double data types only; the blob interface mirros the double interface exactly, and you should use the respective blob classes you find in the [JavaDoc](https://doc.quasardb.net/java/)
 
 Given a QuasarDB timeseries table `doubles_test` that looks as follows
 
