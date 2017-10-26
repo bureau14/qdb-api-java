@@ -196,10 +196,10 @@ public class QdbCluster implements AutoCloseable {
       * @return A handle to perform operations on the timeseries.
       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
       */
-    public QdbTimeSeries createTimeSeries(String alias, Collection<QdbColumnDefinition> columns) {
+    public QdbTimeSeries createTimeSeries(String alias, long shardSize, Collection<QdbColumnDefinition> columns) {
         session.throwIfClosed();
         QdbTimeSeries series = new QdbTimeSeries(session, alias);
-        series.create(columns);
+        series.create(shardSize, columns);
         return series;
     }
 
