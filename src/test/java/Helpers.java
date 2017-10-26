@@ -143,7 +143,7 @@ public class Helpers {
     }
 
     public static QdbTimeSeries createTimeSeries(Collection<QdbColumnDefinition> columns) throws IOException {
-        return cluster.createTimeSeries(createUniqueAlias(), columns);
+        return cluster.createTimeSeries(createUniqueAlias(), 86400000, columns);
     }
 
     public static QdbTimeSeries getTimeSeries(String alias) throws IOException {

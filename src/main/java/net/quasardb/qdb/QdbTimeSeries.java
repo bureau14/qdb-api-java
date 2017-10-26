@@ -22,9 +22,10 @@ public final class QdbTimeSeries {
         return this.name;
     }
 
-    public void create(Collection<QdbColumnDefinition> columns) {
+    public void create(long millisecondsShardSize, Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
+				millisecondsShardSize,
                                 QdbColumnDefinition.toNative(columns));
 
         QdbExceptionFactory.throwIfError(err);
