@@ -11,6 +11,6 @@ public class QdbClusterVersionTest {
     @Test
     public void version_returnsNonEmptyString() {
         String version = QdbCluster.version();
-        Assert.assertTrue(version.length() > 5);
+        Assert.assertTrue("Version: " + version, version.length() >= 5);
     }
 }
