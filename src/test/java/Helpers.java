@@ -156,9 +156,8 @@ public class Helpers {
 
     public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
         QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
-        int rnd = new Random(n++).nextInt(max);
 
-        for (int i = 0; i < (rnd + 1); ++i) {
+        for (int i = 0; i < max; ++i) {
             v.add(new QdbBlobColumnValue(createSampleData()));
         }
 
@@ -175,8 +174,7 @@ public class Helpers {
 
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
         QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
-        int rnd = new Random(n++).nextInt(max);
-        for (int i = 0; i < (rnd + 1); ++i) {
+        for (int i = 0; i < max; ++i) {
             v.add(new QdbDoubleColumnValue(randomDouble()));
         }
 

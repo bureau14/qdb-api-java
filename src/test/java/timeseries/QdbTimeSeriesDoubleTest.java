@@ -1,5 +1,6 @@
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.stream.*;
 import java.util.concurrent.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
@@ -9,6 +10,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class QdbTimeSeriesDoubleTest {
+
     @Test
     public void canSerialize_andDeserialize() throws Exception {
         double data = Helpers.randomDouble();
@@ -203,5 +205,43 @@ public class QdbTimeSeriesDoubleTest {
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
         assertEquals(2, result.get(0).getCount());
+    }
+
+    @Test
+    public void benchmarkDoesntCrash() throws Exception {
+        int COLUMN_COUNT = 50;
+        int ROW_COUNT = 1000000;
+        QdbColumnDefinition[] aliases = new QdbColumnDefinition[COLUMN_COUNT];
+        for (int i = 0; i < aliases.length; i++) {
+            aliases[i] = new QdbColumnDefinition.Double(Helpers.createUniqueAlias());
+        }
+
+
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(Arrays.asList(aliases));
+        QdbTimeRangeCollection ranges =
+            new QdbTimeRangeCollection();
+        int[] rowLengths = new int[COLUMN_COUNT];
+
+        for (int i = 0; i < aliases.length; i++) {
+            QdbColumnDefinition alias = aliases[i];
+
+            QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias.getName(), ROW_COUNT);
+            rowLengths[i] = data.size();
+
+            QdbTimeRange dataRange = data.range();
+
+            series.insertDoubles(data);
+            ranges.add(new QdbTimeRange(dataRange.getBegin(),
+                                        new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
+
+        }
+
+        for (int i = 0; i < aliases.length; i++) {
+            QdbColumnDefinition alias = aliases[i];
+
+            QdbDoubleColumnCollection results = series.getDoubles(alias.getName(), ranges);
+            assertThat(results.size(), (is(rowLengths[i])));
+        }
     }
 }
