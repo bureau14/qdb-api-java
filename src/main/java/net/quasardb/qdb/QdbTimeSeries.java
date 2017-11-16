@@ -22,9 +22,10 @@ public final class QdbTimeSeries {
         return this.name;
     }
 
-    public void create(Collection<QdbColumnDefinition> columns) {
+    public void create(long millisecondsShardSize, Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
+                                millisecondsShardSize,
                                 QdbColumnDefinition.toNative(columns));
 
         QdbExceptionFactory.throwIfError(err);
@@ -55,7 +56,7 @@ public final class QdbTimeSeries {
     }
 
     public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection ranges) {
-        Reference<qdb_ts_double_point[]> points  = new Reference<qdb_ts_double_point[]>();
+        Reference<qdb_ts_double_point[]> points = new Reference<qdb_ts_double_point[]>();
 
         int err = qdb.ts_double_get_ranges(this.session.handle(),
                                            this.name,
@@ -68,7 +69,7 @@ public final class QdbTimeSeries {
     }
 
     public QdbDoubleAggregationCollection doubleAggregate(String column, QdbDoubleAggregationCollection input) {
-        Reference<qdb_ts_double_aggregation[]> aggregations  = new Reference<qdb_ts_double_aggregation[]>();
+        Reference<qdb_ts_double_aggregation[]> aggregations = new Reference<qdb_ts_double_aggregation[]>();
 
         int err = qdb.ts_double_aggregate(this.session.handle(),
                                           this.name,
@@ -89,7 +90,7 @@ public final class QdbTimeSeries {
     }
 
     public QdbBlobColumnCollection getBlobs(String column, QdbTimeRangeCollection ranges) {
-        Reference<qdb_ts_blob_point[]> points  = new Reference<qdb_ts_blob_point[]>();
+        Reference<qdb_ts_blob_point[]> points = new Reference<qdb_ts_blob_point[]>();
 
         int err = qdb.ts_blob_get_ranges(this.session.handle(),
                                          this.name,
@@ -102,7 +103,7 @@ public final class QdbTimeSeries {
     }
 
     public QdbBlobAggregationCollection blobAggregate(String column, QdbBlobAggregationCollection input) {
-        Reference<qdb_ts_blob_aggregation[]> aggregations  = new Reference<qdb_ts_blob_aggregation[]>();
+        Reference<qdb_ts_blob_aggregation[]> aggregations = new Reference<qdb_ts_blob_aggregation[]>();
 
         int err = qdb.ts_blob_aggregate(this.session.handle(),
                                         this.name,
