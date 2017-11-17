@@ -104,7 +104,6 @@ public class QdbTimeSeriesDoubleTest {
                                     new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
 
         QdbDoubleColumnCollection results = series.getDoubles(columnAlias, ranges);
-        System.out.println("results = " + results.toString());
         for (QdbDoubleColumnValue expected : data) {
             assertThat(results, hasItem(expected));
         }
