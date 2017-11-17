@@ -25,11 +25,11 @@ public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T>
             if (cur == null ){
                 cur = new QdbTimeRange(val.getTimestamp(), val.getTimestamp());
             } else {
-                if (val.getTimestamp().value.isBefore(cur.begin.value)) {
+                if (val.getTimestamp().asLocalDateTime().isBefore(cur.begin.asLocalDateTime())) {
                     cur.begin = val.getTimestamp();
                 }
 
-                if (val.getTimestamp().value.isAfter(cur.end.value)) {
+                if (val.getTimestamp().asLocalDateTime().isAfter(cur.end.asLocalDateTime())) {
                     cur.end = val.getTimestamp();
                 }
             }

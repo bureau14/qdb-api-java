@@ -28,6 +28,7 @@ public class QdbTimeSeriesBlobTest {
 
         QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
 
+
         series.insertBlobs(data);
     }
 
@@ -44,7 +45,7 @@ public class QdbTimeSeriesBlobTest {
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(dataRange.getBegin(),
-                                    new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
+                                    new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1))));
 
         QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
 
@@ -69,7 +70,7 @@ public class QdbTimeSeriesBlobTest {
         QdbBlobAggregationCollection aggregations = new QdbBlobAggregationCollection();
         aggregations.add(new QdbBlobAggregation(QdbAggregation.Type.COUNT,
                                                   new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1)))));
+                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbBlobAggregationCollection result = series.blobAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());

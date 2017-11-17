@@ -15,14 +15,15 @@ public class QdbTimeSeriesValueTest {
     public void canCreateDouble() throws Exception {
         double d = Helpers.randomDouble();
         QdbTimeSeriesValue value = QdbTimeSeriesValue.createDouble(d);
-        assertEquals(d, value.getDouble(), 0.01);
+        assertThat(d, equalTo(value.getDouble()));
     }
 
     @Test
     public void canCreateBlob() throws Exception {
         ByteBuffer b = Helpers.createSampleData();
         QdbTimeSeriesValue value = QdbTimeSeriesValue.createBlob(b);
-        assertEquals(b, value.getBlob());
+
+        assertThat(b, equalTo(value.getBlob()));
     }
 
     @Test
@@ -32,7 +33,7 @@ public class QdbTimeSeriesValueTest {
         QdbTimeSeriesValue value2 =
             QdbTimeSeriesValue.createSafeBlob(value1.getBlob());
 
-        assertEquals(value1, value2);
+        assertThat(value1, equalTo(value2));
     }
 
     @Test(expected = QdbIncompatibleTypeException.class)
@@ -55,9 +56,9 @@ public class QdbTimeSeriesValueTest {
         QdbTimeSeriesValue value2 = QdbTimeSeriesValue.createDouble(Helpers.randomDouble());
         QdbTimeSeriesValue value3 = QdbTimeSeriesValue.createDouble(value1.getDouble());
 
-        assertFalse(value1.equals(value2));
-        assertEquals(value1, value3);
-        assertFalse(value2.equals(value3));
+        assertThat(value1, not(equalTo(value2)));
+        assertThat(value1, equalTo(value3));
+        assertThat(value2, not(equalTo(value3)));
     }
 
     @Test
@@ -68,9 +69,9 @@ public class QdbTimeSeriesValueTest {
         QdbTimeSeriesValue value2 = QdbTimeSeriesValue.createBlob(b2);
         QdbTimeSeriesValue value3 = QdbTimeSeriesValue.createBlob(b1);
 
-        assertFalse(value1.equals(value2));
-        assertEquals(value1, value3);
-        assertFalse(value2.equals(value3));
+        assertThat(value1, not(equalTo(value2)));
+        assertThat(value1, equalTo(value3));
+        assertThat(value2, not(equalTo(value3)));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class QdbTimeSeriesValueTest {
         QdbTimeSeriesValue value1 = QdbTimeSeriesValue.createBlob(b);
         QdbTimeSeriesValue value2 = QdbTimeSeriesValue.createDouble(d);
 
-        assertFalse(value1.equals(value2));
+        assertThat(value1, not(equalTo(value2)));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class QdbTimeSeriesValueTest {
         byte[] serialized = Helpers.serialize(vBefore);
         QdbTimeSeriesValue vAfter = (QdbTimeSeriesValue)Helpers.deserialize(serialized, vBefore.getClass());
 
-        assertEquals(vBefore, vAfter);
+        assertThat(vBefore, equalTo(vAfter));
     }
 
     @Test
@@ -101,6 +102,6 @@ public class QdbTimeSeriesValueTest {
         byte[] serialized = Helpers.serialize(vBefore);
         QdbTimeSeriesValue vAfter = (QdbTimeSeriesValue)Helpers.deserialize(serialized, vBefore.getClass());
 
-        assertEquals(vBefore, vAfter);
+        assertThat(vBefore, equalTo(vAfter));
     }
 }

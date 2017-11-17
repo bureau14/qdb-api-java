@@ -23,7 +23,7 @@ public class QdbTimeRange implements Serializable {
     public static qdb_ts_filtered_range toNative(QdbTimeRange input) {
         // :TODO: implement filters, we're always assuming 'no filter' here
 
-        return new qdb_ts_filtered_range(new qdb_ts_range(input.begin.toNative(), input.end.toNative()),
+        return new qdb_ts_filtered_range(new qdb_ts_range(input.begin.getValue(), input.end.getValue()),
                                          new qdb_ts_no_filter());
     }
 
@@ -31,8 +31,8 @@ public class QdbTimeRange implements Serializable {
         // :TODO: implement filters, we're always assuming 'no filter' here
         assert (input.getFilter().getType() == 0);
 
-        return new QdbTimeRange(QdbTimespec.fromNative(input.getRange().getBegin()),
-                                QdbTimespec.fromNative(input.getRange().getEnd()));
+        return new QdbTimeRange(new QdbTimespec(input.getRange().getBegin()),
+                                new QdbTimespec(input.getRange().getEnd()));
     }
 
     public String toString() {
