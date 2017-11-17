@@ -210,7 +210,7 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void benchmarkDoesntCrash() throws Exception {
         int COLUMN_COUNT = 50;
-        int ROW_COUNT = 1000000;
+        int ROW_COUNT = 100000;
         QdbColumnDefinition[] aliases = new QdbColumnDefinition[COLUMN_COUNT];
         for (int i = 0; i < aliases.length; i++) {
             aliases[i] = new QdbColumnDefinition.Double(Helpers.createUniqueAlias());
