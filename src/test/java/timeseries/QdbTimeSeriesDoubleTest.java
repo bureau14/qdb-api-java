@@ -206,41 +206,41 @@ public class QdbTimeSeriesDoubleTest {
         assertEquals(2, result.get(0).getCount());
     }
 
-    @Test
-    public void benchmarkDoesntCrash() throws Exception {
-        int COLUMN_COUNT = 50;
-        int ROW_COUNT = 100000;
-        QdbColumnDefinition[] aliases = new QdbColumnDefinition[COLUMN_COUNT];
-        for (int i = 0; i < aliases.length; i++) {
-            aliases[i] = new QdbColumnDefinition.Double(Helpers.createUniqueAlias());
-        }
+    // @Test
+    // public void benchmarkDoesntCrash() throws Exception {
+    //     int COLUMN_COUNT = 50;
+    //     int ROW_COUNT = 100000;
+    //     QdbColumnDefinition[] aliases = new QdbColumnDefinition[COLUMN_COUNT];
+    //     for (int i = 0; i < aliases.length; i++) {
+    //         aliases[i] = new QdbColumnDefinition.Double(Helpers.createUniqueAlias());
+    //     }
 
 
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(aliases));
-        QdbTimeRangeCollection ranges =
-            new QdbTimeRangeCollection();
-        int[] rowLengths = new int[COLUMN_COUNT];
+    //     QdbTimeSeries series =
+    //         Helpers.createTimeSeries(Arrays.asList(aliases));
+    //     QdbTimeRangeCollection ranges =
+    //         new QdbTimeRangeCollection();
+    //     int[] rowLengths = new int[COLUMN_COUNT];
 
-        for (int i = 0; i < aliases.length; i++) {
-            QdbColumnDefinition alias = aliases[i];
+    //     for (int i = 0; i < aliases.length; i++) {
+    //         QdbColumnDefinition alias = aliases[i];
 
-            QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias.getName(), ROW_COUNT);
-            rowLengths[i] = data.size();
+    //         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias.getName(), ROW_COUNT);
+    //         rowLengths[i] = data.size();
 
-            QdbTimeRange dataRange = data.range();
+    //         QdbTimeRange dataRange = data.range();
 
-            series.insertDoubles(data);
-            ranges.add(new QdbTimeRange(dataRange.getBegin(),
-                                        new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
+    //         series.insertDoubles(data);
+    //         ranges.add(new QdbTimeRange(dataRange.getBegin(),
+    //                                     new QdbTimespec(dataRange.getEnd().getValue().plusNanos(1))));
 
-        }
+    //     }
 
-        for (int i = 0; i < aliases.length; i++) {
-            QdbColumnDefinition alias = aliases[i];
+    //     for (int i = 0; i < aliases.length; i++) {
+    //         QdbColumnDefinition alias = aliases[i];
 
-            QdbDoubleColumnCollection results = series.getDoubles(alias.getName(), ranges);
-            assertThat(results.size(), (is(rowLengths[i])));
-        }
-    }
+    //         QdbDoubleColumnCollection results = series.getDoubles(alias.getName(), ranges);
+    //         assertThat(results.size(), (is(rowLengths[i])));
+    //     }
+    // }
 }
