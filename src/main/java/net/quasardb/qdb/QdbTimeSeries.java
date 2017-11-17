@@ -31,6 +31,10 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
+    public QdbTimeSeriesTable table() {
+        return new QdbTimeSeriesTable(this.session, this.name);
+    }
+
     public void insertColumns(Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_insert_columns(this.session.handle(),
                                         this.name,
