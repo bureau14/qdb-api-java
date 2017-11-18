@@ -29,5 +29,7 @@ public class QdbTimeSeriesTableTest {
                                                     values);
 
         table.append(row);
+        table.append(row);
+        table.flush();
     }
 }
