@@ -176,4 +176,29 @@ public class QdbTimeSeriesTableTest {
         assertThat(results.size(), (is(1)));
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
     }
+
+    @Test
+    public void autoFlushTable_isFlushed_whenThresholdReached() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        QdbTimeSeriesTable table = series.autoFlushTable(1); // flush every row
+
+        QdbTimeSeriesValue[] values = {
+            QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
+        };
+
+        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
+        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
+                                                    values);
+        table.append(row);
+
+        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
+        ranges.add(new QdbTimeRange(timestamp,
+                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+
+        QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
+
+        assertThat(results.size(), (is(1)));
+        assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
+    }
 }
