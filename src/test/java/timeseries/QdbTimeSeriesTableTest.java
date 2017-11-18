@@ -19,17 +19,28 @@ public class QdbTimeSeriesTableTest {
     @Test
     public void canInsertDoubleRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesTable table =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        QdbTimeSeriesTable table = series.table();
 
         QdbTimeSeriesValue[] values = new QdbTimeSeriesValue[1];
-        values[0] = (QdbTimeSeriesValue.createDouble(Helpers.randomDouble()));
+        double value = Helpers.randomDouble();
+        values[0] = (QdbTimeSeriesValue.createDouble(value));
 
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(new QdbTimespec(LocalDateTime.now()),
+        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
+
+        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
 
         table.append(row);
-        table.append(row);
         table.flush();
+
+        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
+        ranges.add(new QdbTimeRange(timestamp,
+                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+
+        QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
+
+        assertThat(results.size(), (is(1)));
+        assertThat(results.get(0).getValue(), equalTo(value));
     }
 }
