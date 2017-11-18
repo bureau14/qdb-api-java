@@ -1,7 +1,5 @@
-import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.stream.*;
-import java.util.concurrent.*;
+import java.time.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
@@ -16,5 +14,20 @@ public class QdbTimeSeriesTableTest {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeriesTable table =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+    }
+
+    @Test
+    public void canInsertDoubleRow() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        QdbTimeSeriesTable table =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+
+        QdbTimeSeriesValue[] values = new QdbTimeSeriesValue[1];
+        values[0] = (QdbTimeSeriesValue.createDouble(Helpers.randomDouble()));
+
+        QdbTimeSeriesRow row = new QdbTimeSeriesRow(new QdbTimespec(LocalDateTime.now()),
+                                                    values);
+
+        table.append(row);
     }
 }
