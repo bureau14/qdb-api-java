@@ -26,6 +26,29 @@ public class QdbTimeSeriesTableTest {
     }
 
     @Test
+    public void canLookupColumnOffsetById() throws Exception {
+        QdbColumnDefinition[] columns = {
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
+            new QdbColumnDefinition.Double(Helpers.createUniqueAlias())
+        };
+
+        QdbTimeSeriesTable table =
+            Helpers.createTimeSeries(Arrays.asList(columns)).table();
+
+        for (int i = 0; i < columns.length; ++i) {
+            QdbColumnDefinition column = columns[i];
+            assertThat(table.columnIndexById(column.getName()), equalTo(i));
+        }
+    }
+
+
+    @Test
     public void canCloseTable() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeriesTable table =
@@ -242,4 +265,5 @@ public class QdbTimeSeriesTableTest {
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
         assertThat(results.get(1).getValue(), equalTo(values[0].getDouble()));
     }
+
 }

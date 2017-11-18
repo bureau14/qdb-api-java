@@ -70,8 +70,7 @@ public class QdbColumnDefinition {
     public static Iterable<QdbColumnDefinition> fromNative (qdb_ts_column_info[] nativeColumns) {
         return Arrays.asList(nativeColumns).stream()
             .map(QdbColumnDefinition::fromNative)
-            .collect(Collectors.toList())
-            ;
+            .collect(Collectors.toList());
     }
 
     @Override
