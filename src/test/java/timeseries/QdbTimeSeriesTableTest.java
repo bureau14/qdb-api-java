@@ -152,6 +152,39 @@ public class QdbTimeSeriesTableTest {
     }
 
     @Test
+    public void canInsertNullColumns() throws Exception {
+        String alias1 = Helpers.createUniqueAlias();
+        String alias2 = Helpers.createUniqueAlias();
+
+        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
+                                                                      new QdbColumnDefinition.Blob (alias2)));
+        QdbTimeSeriesTable table = series.table();
+
+        QdbTimeSeriesValue[] values = {
+            QdbTimeSeriesValue.createDouble(Helpers.randomDouble()),
+            QdbTimeSeriesValue.createNull()
+        };
+
+        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
+        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
+                                                    values);
+
+        table.append(row);
+        table.flush();
+
+        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
+        ranges.add(new QdbTimeRange(timestamp,
+                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+
+        QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
+        QdbBlobColumnCollection results2 = series.getBlobs(alias2, ranges);
+
+        assertThat(results1.size(), (is(1)));
+        assertThat(results2.size(), (is(0)));
+        assertThat(results1.get(0).getValue(), equalTo(values[0].getDouble()));
+    }
+
+    @Test
     public void tableIsFlushed_whenClosed() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
@@ -181,7 +214,7 @@ public class QdbTimeSeriesTableTest {
     public void autoFlushTable_isFlushed_whenThresholdReached() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesTable table = series.autoFlushTable(1); // flush every row
+        QdbTimeSeriesTable table = series.autoFlushTable(2); // flush every 2 rows
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
@@ -198,7 +231,15 @@ public class QdbTimeSeriesTableTest {
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
-        assertThat(results.size(), (is(1)));
+        assertThat(results.size(), (is(0)));
+
+        // Add another row, which should trigger flush
+        table.append(row);
+
+        results = series.getDoubles(alias, ranges);
+
+        assertThat(results.size(), (is(2)));
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
+        assertThat(results.get(1).getValue(), equalTo(values[0].getDouble()));
     }
 }
