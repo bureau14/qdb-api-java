@@ -31,8 +31,30 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
+    /**
+     * Initializes new timeseries table.
+     *
+     * @warning Table should be periodically flushed by invoking the .flush() method,
+     *          or use autoFlushTable() instead.
+     */
     public QdbTimeSeriesTable table() {
         return new QdbTimeSeriesTable(this.session, this.name);
+    }
+
+    /**
+     * Initializes new timeseries table with auto-flush enabled.
+     */
+    public QdbTimeSeriesTable autoFlushTable() {
+        return new QdbAutoFlushTimeSeriesTable(this.session, this.name);
+    }
+
+    /**
+     * Initializes new timeseries table with auto-flush enabled.
+     *
+     * @brioef threshold The amount of rows to keep in local buffer before automatic flushing occurs.
+     */
+    public QdbTimeSeriesTable autoFlushTable(long threshold) {
+        return new QdbAutoFlushTimeSeriesTable(this.session, this.name, threshold);
     }
 
     public void insertColumns(Collection<QdbColumnDefinition> columns) {
