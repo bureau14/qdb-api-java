@@ -70,7 +70,7 @@ public class QdbTimeSeriesTableTest {
         QdbTimeSeriesRow[] rows = new QdbTimeSeriesRow[ROW_COUNT];
         for (int i = 0; i < rows.length; ++i) {
             rows[i] =
-                new QdbTimeSeriesRow (new QdbTimespec(LocalDateTime.now()),
+                new QdbTimeSeriesRow (LocalDateTime.now(),
                                       new QdbTimeSeriesValue[] {
                                           QdbTimeSeriesValue.createDouble(Helpers.randomDouble())});
             table.append(rows[i]);
