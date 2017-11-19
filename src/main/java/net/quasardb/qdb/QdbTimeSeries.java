@@ -51,7 +51,7 @@ public final class QdbTimeSeries {
     /**
      * Initializes new timeseries table with auto-flush enabled.
      *
-     * @brioef threshold The amount of rows to keep in local buffer before automatic flushing occurs.
+     * @param threshold The amount of rows to keep in local buffer before automatic flushing occurs.
      */
     public QdbTimeSeriesTable autoFlushTable(long threshold) {
         return new QdbAutoFlushTimeSeriesTable(this.session, this.name, threshold);
