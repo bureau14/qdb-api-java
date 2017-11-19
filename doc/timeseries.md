@@ -66,7 +66,7 @@ table.flush();
 
 ### Safe blobs
 
-In  order to maximize performance, QuasarDB tries to keep memory copying to a minimum and `createBlob` does not copy blob data before putting it into the local cache using `append`. This means that when short-lived objects that get garbage collectred before they are added to the local cache will lead to errors. As a solution to this, we provide a SafeBlob class that copies the data into a new, temporary ByteBuffer automatically:
+In  order to maximize performance, QuasarDB tries to keep memory copying to a minimum and `createBlob` does not copy blob data before putting it into the local cache using `append`. This means that when short-lived objects that get garbage collected before they are added to the local cache will lead to errors. As a solution to this, we provide a SafeBlob class that copies the data into a new, temporary ByteBuffer automatically:
 
 ```java
 String qdbUri = "qdb://127.0.0.1:2838";
