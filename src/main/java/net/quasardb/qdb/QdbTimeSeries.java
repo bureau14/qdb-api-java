@@ -34,8 +34,8 @@ public final class QdbTimeSeries {
     /**
      * Initializes new timeseries table.
      *
-     * @warning Table should be periodically flushed by invoking the .flush() method,
-     *          or use autoFlushTable() instead.
+     * Table should be periodically flushed by invoking the .flush() method,
+     * or use autoFlushTable() instead.
      */
     public QdbTimeSeriesTable table() {
         return new QdbTimeSeriesTable(this.session, this.name);
