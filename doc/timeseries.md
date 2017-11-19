@@ -39,9 +39,10 @@ QdbTimeSeriesTable table = series.autoFlushTable();
 ...
 
 // Do not forget to flush after you are done.
-table.flush();```
+table.flush();
+```
 
-### Inserting rows data
+### Inserting rows
 
 Use the `append` member function to append new rows to the local table cache. Assuming you have a table with a double and a blob column, the following example shows how to insert a new row:
 
@@ -79,7 +80,8 @@ QdbTimeSeriesValue[] values = {
   };
 
 table.append(new QdbTimeSeriesRow (LocalDateTime.now(), values));
-table.flush();```
+table.flush();
+```
 
 While SafeBlob should be avoided for performance reasons, the code above is safe to use, even when the short-lived ByteBuffer gets garbage collected.
 
