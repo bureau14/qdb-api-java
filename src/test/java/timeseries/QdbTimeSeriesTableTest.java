@@ -155,10 +155,8 @@ public class QdbTimeSeriesTableTest {
         };
 
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
-                                                    values);
 
-        table.append(row);
+        table.append(timestamp, values);
         table.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
