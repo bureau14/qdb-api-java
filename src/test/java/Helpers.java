@@ -1,3 +1,5 @@
+package net.quasardb.qdb;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -10,13 +12,14 @@ public class Helpers {
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    public static final QdbCluster.SecurityOptions SECURITRY_OPTIONS =
-        new QdbCluster.SecurityOptions("qdb-api-python",
+    public static final QdbSession.SecurityOptions SECURITRY_OPTIONS =
+        new QdbSession.SecurityOptions("qdb-api-python",
                                        "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
                                        "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 
     public static QdbCluster createCluster() {
         try {
+            System.out.println("initializing a new cluster!");
             return new QdbCluster(DaemonRunner.uri());
         } catch (Exception e) {
             throw new RuntimeException(e);

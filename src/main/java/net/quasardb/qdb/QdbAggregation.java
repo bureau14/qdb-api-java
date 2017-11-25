@@ -64,6 +64,4 @@ public class QdbAggregation <T extends QdbColumnValue> {
     public T getResult() {
         return this.result;
     }
-
-
 }

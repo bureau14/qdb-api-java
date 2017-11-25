@@ -10,27 +10,7 @@ import net.quasardb.qdb.jni.*;
  * A connection to a quasardb cluster.
  */
 public class QdbCluster implements AutoCloseable {
-    private final QdbSession session;
-
-    public static class SecurityOptions implements Serializable {
-        protected String userName;
-        protected String userPrivateKey;
-        protected String clusterPublicKey;
-
-        public SecurityOptions (String userName,
-                                String userPrivateKey,
-                                String clusterPublicKey) {
-            this.userName = userName;
-            this.userPrivateKey = userPrivateKey;
-            this.clusterPublicKey = clusterPublicKey;
-        }
-
-        static qdb_cluster_security_options toNative(SecurityOptions options) {
-          return new qdb_cluster_security_options(options.userName,
-                                                  options.userPrivateKey,
-                                                  options.clusterPublicKey);
-        }
-    }
+    private QdbSession session;
 
     /**
      * Connects to a quasardb cluster through the specified URI. Requires security settings to be disabled.
@@ -42,9 +22,8 @@ public class QdbCluster implements AutoCloseable {
      * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri) {
-        session = new QdbSession();
-        int err = qdb.connect(session.handle(), uri);
-        QdbExceptionFactory.throwIfError(err);
+        this.session = new QdbSession();
+        this.session.connect(uri);
     }
 
     /**
@@ -58,17 +37,24 @@ public class QdbCluster implements AutoCloseable {
      * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri,
-                      SecurityOptions securityOptions) {
-        session = new QdbSession();
-        int err = qdb.secure_connect(session.handle(), uri, SecurityOptions.toNative(securityOptions));
-        QdbExceptionFactory.throwIfError(err);
+                      QdbSession.SecurityOptions securityOptions) {
+        this.session = new QdbSession(securityOptions);
+        this.session.connect(uri);
     }
 
     /**
      * Closes the connection to the cluster.
      */
     public void close() {
-        session.close();
+        this.session.close();
+    }
+
+    /**
+     * Returns true if a the legacy session object is initialised and
+     * in used by other objects.
+     */
+    public boolean isLegacySessionInitialised() {
+        return (this.session != null);
     }
 
     /**
@@ -211,6 +197,7 @@ public class QdbCluster implements AutoCloseable {
        * @throws QdbClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbNode findNodeFor(String alias) {
+        session.throwIfClosed();
         QdbEntry e = new QdbEntry(session, alias);
         return e.node();
     }

@@ -4,15 +4,15 @@ import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbEntryTagsTest {
-    @Test(expected = QdbClusterClosedException.class)
-    public void throwsClusterClosed_afterCallingQdbClusterClose() {
-        QdbCluster cluster = Helpers.createCluster();
-        String alias = Helpers.createUniqueAlias();
+    // @Test(expected = QdbClusterClosedException.class)
+    // public void throwsClusterClosed_afterCallingQdbClusterClose() {
+    //     QdbCluster cluster = Helpers.createCluster();
+    //     String alias = Helpers.createUniqueAlias();
 
-        QdbEntry entry = cluster.blob(alias);
-        cluster.close();
-        entry.tags().iterator(); // <- throws
-    }
+    //     QdbEntry entry = cluster.blob(alias);
+    //     cluster.close();
+    //     entry.tags().iterator(); // <- throws
+    // }
 
     @Test(expected = QdbReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
