@@ -10,19 +10,19 @@ import static org.junit.Assert.*;
 public class QdbTimeSeriesTableTest {
 
     @Test
-    public void canGetTable() throws Exception {
+    public void canGetWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesTable table =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+        QdbTimeSeriesWriter writer =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
     }
 
     @Test
-    public void canFlushTable() throws Exception {
+    public void canFlushWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesTable table =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+        QdbTimeSeriesWriter writer =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
 
-        table.flush();
+        writer.flush();
     }
 
     @Test
@@ -38,30 +38,30 @@ public class QdbTimeSeriesTableTest {
             new QdbColumnDefinition.Double(Helpers.createUniqueAlias())
         };
 
-        QdbTimeSeriesTable table =
-            Helpers.createTimeSeries(Arrays.asList(columns)).table();
+        QdbTimeSeriesWriter writer =
+            Helpers.createTimeSeries(Arrays.asList(columns)).tableWriter();
 
         for (int i = 0; i < columns.length; ++i) {
             QdbColumnDefinition column = columns[i];
-            assertThat(table.columnIndexById(column.getName()), equalTo(i));
+            assertThat(writer.getTable().columnIndexById(column.getName()), equalTo(i));
         }
     }
 
 
     @Test
-    public void canCloseTable() throws Exception {
+    public void canCloseWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesTable table =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).table();
+        QdbTimeSeriesWriter writer =
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
 
-        table.close();
+        writer.close();
     }
 
     @Test
     public void canInsertDoubleRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
@@ -70,8 +70,8 @@ public class QdbTimeSeriesTableTest {
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
         QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
-        table.append(row);
-        table.flush();
+        writer.append(row);
+        writer.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -87,7 +87,7 @@ public class QdbTimeSeriesTableTest {
     public void canInsertMultipleDoubleRows() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         int ROW_COUNT = 100000;
         QdbTimeSeriesRow[] rows = new QdbTimeSeriesRow[ROW_COUNT];
@@ -96,10 +96,10 @@ public class QdbTimeSeriesTableTest {
                 new QdbTimeSeriesRow (LocalDateTime.now(),
                                       new QdbTimeSeriesValue[] {
                                           QdbTimeSeriesValue.createDouble(Helpers.randomDouble())});
-            table.append(rows[i]);
+            writer.append(rows[i]);
         }
 
-        table.flush();
+        writer.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(rows[0].getTimestamp(),
@@ -118,7 +118,7 @@ public class QdbTimeSeriesTableTest {
     public void canInsertBlobRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createSafeBlob(Helpers.createSampleData())
@@ -127,8 +127,8 @@ public class QdbTimeSeriesTableTest {
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
         QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
-        table.append(row);
-        table.flush();
+        writer.append(row);
+        writer.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -147,7 +147,7 @@ public class QdbTimeSeriesTableTest {
 
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
                                                                       new QdbColumnDefinition.Blob (alias2)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble()),
@@ -156,8 +156,8 @@ public class QdbTimeSeriesTableTest {
 
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
 
-        table.append(timestamp, values);
-        table.flush();
+        writer.append(timestamp, values);
+        writer.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -179,7 +179,7 @@ public class QdbTimeSeriesTableTest {
 
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
                                                                       new QdbColumnDefinition.Blob (alias2)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble()),
@@ -190,8 +190,8 @@ public class QdbTimeSeriesTableTest {
         QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
 
-        table.append(row);
-        table.flush();
+        writer.append(row);
+        writer.flush();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -206,10 +206,10 @@ public class QdbTimeSeriesTableTest {
     }
 
     @Test
-    public void tableIsFlushed_whenClosed() throws Exception {
+    public void writerIsFlushed_whenClosed() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesTable table = series.table();
+        QdbTimeSeriesWriter writer = series.tableWriter();
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
@@ -218,8 +218,8 @@ public class QdbTimeSeriesTableTest {
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
         QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
-        table.append(row);
-        table.close();
+        writer.append(row);
+        writer.close();
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -232,10 +232,10 @@ public class QdbTimeSeriesTableTest {
     }
 
     @Test
-    public void autoFlushTable_isFlushed_whenThresholdReached() throws Exception {
+    public void autoFlushWriter_isFlushed_whenThresholdReached() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesTable table = series.autoFlushTable(2); // flush every 2 rows
+        QdbTimeSeriesWriter writer = series.autoFlushTableWriter(2); // flush every 2 rows
 
         QdbTimeSeriesValue[] values = {
             QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
@@ -244,7 +244,7 @@ public class QdbTimeSeriesTableTest {
         QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
         QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
                                                     values);
-        table.append(row);
+        writer.append(row);
 
         QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
         ranges.add(new QdbTimeRange(timestamp,
@@ -255,7 +255,7 @@ public class QdbTimeSeriesTableTest {
         assertThat(results.size(), (is(0)));
 
         // Add another row, which should trigger flush
-        table.append(row);
+        writer.append(row);
 
         results = series.getDoubles(alias, ranges);
 
