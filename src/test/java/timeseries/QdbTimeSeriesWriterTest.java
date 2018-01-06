@@ -7,7 +7,7 @@ import org.hamcrest.Matcher;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-public class QdbTimeSeriesTableTest {
+public class QdbTimeSeriesWriterTest {
 
     @Test
     public void canGetWriter() throws Exception {
