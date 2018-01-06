@@ -32,29 +32,36 @@ public final class QdbTimeSeries {
     }
 
     /**
-     * Initializes new timeseries table.
+     * Initializes new timeseries table writer.
      *
-     * Table should be periodically flushed by invoking the .flush() method,
-     * or use autoFlushTable() instead.
+     * Table writer should be periodically flushed by invoking the .flush()
+     * method, or create a new table writer using autoFlushTableWriter() instead.
      */
     public QdbTimeSeriesWriter tableWriter() {
         return QdbTimeSeriesTable.writer(this.session, this.name);
     }
 
     /**
-     * Initializes new timeseries table with auto-flush enabled.
+     * Initializes new timeseries table writer with auto-flush enabled.
      */
     public QdbAutoFlushTimeSeriesWriter autoFlushTableWriter() {
         return QdbTimeSeriesTable.autoFlushWriter(this.session, this.name);
     }
 
     /**
-     * Initializes new timeseries table with auto-flush enabled.
+     * Initializes new timeseries table writer with auto-flush enabled.
      *
      * @param threshold The amount of rows to keep in local buffer before automatic flushing occurs.
      */
     public QdbAutoFlushTimeSeriesWriter autoFlushTableWriter(long threshold) {
         return QdbTimeSeriesTable.autoFlushWriter(this.session, this.name, threshold);
+    }
+
+    /**
+     * Initializes new timeseries table reader.
+     */
+    public QdbTimeSeriesReader tableReader() {
+        return QdbTimeSeriesTable.reader(this.session, this.name);
     }
 
     public void insertColumns(Collection<QdbColumnDefinition> columns) {
