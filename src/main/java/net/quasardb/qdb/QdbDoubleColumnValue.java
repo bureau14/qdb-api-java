@@ -28,12 +28,12 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
     }
 
     protected static QdbDoubleColumnValue fromNative(qdb_ts_double_point input) {
-        return new QdbDoubleColumnValue(new QdbTimespec(input.getTimestamp()),
+        return new QdbDoubleColumnValue(input.getTimestamp(),
                                         input.getValue());
     }
 
     protected static qdb_ts_double_point toNative(QdbColumnValue<Double> point) {
-        return new qdb_ts_double_point(point.getTimestamp().getValue(), point.getValue());
+        return new qdb_ts_double_point(point.getTimestamp(), point.getValue());
     }
 
     public String toString() {

@@ -29,12 +29,12 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
     }
 
     protected static QdbBlobColumnValue fromNative(qdb_ts_blob_point input) {
-        return new QdbBlobColumnValue(new QdbTimespec(input.getTimestamp()),
+        return new QdbBlobColumnValue(input.getTimestamp(),
                                       input.getValue());
     }
 
     protected static qdb_ts_blob_point toNative(QdbColumnValue<ByteBuffer> point) {
-        return new qdb_ts_blob_point(point.getTimestamp().getValue(), point.getValue());
+        return new qdb_ts_blob_point(point.getTimestamp(), point.getValue());
     }
 
     public String toString() {

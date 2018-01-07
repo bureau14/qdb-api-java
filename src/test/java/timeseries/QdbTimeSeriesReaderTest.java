@@ -12,7 +12,9 @@ public class QdbTimeSeriesReaderTest {
     @Test
     public void canGetReader() throws Exception {
         String alias = Helpers.createUniqueAlias();
+
+        QdbTimeRange[] ranges = {};
         QdbTimeSeriesReader reader =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader();
+            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader(ranges);
     }
 }

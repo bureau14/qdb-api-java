@@ -43,9 +43,10 @@ public class QdbTimeSeriesBlobTest {
         QdbTimeRange dataRange = data.range();
         series.insertBlobs(data);
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(dataRange.getBegin(),
-                                    new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(dataRange.getBegin(),
+                             new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
+        };
 
         QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
 

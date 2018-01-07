@@ -60,8 +60,15 @@ public final class QdbTimeSeries {
     /**
      * Initializes new timeseries table reader.
      */
-    public QdbTimeSeriesReader tableReader() {
-        return QdbTimeSeriesTable.reader(this.session, this.name);
+    public QdbTimeSeriesReader tableReader(QdbTimeRange[] ranges) {
+        return tableReader(Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+    }
+
+    /**
+     * Initializes new timeseries table reader.
+     */
+    public QdbTimeSeriesReader tableReader(QdbFilteredRange[] ranges) {
+        return QdbTimeSeriesTable.reader(this.session, this.name, ranges);
     }
 
     public void insertColumns(Collection<QdbColumnDefinition> columns) {
@@ -88,13 +95,25 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRangeCollection ranges) {
+    /**
+     * Access to timeseries doubles by column. Helper function that automatically converts
+     * QdbTimeRange objects to QdbFilteredRange objects without filter;
+     */
+    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRange[] ranges) {
+        return getDoubles(column,
+                          Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+    }
+
+    /**
+     * Access to timeseries doubles by column.
+     */
+    public QdbDoubleColumnCollection getDoubles(String column, QdbFilteredRange[] ranges) {
         Reference<qdb_ts_double_point[]> points = new Reference<qdb_ts_double_point[]>();
 
         int err = qdb.ts_double_get_ranges(this.session.handle(),
                                            this.name,
                                            column,
-                                           ranges.toNative(),
+                                           ranges,
                                            points);
         QdbExceptionFactory.throwIfError(err);
 
@@ -122,13 +141,26 @@ public final class QdbTimeSeries {
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public QdbBlobColumnCollection getBlobs(String column, QdbTimeRangeCollection ranges) {
+
+    /**
+     * Access to timeseries blobs by column. Helper function that automatically converts
+     * QdbTimeRange objects to QdbFilteredRange objects without filter.
+     */
+    public QdbBlobColumnCollection getBlobs(String column, QdbTimeRange[] ranges) {
+        return getBlobs(column,
+                        Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+    }
+
+    /**
+     * Access to timeseries blobs by column.
+     */
+    public QdbBlobColumnCollection getBlobs(String column, QdbFilteredRange[] ranges) {
         Reference<qdb_ts_blob_point[]> points = new Reference<qdb_ts_blob_point[]>();
 
         int err = qdb.ts_blob_get_ranges(this.session.handle(),
                                          this.name,
                                          column,
-                                         ranges.toNative(),
+                                         ranges,
                                          points);
         QdbExceptionFactory.throwIfError(err);
 

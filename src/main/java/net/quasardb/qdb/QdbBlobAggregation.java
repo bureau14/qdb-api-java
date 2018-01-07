@@ -21,7 +21,7 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
      * Converts this object to JNI-compatible representation.
      */
     protected static qdb_ts_blob_aggregation toNative(QdbBlobAggregation input) {
-        return new qdb_ts_blob_aggregation (QdbTimeRange.toNative(input.range),
+        return new qdb_ts_blob_aggregation (new QdbFilteredRange(input.range),
                                             input.type.value,
                                             input.count,
                                             QdbBlobColumnValue.toNative(input.result));
@@ -35,7 +35,7 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
         assert(input.getFilteredRange().getFilter().getType() == 0);
 
         return new QdbBlobAggregation(Type.values()[(int)input.getAggregationType()],
-                                      QdbTimeRange.fromNative(input.getFilteredRange()),
+                                      input.getFilteredRange().getRange(),
                                       input.getCount(),
                                       QdbBlobColumnValue.fromNative(input.getResult()));
     }

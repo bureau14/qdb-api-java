@@ -73,9 +73,10 @@ public class QdbTimeSeriesWriterTest {
         writer.append(row);
         writer.flush();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
@@ -101,9 +102,10 @@ public class QdbTimeSeriesWriterTest {
 
         writer.flush();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(rows[0].getTimestamp(),
-                                    new QdbTimespec(rows[(rows.length - 1)].getTimestamp().asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(rows[0].getTimestamp(),
+                             new QdbTimespec(rows[(rows.length - 1)].getTimestamp().asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
         assertThat(results.size(), (is(rows.length)));
@@ -130,9 +132,10 @@ public class QdbTimeSeriesWriterTest {
         writer.append(row);
         writer.flush();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
 
@@ -159,9 +162,10 @@ public class QdbTimeSeriesWriterTest {
         writer.append(timestamp, values);
         writer.flush();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
         QdbBlobColumnCollection results2 = series.getBlobs(alias2, ranges);
@@ -193,9 +197,10 @@ public class QdbTimeSeriesWriterTest {
         writer.append(row);
         writer.flush();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
         QdbBlobColumnCollection results2 = series.getBlobs(alias2, ranges);
@@ -221,9 +226,10 @@ public class QdbTimeSeriesWriterTest {
         writer.append(row);
         writer.close();
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
@@ -246,9 +252,10 @@ public class QdbTimeSeriesWriterTest {
                                                     values);
         writer.append(row);
 
-        QdbTimeRangeCollection ranges = new QdbTimeRangeCollection();
-        ranges.add(new QdbTimeRange(timestamp,
-                                    new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1))));
+        QdbTimeRange[] ranges = {
+            new QdbTimeRange(timestamp,
+                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
