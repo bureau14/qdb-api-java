@@ -61,7 +61,7 @@ public final class QdbTimeSeries {
      * Initializes new timeseries table reader.
      */
     public QdbTimeSeriesReader tableReader(QdbTimeRange[] ranges) {
-        return tableReader(Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+        return tableReader(Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
     }
 
     /**
@@ -101,7 +101,7 @@ public final class QdbTimeSeries {
      */
     public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRange[] ranges) {
         return getDoubles(column,
-                          Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+                          Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
     }
 
     /**
@@ -148,7 +148,7 @@ public final class QdbTimeSeries {
      */
     public QdbBlobColumnCollection getBlobs(String column, QdbTimeRange[] ranges) {
         return getBlobs(column,
-                        Arrays.stream(ranges).toArray(QdbFilteredRange[]::new));
+                        Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
     }
 
     /**
