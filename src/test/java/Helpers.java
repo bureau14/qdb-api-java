@@ -4,6 +4,9 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.function.Supplier;
+
 import net.quasardb.qdb.*;
 
 public class Helpers {
@@ -55,6 +58,70 @@ public class Helpers {
 
     public static ByteBuffer createSampleData() {
         return createSampleData(0);
+    }
+
+
+    public static QdbColumnDefinition[] generateTableColumns(int count) {
+        return Stream.generate(Helpers::createUniqueAlias)
+            .limit(count)
+            .map(QdbColumnDefinition.Double::new)
+            .toArray(QdbColumnDefinition[]::new);
+    }
+
+    public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int count) {
+        Supplier<QdbTimeSeriesValue[]> valueGen = (() ->
+                                                   Stream.generate(Helpers::randomDouble)
+                                                   .limit(cols.length)
+                                                   .map(QdbTimeSeriesValue::createDouble)
+                                                   .toArray(QdbTimeSeriesValue[]::new));
+
+
+        return Stream.generate(valueGen)
+            .limit(count)
+            .map((v) ->
+                 new QdbTimeSeriesRow(QdbTimespec.now(),
+                                      v))
+            .toArray(QdbTimeSeriesRow[]::new);
+    }
+
+    public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, QdbTimeSeriesRow[] rows) throws Exception {
+        QdbTimeSeries series = createTimeSeries(Arrays.asList(cols));
+        QdbTimeSeriesWriter writer = series.tableWriter();
+
+        for (QdbTimeSeriesRow row : rows) {
+            writer.append(row);
+        }
+
+        writer.flush();
+
+        return series;
+    }
+
+    /**
+     * Generates a QdbTimeRange from an array of rows. Assumes that all rows are sorted,
+     * with the oldest row being first.
+     */
+    public static QdbTimeRange rangeFromRows(QdbTimeSeriesRow[] rows) {
+        assert(rows.length >= 1);
+
+        QdbTimespec first = rows[0].getTimestamp();
+        QdbTimespec last = rows[(rows.length - 1)].getTimestamp();
+
+        return new QdbTimeRange(first,
+                                last.plusNanos(1));
+    }
+
+    /**
+     * Generates an array of QdbTimeRange from an array of rows. Generates exactly one timerange
+     * per row.
+     */
+    public static QdbTimeRange[] rangesFromRows(QdbTimeSeriesRow[] rows) {
+        return Arrays.stream(rows)
+            .map(QdbTimeSeriesRow::getTimestamp)
+            .map((t) -> {
+                     return new QdbTimeRange(t, t.plusNanos(1));
+                })
+            .toArray(QdbTimeRange[]::new);
     }
 
     public static <T extends Serializable> byte[] serialize(T obj)
