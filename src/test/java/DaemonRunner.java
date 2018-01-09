@@ -35,7 +35,7 @@ public class DaemonRunner {
     private static String findDaemon() {
         String path = System.getProperty("qdbd.path");
         if (path == null) {
-            path = "qdbd";
+            path = "qdb/bin/qdbd";
             System.out.println("Warning: qdbd.path not set.");
         } else {
             System.out.println("qdbd.path = " + path);

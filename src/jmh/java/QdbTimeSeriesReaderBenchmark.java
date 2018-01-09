@@ -16,24 +16,21 @@ public class QdbTimeSeriesReaderBenchmark {
     @Param({"1", "10", "100"})
     public int colCount;
 
-    @Param({"100", "10000", "1000000"})
-    public int rowCount;
-
     QdbTimeSeries series;
     QdbTimeRange[] ranges;
 
     @Setup
     public void setup() throws Exception {
         QdbColumnDefinition[] cols = Helpers.generateTableColumns(colCount);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, rowCount);
+        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1000000);
 
-        this.series = Helpers.seedTable(cols, rows);
         QdbTimeRange[] ranges  = { Helpers.rangeFromRows(rows) };
+
         this.ranges = ranges;
+        this.series = Helpers.seedTable(cols, rows);
     }
 
-    @Benchmark
-    public void readRows() {
+    private void run(int rowCount) {
         QdbTimeSeriesReader reader = this.series.tableReader(ranges);
 
         while (reader.hasNext()) {
@@ -41,11 +38,43 @@ public class QdbTimeSeriesReaderBenchmark {
         }
     }
 
+    @Benchmark
+    @OperationsPerInvocation(100)
+    public void readRows_100() {
+        this.run(100);
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(1000)
+    public void readRows_1000() {
+        this.run(1000);
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(10000)
+    public void readRows_10000() {
+        this.run(10000);
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(100000)
+    public void readRows_100000() {
+        this.run(100000);
+    }
+
+    @Benchmark
+    @OperationsPerInvocation(1000000)
+    public void readRows_1000000() {
+        this.run(1000000);
+    }
+
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-                .include(QdbTimeSeriesReaderBenchmark.class.getSimpleName())
-                .forks(1)
-                .build();
+            .include(QdbTimeSeriesReaderBenchmark.class.getSimpleName())
+            .warmupIterations(5)
+            .measurementIterations(5)
+            .forks(1)
+            .build();
 
         new Runner(opt).run();
     }
