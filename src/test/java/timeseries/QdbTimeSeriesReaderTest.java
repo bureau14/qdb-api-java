@@ -85,54 +85,12 @@ public class QdbTimeSeriesReaderTest {
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
 
-        System.out.println("rows = " + Arrays.toString(rows));
-        System.out.println("ranges = " + Arrays.toString(ranges));
-
         QdbTimeSeriesReader reader = series.tableReader(ranges);
 
         int index = 0;
         while (reader.hasNext()) {
             assertThat(rows[index++], (equalTo(reader.next())));
         }
-    }
-
-    @Test
-    public void canReadManyRows() throws Exception {
-        // Generate a big test dataset
-
-        int COL_COUNT = 10;
-        int ROW_COUNT = 10000;
-
-        long startTime = System.nanoTime();
-
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(COL_COUNT);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, ROW_COUNT);
-
-        long genTime = System.nanoTime();
-
-        QdbTimeSeries series = Helpers.seedTable(cols, rows);
-        QdbTimeRange[] ranges = { Helpers.rangeFromRows(rows) };
-
-        long writeTime = System.nanoTime();
-
-        QdbTimeSeriesReader reader = series.tableReader(ranges);
-
-        long preReadTime = System.nanoTime();
-
-        int index = 0;
-        while (reader.hasNext()) {
-            assertThat(rows[index++], (equalTo(reader.next())));
-        }
-
-        long readTime = System.nanoTime();
-
-        System.out.println("canReadyManyRows [" + ROW_COUNT + "x" + COL_COUNT + "]");
-        System.out.println("canReadyManyRows genTime:     " + Duration.ofNanos(genTime - startTime) + "ns");
-        System.out.println("canReadyManyRows writeTime:   " + Duration.ofNanos(writeTime - genTime) + "ns");
-        System.out.println("canReadyManyRows preReadTime: " + Duration.ofNanos(preReadTime - writeTime) + "ns");
-        System.out.println("canReadyManyRows readTime:    " + Duration.ofNanos(readTime - preReadTime) + "ns");
-
-        assertThat(index, (equalTo(ROW_COUNT)));
     }
 
     @Test
