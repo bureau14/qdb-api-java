@@ -53,6 +53,7 @@ public class QdbTimeSeriesWriterBenchmark {
 
         @Setup(Level.Iteration)
         public void setup(TimeSeries ts) throws Exception {
+            System.out.println("setting up Writer for timeseries table " + ts.series.getName());
             this.writer = ts.series.autoFlushTableWriter(this.flushThreshold);
         }
 
@@ -70,9 +71,8 @@ public class QdbTimeSeriesWriterBenchmark {
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
-            .include(QdbTimeSeriesReaderBenchmark.class.getSimpleName())
+            .include(QdbTimeSeriesWriterBenchmark.class.getSimpleName())
             .shouldFailOnError(true)
-            .shouldDoGC(true)
             .build();
 
         Helpers.createCluster();

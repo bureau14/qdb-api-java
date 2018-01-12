@@ -84,7 +84,7 @@ public class Helpers {
     }
 
     public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, QdbTimeSeriesRow[] rows) throws Exception {
-        QdbTimeSeries series = createTimeSeries(Arrays.asList(cols));
+        QdbTimeSeries series = createTimeSeries(cols);
         QdbTimeSeriesWriter writer = series.tableWriter();
 
         for (QdbTimeSeriesRow row : rows) {
@@ -221,6 +221,10 @@ public class Helpers {
         QdbTag tag = createEmptyTag();
         blob.attachTag(tag.alias());
         return tag;
+    }
+
+    public static QdbTimeSeries createTimeSeries(QdbColumnDefinition[] columns) throws IOException {
+        return createTimeSeries(Arrays.asList(columns));
     }
 
     public static QdbTimeSeries createTimeSeries(Collection<QdbColumnDefinition> columns) throws IOException {
