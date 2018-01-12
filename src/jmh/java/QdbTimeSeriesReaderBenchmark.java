@@ -1,80 +1,48 @@
 package net.quasardb.qdb;
 
-import java.time.Instant;
-
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.*;
 import org.openjdk.jmh.runner.options.*;
+import java.util.concurrent.TimeUnit;
 
 import net.quasardb.qdb.*;
 
-@BenchmarkMode(Mode.AverageTime)
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(1)
 @State(Scope.Thread)
 public class QdbTimeSeriesReaderBenchmark {
 
-    @Param({"1", "10", "100"})
+    @Param({"1", "10", "25", "100"})
     public int colCount;
 
-    QdbTimeSeries series;
-    QdbTimeRange[] ranges;
+    QdbTimeSeriesReader reader;
 
-    @Setup
+    @Setup(Level.Iteration)
     public void setup() throws Exception {
         QdbColumnDefinition[] cols = Helpers.generateTableColumns(colCount);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1000000);
+        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1000000 / colCount);
 
         QdbTimeRange[] ranges  = { Helpers.rangeFromRows(rows) };
 
-        this.ranges = ranges;
-        this.series = Helpers.seedTable(cols, rows);
-    }
-
-    private void run(int rowCount) {
-        QdbTimeSeriesReader reader = this.series.tableReader(ranges);
-
-        while (reader.hasNext()) {
-            reader.next();
-        }
+        QdbTimeSeries series = Helpers.seedTable(cols, rows);
+        this.reader = series.tableReader(ranges);
     }
 
     @Benchmark
-    @OperationsPerInvocation(100)
-    public void readRows_100() {
-        this.run(100);
-    }
-
-    @Benchmark
-    @OperationsPerInvocation(1000)
-    public void readRows_1000() {
-        this.run(1000);
-    }
-
-    @Benchmark
-    @OperationsPerInvocation(10000)
-    public void readRows_10000() {
-        this.run(10000);
-    }
-
-    @Benchmark
-    @OperationsPerInvocation(100000)
-    public void readRows_100000() {
-        this.run(100000);
-    }
-
-    @Benchmark
-    @OperationsPerInvocation(1000000)
-    public void readRows_1000000() {
-        this.run(1000000);
+    public QdbTimeSeriesRow readRow() {
+        assert(this.reader.hasNext());
+        return this.reader.next();
     }
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
             .include(QdbTimeSeriesReaderBenchmark.class.getSimpleName())
-            .warmupIterations(5)
-            .measurementIterations(5)
-            .forks(1)
+            .shouldFailOnError(true)
+            .shouldDoGC(true)
             .build();
+
+        Helpers.createCluster();
 
         new Runner(opt).run();
     }

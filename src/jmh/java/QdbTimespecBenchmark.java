@@ -2,24 +2,35 @@ package net.quasardb.qdb;
 
 import java.time.Instant;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.*;
+import org.openjdk.jmh.runner.options.*;
 
 import net.quasardb.qdb.*;
 
+@State(Scope.Thread)
 public class QdbTimespecBenchmark {
 
-    @Benchmark
-    public void qdbTimespec() {
-        QdbTimespec.now();
+    public QdbClock clock;
+
+    @Setup
+    public void setup() throws Exception {
+        this.clock = new QdbClock();
     }
 
     @Benchmark
-    public void instant() {
-        Instant.now();
+    public QdbTimespec jni() {
+        return QdbTimespec.now();
+    }
+
+    @Benchmark
+    public QdbTimespec clock() {
+        return QdbTimespec.now(this.clock);
+    }
+
+    @Benchmark
+    public QdbTimespec instant() {
+        return new QdbTimespec(Instant.now());
     }
 
     public static void main(String[] args) throws RunnerException {
