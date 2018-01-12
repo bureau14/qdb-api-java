@@ -22,7 +22,6 @@ public class Helpers {
 
     public static QdbCluster createCluster() {
         try {
-            System.out.println("initializing a new cluster!");
             return new QdbCluster(DaemonRunner.uri());
         } catch (Exception e) {
             throw new RuntimeException(e);
