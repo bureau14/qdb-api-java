@@ -49,7 +49,7 @@ public class DaemonRunner {
             System.out.println("Start " + path + " --security=false");
             process = runtime.exec(new String[] {path, "--security=false", "--transient", "-a", "127.0.0.1:" + port()});
             System.out.println(path + " started, waiting...");
-            Thread.sleep(2000);
+            Thread.sleep(10000);
             System.out.println(path + " ready");
 
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class DaemonRunner {
                                                  "--transient",
                                                  "-a", "127.0.0.1:" + securePort()});
             System.out.println(path + " started, waiting...");
-            Thread.sleep(2000);
+            Thread.sleep(10000);
             System.out.println(path + " ready");
 
         } catch (Exception e) {
