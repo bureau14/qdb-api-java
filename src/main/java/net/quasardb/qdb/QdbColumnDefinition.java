@@ -8,32 +8,33 @@ import java.util.stream.Collectors;
 
 public class QdbColumnDefinition {
     protected String name;
-    protected Type type;
-
-    public enum Type {
-        UNINITIALIZED(qdb_ts_column_type.uninitialized),
-        DOUBLE(qdb_ts_column_type.double_),
-        BLOB(qdb_ts_column_type.blob);
-
-        protected final int value;
-        Type(int type) {
-            this.value = type;
-        }
-    }
+    protected QdbTimeSeriesValue.Type type;
 
     public static class Blob extends QdbColumnDefinition {
         public Blob(String name) {
-            super(name, Type.BLOB);
+            super(name, QdbTimeSeriesValue.Type.BLOB);
         }
     }
 
     public static class Double extends QdbColumnDefinition {
         public Double(String name) {
-            super(name, Type.DOUBLE);
+            super(name, QdbTimeSeriesValue.Type.DOUBLE);
         }
     }
 
-    QdbColumnDefinition(String name, Type type) {
+    public static class Int64 extends QdbColumnDefinition {
+        public Int64(String name) {
+            super(name, QdbTimeSeriesValue.Type.INT64);
+        }
+    }
+
+    public static class Timestamp extends QdbColumnDefinition {
+        public Timestamp(String name) {
+            super(name, QdbTimeSeriesValue.Type.TIMESTAMP);
+        }
+    }
+
+    QdbColumnDefinition(String name, QdbTimeSeriesValue.Type type) {
         this.name = name;
         this.type = type;
     }
@@ -42,7 +43,7 @@ public class QdbColumnDefinition {
         return this.name;
     }
 
-    public Type getType() {
+    public QdbTimeSeriesValue.Type getType() {
         return this.type;
     }
 
@@ -57,14 +58,8 @@ public class QdbColumnDefinition {
     }
 
     public static QdbColumnDefinition fromNative (qdb_ts_column_info info) {
-        switch (info.type) {
-        case qdb_ts_column_type.double_:
-            return new Double(info.name);
-        case qdb_ts_column_type.blob:
-            return new Blob(info.name);
-        default:
-            throw new IllegalArgumentException("invalid column type: " + info.type);
-        }
+        return new QdbColumnDefinition(info.name,
+                                       QdbTimeSeriesValue.Type.fromInt(info.type));
     }
 
     public static Iterable<QdbColumnDefinition> fromNative (qdb_ts_column_info[] nativeColumns) {
