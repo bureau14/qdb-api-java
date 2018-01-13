@@ -54,6 +54,9 @@ jmh {
   exclude = ['Timespec']
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+}
 task flatSources(type: Copy) {
     from sourceSets.main.allSource.files
     into "$buildDir/flatSrc/net/quasardb/qdb"
