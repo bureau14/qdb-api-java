@@ -119,18 +119,25 @@ public class QdbTimeSeriesReaderTest {
 
     @Test
     public void canReadMultipleValues_afterWriting() throws Exception {
-        // Generate a 2x2 test dataset
 
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(2);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 2);
-        QdbTimeSeries series = Helpers.seedTable(cols, rows);
-        QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.DOUBLE,
+                                                 QdbTimeSeriesValue.Type.BLOB };
 
-        QdbTimeSeriesReader reader = series.tableReader(ranges);
+        for (QdbTimeSeriesValue.Type valueType : valueTypes) {
+            // Generate a 2x2 test dataset
 
-        int index = 0;
-        while (reader.hasNext()) {
-            assertThat(rows[index++], (equalTo(reader.next())));
+            QdbColumnDefinition[] cols =
+                Helpers.generateTableColumns(valueType, 2);
+            QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 2);
+            QdbTimeSeries series = Helpers.seedTable(cols, rows);
+            QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+
+            QdbTimeSeriesReader reader = series.tableReader(ranges);
+
+            int index = 0;
+            while (reader.hasNext()) {
+                assertThat(rows[index++], (equalTo(reader.next())));
+            }
         }
     }
 
