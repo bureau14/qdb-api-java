@@ -62,20 +62,59 @@ public class QdbTimeSeriesReaderTest {
     }
 
     @Test
-    public void canReadSingleDoubleValue_afterWriting() throws Exception {
-        // Generate a 1x1 test dataset
-
+    public void helpersRowGen_generatesDoubleRows() throws Exception {
         QdbColumnDefinition[] cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, 1);
         QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
-        QdbTimeSeries series = Helpers.seedTable(cols, rows);
-        QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
 
-        QdbTimeSeriesReader reader = series.tableReader(ranges);
+        Arrays.stream(cols)
+            .forEach((col) ->
+                     assertThat(col.getType(), (equalTo(QdbColumnDefinition.Type.DOUBLE))));
 
-        assertThat(reader.hasNext(), (is(true)));
+        Arrays.stream(rows)
+            .forEach((row) ->
+                     Arrays.stream(row.getValues())
+                     .forEach((value) ->
+                              assertThat(value.getType(), (equalTo(QdbTimeSeriesValue.Type.DOUBLE)))));
+    }
 
-        QdbTimeSeriesRow row = reader.next();
-        assertThat(rows[0], (equalTo(row)));
+    @Test
+    public void helpersRowGen_generatesBlobRows() throws Exception {
+        QdbColumnDefinition[] cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.BLOB, 1);
+        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+
+        Arrays.stream(cols)
+            .forEach((col) ->
+                     assertThat(col.getType(), (equalTo(QdbColumnDefinition.Type.BLOB))));
+
+        Arrays.stream(rows)
+            .forEach((row) ->
+                     Arrays.stream(row.getValues())
+                     .forEach((value) ->
+                              assertThat(value.getType(), (equalTo(QdbTimeSeriesValue.Type.BLOB)))));
+    }
+
+    @Test
+    public void canReadSingleValue_afterWriting() throws Exception {
+
+        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.DOUBLE,
+                                                 QdbTimeSeriesValue.Type.BLOB };
+
+        for (QdbTimeSeriesValue.Type valueType : valueTypes) {
+            // Generate a 1x1 test dataset
+            QdbColumnDefinition[] cols =
+                Helpers.generateTableColumns(valueType, 1);
+
+            QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+            QdbTimeSeries series = Helpers.seedTable(cols, rows);
+            QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+
+            QdbTimeSeriesReader reader = series.tableReader(ranges);
+
+            assertThat(reader.hasNext(), (is(true)));
+
+            QdbTimeSeriesRow row = reader.next();
+            assertThat(rows[0], (equalTo(row)));
+        }
     }
 
     @Test
