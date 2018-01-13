@@ -180,7 +180,7 @@ public class Helpers {
     }
 
     public static ByteBuffer createSampleData() {
-        return createSampleData(0);
+        return createSampleData(32);
     }
 
     public static ByteBuffer createSampleData(int size) {
