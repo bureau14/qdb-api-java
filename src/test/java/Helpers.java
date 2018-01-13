@@ -81,11 +81,23 @@ public class Helpers {
             .toArray(QdbColumnDefinition[]::new);
     }
 
+    public static QdbTimeSeriesValue generateRandomValueByType(QdbColumnDefinition.Type valueType) {
+        switch (valueType) {
+        case DOUBLE:
+            return QdbTimeSeriesValue.createDouble(randomDouble());
+        case BLOB:
+            return QdbTimeSeriesValue.createBlob(createSampleData());
+        }
+
+        return QdbTimeSeriesValue.createNull();
+
+    }
+
     public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int count) {
         Supplier<QdbTimeSeriesValue[]> valueGen = (() ->
-                                                   Stream.generate(Helpers::randomDouble)
-                                                   .limit(cols.length)
-                                                   .map(QdbTimeSeriesValue::createDouble)
+                                                   Arrays.stream(cols)
+                                                   .map(QdbColumnDefinition::getType)
+                                                   .map(Helpers::generateRandomValueByType)
                                                    .toArray(QdbTimeSeriesValue[]::new));
 
 

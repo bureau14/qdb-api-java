@@ -62,10 +62,10 @@ public class QdbTimeSeriesReaderTest {
     }
 
     @Test
-    public void canReadSingleValue_afterWriting() throws Exception {
+    public void canReadSingleDoubleValue_afterWriting() throws Exception {
         // Generate a 1x1 test dataset
 
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(1);
+        QdbColumnDefinition[] cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, 1);
         QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
