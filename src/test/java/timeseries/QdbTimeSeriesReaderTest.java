@@ -68,7 +68,7 @@ public class QdbTimeSeriesReaderTest {
 
         Arrays.stream(cols)
             .forEach((col) ->
-                     assertThat(col.getType(), (equalTo(QdbColumnDefinition.Type.DOUBLE))));
+                     assertThat(col.getType(), (equalTo(QdbTimeSeriesValue.Type.DOUBLE))));
 
         Arrays.stream(rows)
             .forEach((row) ->
@@ -84,7 +84,7 @@ public class QdbTimeSeriesReaderTest {
 
         Arrays.stream(cols)
             .forEach((col) ->
-                     assertThat(col.getType(), (equalTo(QdbColumnDefinition.Type.BLOB))));
+                     assertThat(col.getType(), (equalTo(QdbTimeSeriesValue.Type.BLOB))));
 
         Arrays.stream(rows)
             .forEach((row) ->
@@ -96,7 +96,9 @@ public class QdbTimeSeriesReaderTest {
     @Test
     public void canReadSingleValue_afterWriting() throws Exception {
 
-        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.DOUBLE,
+        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.INT64,
+                                                 QdbTimeSeriesValue.Type.DOUBLE,
+                                                 QdbTimeSeriesValue.Type.TIMESTAMP,
                                                  QdbTimeSeriesValue.Type.BLOB };
 
         for (QdbTimeSeriesValue.Type valueType : valueTypes) {
@@ -120,7 +122,9 @@ public class QdbTimeSeriesReaderTest {
     @Test
     public void canReadMultipleValues_afterWriting() throws Exception {
 
-        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.DOUBLE,
+        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.INT64,
+                                                 QdbTimeSeriesValue.Type.DOUBLE,
+                                                 QdbTimeSeriesValue.Type.TIMESTAMP,
                                                  QdbTimeSeriesValue.Type.BLOB };
 
         for (QdbTimeSeriesValue.Type valueType : valueTypes) {

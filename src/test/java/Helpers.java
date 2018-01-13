@@ -55,10 +55,6 @@ public class Helpers {
         }
     }
 
-    public static ByteBuffer createSampleData() {
-        return createSampleData(0);
-    }
-
 
     public static QdbColumnDefinition[] generateTableColumns(int count) {
         return generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, count);
@@ -67,38 +63,52 @@ public class Helpers {
     public static QdbColumnDefinition[] generateTableColumns(QdbTimeSeriesValue.Type valueType, int count) {
         return Stream.generate(Helpers::createUniqueAlias)
             .limit(count)
-            .map((alias) ->
-                 {
-                     switch (valueType) {
-                     case DOUBLE:
-                         return new QdbColumnDefinition.Double(alias);
-                     case BLOB:
-                         return new QdbColumnDefinition.Blob(alias);
-                     }
-
-                     return new QdbColumnDefinition(alias, QdbColumnDefinition.Type.UNINITIALIZED);
-                 })
+            .map((alias) -> {
+                    return new QdbColumnDefinition(alias, valueType);
+                })
             .toArray(QdbColumnDefinition[]::new);
     }
 
-    public static QdbTimeSeriesValue generateRandomValueByType(QdbColumnDefinition.Type valueType) {
+    public static QdbTimeSeriesValue generateRandomValueByType(int complexity, QdbTimeSeriesValue.Type valueType) {
         switch (valueType) {
+        case INT64:
+            return QdbTimeSeriesValue.createInt64(randomInt64());
         case DOUBLE:
             return QdbTimeSeriesValue.createDouble(randomDouble());
+        case TIMESTAMP:
+            return QdbTimeSeriesValue.createTimestamp(randomTimestamp());
         case BLOB:
-            return QdbTimeSeriesValue.createBlob(createSampleData());
+            return QdbTimeSeriesValue.createBlob(createSampleData(complexity));
         }
 
         return QdbTimeSeriesValue.createNull();
 
     }
 
+    /**
+     * Generate table rows with standard complexity
+     */
     public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int count) {
-        Supplier<QdbTimeSeriesValue[]> valueGen = (() ->
-                                                   Arrays.stream(cols)
-                                                   .map(QdbColumnDefinition::getType)
-                                                   .map(Helpers::generateRandomValueByType)
-                                                   .toArray(QdbTimeSeriesValue[]::new));
+        return generateTableRows(cols, 1, count);
+    }
+
+    /**
+     * Generate table rows.
+     *
+     * @param cols       Describes the table layout
+     * @param complexity Arbitrary complexity variable that is used when generating data. E.g. for blobs,
+     *                   this denotes the size of the blob value being generated.
+     */
+    public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int complexity, int count) {
+        // Generate that returns entire rows with an appropriate value for each column.
+        Supplier<QdbTimeSeriesValue[]> valueGen =
+            (() ->
+             Arrays.stream(cols)
+             .map(QdbColumnDefinition::getType)
+             .map((QdbTimeSeriesValue.Type valueType) -> {
+                     return Helpers.generateRandomValueByType(complexity, valueType);
+                 })
+             .toArray(QdbTimeSeriesValue[]::new));
 
 
         return Stream.generate(valueGen)
@@ -112,6 +122,7 @@ public class Helpers {
     public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, QdbTimeSeriesRow[] rows) throws Exception {
         QdbTimeSeries series = createTimeSeries(cols);
         QdbTimeSeriesWriter writer = series.tableWriter();
+
 
         for (QdbTimeSeriesRow row : rows) {
             writer.append(row);
@@ -168,14 +179,26 @@ public class Helpers {
         return cl.cast(o);
     }
 
+    public static ByteBuffer createSampleData() {
+        return createSampleData(0);
+    }
+
     public static ByteBuffer createSampleData(int size) {
-        String DATA = String.format("data.%d", n++);
-        if (size == 0)
-            size = DATA.getBytes().length;
         ByteBuffer buffer = ByteBuffer.allocateDirect(size);
-        buffer.put(DATA.getBytes());
-        buffer.flip();
+        createSampleData(size, buffer);
         return buffer;
+    }
+
+    public static void createSampleData(int size, ByteBuffer buffer) {
+        byte[] b = new byte[size];
+        createSampleData(b);
+
+        buffer.put(b);
+        buffer.flip();
+    }
+
+    public static void createSampleData(byte[] b) {
+        new Random(n++).nextBytes(b);
     }
 
     public static QdbBatch createBatch() {
@@ -281,6 +304,21 @@ public class Helpers {
 
     public static double randomDouble() {
         return new Random(n++).nextDouble();
+    }
+
+    public static long randomInt64() {
+        return new Random(n++).nextLong();
+    }
+
+    public static QdbTimespec randomTimespec() {
+        return randomTimestamp();
+
+    }
+
+    public static QdbTimespec randomTimestamp() {
+        return new QdbTimespec(new Random(n++).nextInt(),
+                               new Random(n++).nextInt());
+
     }
 
     public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
