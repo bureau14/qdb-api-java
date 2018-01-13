@@ -17,8 +17,9 @@ public class QdbTimeSeriesReaderTest {
             new QdbTimeRange(QdbTimespec.now(),
                              QdbTimespec.now().plusNanos(1))
         };
+
         QdbTimeSeriesReader reader =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader(ranges);
+            Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
     }
 
     @Test
@@ -29,8 +30,9 @@ public class QdbTimeSeriesReaderTest {
             new QdbTimeRange(QdbTimespec.now(),
                              QdbTimespec.now().plusNanos(1))
         };
+
         QdbTimeSeriesReader reader =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader(ranges);
+            Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
         reader.close();
     }
 
@@ -40,7 +42,7 @@ public class QdbTimeSeriesReaderTest {
 
         QdbTimeRange[] ranges = {};
         QdbTimeSeriesReader reader =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader(ranges);
+            Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
     }
 
     @Test
@@ -54,7 +56,7 @@ public class QdbTimeSeriesReaderTest {
         };
 
         QdbTimeSeriesReader reader =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableReader(ranges);
+            Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
 
         assertThat(reader.hasNext(), (is(false)));
     }

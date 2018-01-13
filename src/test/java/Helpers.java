@@ -61,9 +61,23 @@ public class Helpers {
 
 
     public static QdbColumnDefinition[] generateTableColumns(int count) {
+        return generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, count);
+    }
+
+    public static QdbColumnDefinition[] generateTableColumns(QdbTimeSeriesValue.Type valueType, int count) {
         return Stream.generate(Helpers::createUniqueAlias)
             .limit(count)
-            .map(QdbColumnDefinition.Double::new)
+            .map((alias) ->
+                 {
+                     switch (valueType) {
+                     case DOUBLE:
+                         return new QdbColumnDefinition.Double(alias);
+                     case BLOB:
+                         return new QdbColumnDefinition.Blob(alias);
+                     }
+
+                     return new QdbColumnDefinition(alias, QdbColumnDefinition.Type.UNINITIALIZED);
+                 })
             .toArray(QdbColumnDefinition[]::new);
     }
 
