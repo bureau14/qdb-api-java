@@ -18,21 +18,6 @@ import net.quasardb.qdb.*;
 public class QdbTimeSeriesWriterBenchmark {
 
     @State(Scope.Thread)
-    public static class Table {
-        @Param({"1", "10", "25", "100"})
-        public int colCount;
-
-        QdbColumnDefinition[] cols;
-        QdbTimeSeriesRow[] rows;
-
-        @Setup(Level.Trial)
-        public void setup() {
-            this.cols = Helpers.generateTableColumns(colCount);
-            this.rows = Helpers.generateTableRows(cols, 10000000 / colCount);
-        }
-    }
-
-    @State(Scope.Thread)
     public static class TimeSeries {
         QdbTimeSeries series;
         Iterator<QdbTimeSeriesRow> iterator;
@@ -53,7 +38,6 @@ public class QdbTimeSeriesWriterBenchmark {
 
         @Setup(Level.Iteration)
         public void setup(TimeSeries ts) throws Exception {
-            System.out.println("setting up Writer for timeseries table " + ts.series.getName());
             this.writer = ts.series.autoFlushTableWriter(this.flushThreshold);
         }
 

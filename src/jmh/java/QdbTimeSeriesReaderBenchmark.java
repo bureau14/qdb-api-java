@@ -10,32 +10,20 @@ import net.quasardb.qdb.*;
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(1)
-@State(Scope.Benchmark)
 public class QdbTimeSeriesReaderBenchmark {
 
     @State(Scope.Thread)
-    public static class Table {
-        @Param({"1", "10", "25", "100"})
-        public int colCount;
-
-        QdbColumnDefinition[] cols;
-        QdbTimeSeriesRow[] rows;
-        QdbTimeRange[] ranges ;
+    public static class ReadableTable {
+        QdbTimeRange[] ranges;
         String tableName;
 
         @Setup(Level.Trial)
-        public void setup() throws Exception {
-            System.out.println("Generating columns..");
-            this.cols = Helpers.generateTableColumns(colCount);
-
-            System.out.println("Generating rows..");
-            this.rows = Helpers.generateTableRows(cols, 10000000 / colCount);
-
+        public void setup(Table table) throws Exception {
             System.out.println("Determining time ranges..");
-            this.ranges = new QdbTimeRange[]{ Helpers.rangeFromRows(this.rows) };
+            this.ranges = new QdbTimeRange[]{ Helpers.rangeFromRows(table.rows) };
 
             System.out.println("Seeding table.....");
-            this.tableName = Helpers.seedTable(this.cols, this.rows).getName();
+            this.tableName = Helpers.seedTable(table.cols, table.rows).getName();
 
             System.out.println("Got tablename = " + this.tableName);
         }
@@ -46,8 +34,7 @@ public class QdbTimeSeriesReaderBenchmark {
         QdbTimeSeriesReader reader;
 
         @Setup(Level.Iteration)
-        public void setup(Table table) throws Exception {
-            System.out.println("Setting up Reader from table " + table.tableName + " and timeseries");
+        public void setup(ReadableTable table) throws Exception {
             this.reader = Helpers.getTimeSeries(table.tableName).tableReader(table.ranges);
         }
 
