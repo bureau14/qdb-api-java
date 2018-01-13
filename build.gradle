@@ -51,7 +51,7 @@ jmh {
   fork = 1
   warmupIterations = 3
   iterations = 10
-  exclude = ['Reader']
+  exclude = ['Timespec']
 }
 
 task flatSources(type: Copy) {
