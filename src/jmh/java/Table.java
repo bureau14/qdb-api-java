@@ -23,7 +23,7 @@ public class Table {
     };
 
 
-    @Param({"1", "10", "25", "100"})
+    @Param({"1", "10", "100"})
     public int colCount;
 
     @Param({"INT64", "DOUBLE", "TIMESTAMP", "BLOB_1", "BLOB_256", "BLOB_1024"})
