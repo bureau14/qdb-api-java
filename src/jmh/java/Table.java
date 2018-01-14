@@ -70,7 +70,7 @@ public class Table {
             break;
         }
 
-        int rowCount = 1000000 / colCount;
+        int rowCount = 10000000 / colCount;
         System.out.println("Generating " + rowCount + " rows and keeping structure in memory..");
         this.rows = Helpers.generateTableRows(this.cols, complexity, rowCount);
     }
