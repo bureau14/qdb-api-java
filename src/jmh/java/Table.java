@@ -14,7 +14,9 @@ import net.quasardb.qdb.*;
 @State(Scope.Thread)
 public class Table {
     public enum ValueType {
+        INT64,
         DOUBLE,
+        TIMESTAMP,
         BLOB_1,
         BLOB_256,
         BLOB_1024
