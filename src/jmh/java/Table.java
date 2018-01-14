@@ -14,14 +14,16 @@ import net.quasardb.qdb.*;
 @State(Scope.Thread)
 public class Table {
     public enum ValueType {
+        INT64,
         DOUBLE,
+        TIMESTAMP,
         BLOB_1,
         BLOB_256,
         BLOB_1024
     };
 
 
-    @Param({"1", "10", "25", "100"})
+    @Param({"1", "10", "100"})
     public int colCount;
 
     @Param({"INT64", "DOUBLE", "TIMESTAMP", "BLOB_1", "BLOB_256", "BLOB_1024"})
@@ -68,7 +70,7 @@ public class Table {
             break;
         }
 
-        int rowCount = 1000000 / colCount;
+        int rowCount = 10000000 / colCount;
         System.out.println("Generating " + rowCount + " rows and keeping structure in memory..");
         this.rows = Helpers.generateTableRows(this.cols, complexity, rowCount);
     }
