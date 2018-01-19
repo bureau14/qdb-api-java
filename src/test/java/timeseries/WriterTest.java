@@ -1,25 +1,28 @@
 import java.util.*;
 import java.time.*;
-import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-public class QdbTimeSeriesWriterTest {
+import net.quasardb.qdb.ts.*;
+import net.quasardb.qdb.*;
+
+
+public class WriterTest {
 
     @Test
     public void canGetWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesWriter writer =
+        Writer writer =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
     }
 
     @Test
     public void canFlushWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesWriter writer =
+        Writer writer =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
 
         writer.flush();
@@ -38,7 +41,7 @@ public class QdbTimeSeriesWriterTest {
             new QdbColumnDefinition.Double(Helpers.createUniqueAlias())
         };
 
-        QdbTimeSeriesWriter writer =
+        Writer writer =
             Helpers.createTimeSeries(Arrays.asList(columns)).tableWriter();
 
         for (int i = 0; i < columns.length; ++i) {
@@ -51,7 +54,7 @@ public class QdbTimeSeriesWriterTest {
     @Test
     public void canCloseWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeriesWriter writer =
+        Writer writer =
             Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
 
         writer.close();
@@ -61,21 +64,20 @@ public class QdbTimeSeriesWriterTest {
     public void canInsertDoubleRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble())
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
-                                                    values);
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp, values);
         writer.append(row);
         writer.flush();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
@@ -88,23 +90,23 @@ public class QdbTimeSeriesWriterTest {
     public void canInsertMultipleDoubleRows() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
         int ROW_COUNT = 100000;
-        QdbTimeSeriesRow[] rows = new QdbTimeSeriesRow[ROW_COUNT];
+        Row[] rows = new Row[ROW_COUNT];
         for (int i = 0; i < rows.length; ++i) {
             rows[i] =
-                new QdbTimeSeriesRow (LocalDateTime.now(),
-                                      new QdbTimeSeriesValue[] {
-                                          QdbTimeSeriesValue.createDouble(Helpers.randomDouble())});
+                new Row (LocalDateTime.now(),
+                                      new Value[] {
+                                          Value.createDouble(Helpers.randomDouble())});
             writer.append(rows[i]);
         }
 
         writer.flush();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(rows[0].getTimestamp(),
-                             new QdbTimespec(rows[(rows.length - 1)].getTimestamp().asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(rows[0].getTimestamp(),
+                          new Timespec(rows[(rows.length - 1)].getTimestamp().asLocalDateTime().plusNanos(1)))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
@@ -120,21 +122,21 @@ public class QdbTimeSeriesWriterTest {
     public void canInsertBlobRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createSafeBlob(Helpers.createSampleData())
+        Value[] values = {
+            Value.createSafeBlob(Helpers.createSampleData())
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp,
                                                     values);
         writer.append(row);
         writer.flush();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
@@ -150,21 +152,21 @@ public class QdbTimeSeriesWriterTest {
 
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
                                                                       new QdbColumnDefinition.Blob (alias2)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createDouble(Helpers.randomDouble()),
-            QdbTimeSeriesValue.createBlob(Helpers.createSampleData())
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble()),
+            Value.createBlob(Helpers.createSampleData())
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
+        Timespec timestamp = new Timespec(LocalDateTime.now());
 
         writer.append(timestamp, values);
         writer.flush();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
@@ -183,23 +185,22 @@ public class QdbTimeSeriesWriterTest {
 
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
                                                                       new QdbColumnDefinition.Blob (alias2)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createDouble(Helpers.randomDouble()),
-            QdbTimeSeriesValue.createNull()
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble()),
+            Value.createNull()
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
-                                                    values);
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp, values);
 
         writer.append(row);
         writer.flush();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
@@ -214,21 +215,21 @@ public class QdbTimeSeriesWriterTest {
     public void writerIsFlushed_whenClosed() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble())
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
-                                                    values);
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp,
+                          values);
         writer.append(row);
         writer.close();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
@@ -241,20 +242,19 @@ public class QdbTimeSeriesWriterTest {
     public void autoFlushWriter_isFlushed_whenThresholdReached() throws Exception {
         String alias = Helpers.createUniqueAlias();
         QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        QdbTimeSeriesWriter writer = series.autoFlushTableWriter(2); // flush every 2 rows
+        Writer writer = series.autoFlushTableWriter(2); // flush every 2 rows
 
-        QdbTimeSeriesValue[] values = {
-            QdbTimeSeriesValue.createDouble(Helpers.randomDouble())
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble())
         };
 
-        QdbTimespec timestamp = new QdbTimespec(LocalDateTime.now());
-        QdbTimeSeriesRow row = new QdbTimeSeriesRow(timestamp,
-                                                    values);
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp, values);
         writer.append(row);
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(timestamp,
-                             new QdbTimespec(timestamp.asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
@@ -270,5 +270,4 @@ public class QdbTimeSeriesWriterTest {
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
         assertThat(results.get(1).getValue(), equalTo(values[0].getDouble()));
     }
-
 }

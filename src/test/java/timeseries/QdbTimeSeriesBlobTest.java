@@ -1,12 +1,14 @@
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
-import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+
+import net.quasardb.qdb.ts.*;
+import net.quasardb.qdb.*;
 
 public class QdbTimeSeriesBlobTest {
     @Test
@@ -40,12 +42,12 @@ public class QdbTimeSeriesBlobTest {
 
         QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertBlobs(data);
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(dataRange.getBegin(),
-                             new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(dataRange.getBegin(),
+                          new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
         };
 
         QdbBlobColumnCollection results = series.getBlobs(alias, ranges);
@@ -65,13 +67,13 @@ public class QdbTimeSeriesBlobTest {
         data.add(new QdbBlobColumnValue(Helpers.createSampleData()));
         data.add(new QdbBlobColumnValue(Helpers.createSampleData()));
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertBlobs(data);
 
         QdbBlobAggregationCollection aggregations = new QdbBlobAggregationCollection();
         aggregations.add(new QdbBlobAggregation(QdbAggregation.Type.COUNT,
-                                                  new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
+                                                new TimeRange(dataRange.getBegin(),
+                                                              new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbBlobAggregationCollection result = series.blobAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());

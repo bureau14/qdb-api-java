@@ -1,24 +1,26 @@
 import java.util.*;
 import java.time.*;
-import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-public class QdbTimeSeriesReaderTest {
+import net.quasardb.qdb.ts.*;
+import net.quasardb.qdb.*;
+
+public class ReaderTest {
 
     @Test
     public void canGetReader() throws Exception {
         String alias = Helpers.createUniqueAlias();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(QdbTimespec.now(),
-                             QdbTimespec.now().plusNanos(1))
+        TimeRange[] ranges = {
+            new TimeRange(Timespec.now(),
+                          Timespec.now().plusNanos(1))
         };
 
-        QdbTimeSeriesReader reader =
+        Reader reader =
             Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
     }
 
@@ -26,12 +28,12 @@ public class QdbTimeSeriesReaderTest {
     public void canCloseReader() throws Exception {
         String alias = Helpers.createUniqueAlias();
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(QdbTimespec.now(),
-                             QdbTimespec.now().plusNanos(1))
+        TimeRange[] ranges = {
+            new TimeRange(Timespec.now(),
+                          Timespec.now().plusNanos(1))
         };
 
-        QdbTimeSeriesReader reader =
+        Reader reader =
             Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
         reader.close();
     }
@@ -40,8 +42,8 @@ public class QdbTimeSeriesReaderTest {
     public void readWithoutRanges_throwsException() throws Exception {
         String alias = Helpers.createUniqueAlias();
 
-        QdbTimeRange[] ranges = {};
-        QdbTimeSeriesReader reader =
+        TimeRange[] ranges = {};
+        Reader reader =
             Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
     }
 
@@ -50,12 +52,12 @@ public class QdbTimeSeriesReaderTest {
         String alias = Helpers.createUniqueAlias();
 
         // These ranges should always be empty
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(QdbTimespec.now(),
-                             QdbTimespec.now().plusNanos(1))
+        TimeRange[] ranges = {
+            new TimeRange(Timespec.now(),
+                          Timespec.now().plusNanos(1))
         };
 
-        QdbTimeSeriesReader reader =
+        Reader reader =
             Helpers.createTimeSeries(Helpers.generateTableColumns(1)).tableReader(ranges);
 
         assertThat(reader.hasNext(), (is(false)));
@@ -63,58 +65,58 @@ public class QdbTimeSeriesReaderTest {
 
     @Test
     public void helpersRowGen_generatesDoubleRows() throws Exception {
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, 1);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+        QdbColumnDefinition[] cols = Helpers.generateTableColumns(Value.Type.DOUBLE, 1);
+        Row[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
             .forEach((col) ->
-                     assertThat(col.getType(), (equalTo(QdbTimeSeriesValue.Type.DOUBLE))));
+                     assertThat(col.getType(), (equalTo(Value.Type.DOUBLE))));
 
         Arrays.stream(rows)
             .forEach((row) ->
                      Arrays.stream(row.getValues())
                      .forEach((value) ->
-                              assertThat(value.getType(), (equalTo(QdbTimeSeriesValue.Type.DOUBLE)))));
+                              assertThat(value.getType(), (equalTo(Value.Type.DOUBLE)))));
     }
 
     @Test
     public void helpersRowGen_generatesBlobRows() throws Exception {
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.BLOB, 1);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+        QdbColumnDefinition[] cols = Helpers.generateTableColumns(Value.Type.BLOB, 1);
+        Row[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
             .forEach((col) ->
-                     assertThat(col.getType(), (equalTo(QdbTimeSeriesValue.Type.BLOB))));
+                     assertThat(col.getType(), (equalTo(Value.Type.BLOB))));
 
         Arrays.stream(rows)
             .forEach((row) ->
                      Arrays.stream(row.getValues())
                      .forEach((value) ->
-                              assertThat(value.getType(), (equalTo(QdbTimeSeriesValue.Type.BLOB)))));
+                              assertThat(value.getType(), (equalTo(Value.Type.BLOB)))));
     }
 
     @Test
     public void canReadSingleValue_afterWriting() throws Exception {
 
-        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.INT64,
-                                                 QdbTimeSeriesValue.Type.DOUBLE,
-                                                 QdbTimeSeriesValue.Type.TIMESTAMP,
-                                                 QdbTimeSeriesValue.Type.BLOB };
+        Value.Type[] valueTypes = { Value.Type.INT64,
+                                                 Value.Type.DOUBLE,
+                                                 Value.Type.TIMESTAMP,
+                                                 Value.Type.BLOB };
 
-        for (QdbTimeSeriesValue.Type valueType : valueTypes) {
+        for (Value.Type valueType : valueTypes) {
             // Generate a 1x1 test dataset
             QdbColumnDefinition[] cols =
                 Helpers.generateTableColumns(valueType, 1);
 
-            QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+            Row[] rows = Helpers.generateTableRows(cols, 1);
             QdbTimeSeries series = Helpers.seedTable(cols, rows);
-            QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+            TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
-            QdbTimeSeriesReader reader = series.tableReader(ranges);
+            Reader reader = series.tableReader(ranges);
 
             assertThat(reader.hasNext(), (is(true)));
 
-            QdbTimeSeriesRow row = reader.next();
+            Row row = reader.next();
             assertThat(rows[0], (equalTo(row)));
         }
     }
@@ -122,21 +124,21 @@ public class QdbTimeSeriesReaderTest {
     @Test
     public void canReadMultipleValues_afterWriting() throws Exception {
 
-        QdbTimeSeriesValue.Type[] valueTypes = { QdbTimeSeriesValue.Type.INT64,
-                                                 QdbTimeSeriesValue.Type.DOUBLE,
-                                                 QdbTimeSeriesValue.Type.TIMESTAMP,
-                                                 QdbTimeSeriesValue.Type.BLOB };
+        Value.Type[] valueTypes = { Value.Type.INT64,
+                                                 Value.Type.DOUBLE,
+                                                 Value.Type.TIMESTAMP,
+                                                 Value.Type.BLOB };
 
-        for (QdbTimeSeriesValue.Type valueType : valueTypes) {
+        for (Value.Type valueType : valueTypes) {
             // Generate a 2x2 test dataset
 
             QdbColumnDefinition[] cols =
                 Helpers.generateTableColumns(valueType, 2);
-            QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 2);
+            Row[] rows = Helpers.generateTableRows(cols, 2);
             QdbTimeSeries series = Helpers.seedTable(cols, rows);
-            QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+            TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
-            QdbTimeSeriesReader reader = series.tableReader(ranges);
+            Reader reader = series.tableReader(ranges);
 
             int index = 0;
             while (reader.hasNext()) {
@@ -150,11 +152,11 @@ public class QdbTimeSeriesReaderTest {
         // Generate a 1x1 test dataset
 
         QdbColumnDefinition[] cols = Helpers.generateTableColumns(1);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+        Row[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
-        QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+        TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
-        QdbTimeSeriesReader reader = series.tableReader(ranges);
+        Reader reader = series.tableReader(ranges);
 
         assertThat(reader.hasNext(), (is(true)));
         assertThat(reader.hasNext(), (is(true)));
@@ -171,13 +173,13 @@ public class QdbTimeSeriesReaderTest {
         // Generate a 1x1 test dataset
 
         QdbColumnDefinition[] cols = Helpers.generateTableColumns(1);
-        QdbTimeSeriesRow[] rows = Helpers.generateTableRows(cols, 1);
+        Row[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
-        QdbTimeRange[] ranges = Helpers.rangesFromRows(rows);
+        TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
         // Seeding complete, actual test below this line
 
-        QdbTimeSeriesReader reader = series.tableReader(ranges);
+        Reader reader = series.tableReader(ranges);
         reader.next();
         reader.next();
     }

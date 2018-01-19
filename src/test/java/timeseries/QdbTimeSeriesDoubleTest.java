@@ -2,9 +2,11 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.*;
 import java.util.concurrent.*;
-import net.quasardb.qdb.*;
 import org.junit.*;
 import org.hamcrest.Matcher;
+
+import net.quasardb.qdb.ts.*;
+import net.quasardb.qdb.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -41,12 +43,12 @@ public class QdbTimeSeriesDoubleTest {
 
         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertDoubles(data);
 
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(dataRange.getBegin(),
-                             new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
+        TimeRange[] ranges = {
+            new TimeRange(dataRange.getBegin(),
+                             new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
@@ -99,10 +101,10 @@ public class QdbTimeSeriesDoubleTest {
         data.addAll(task7.get());
         data.addAll(task8.get());
 
-        QdbTimeRange dataRange = data.range();
-        QdbTimeRange[] ranges = {
-            new QdbTimeRange(dataRange.getBegin(),
-                             new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
+        TimeRange dataRange = data.range();
+        TimeRange[] ranges = {
+            new TimeRange(dataRange.getBegin(),
+                             new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))
         };
 
         QdbDoubleColumnCollection results = series.getDoubles(columnAlias, ranges);
@@ -123,13 +125,13 @@ public class QdbTimeSeriesDoubleTest {
         data.add(new QdbDoubleColumnValue(1.00));
         data.add(new QdbDoubleColumnValue(2.00));
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertDoubles(data);
 
         QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
         aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.FIRST,
-                                                  new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
+                                                  new TimeRange(dataRange.getBegin(),
+                                                                   new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
@@ -146,13 +148,13 @@ public class QdbTimeSeriesDoubleTest {
         data.add(new QdbDoubleColumnValue(1.00));
         data.add(new QdbDoubleColumnValue(2.00));
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertDoubles(data);
 
         QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
         aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.FIRST,
-                                                  new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
+                                                  new TimeRange(dataRange.getBegin(),
+                                                                   new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
@@ -171,13 +173,13 @@ public class QdbTimeSeriesDoubleTest {
         data.add(new QdbDoubleColumnValue(1.00));
         data.add(new QdbDoubleColumnValue(2.00));
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertDoubles(data);
 
         QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
         aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.LAST,
-                                                  new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
+                                                  new TimeRange(dataRange.getBegin(),
+                                                                   new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());
@@ -195,13 +197,13 @@ public class QdbTimeSeriesDoubleTest {
         data.add(new QdbDoubleColumnValue(1.00));
         data.add(new QdbDoubleColumnValue(2.00));
 
-        QdbTimeRange dataRange = data.range();
+        TimeRange dataRange = data.range();
         series.insertDoubles(data);
 
         QdbDoubleAggregationCollection aggregations = new QdbDoubleAggregationCollection();
         aggregations.add(new QdbDoubleAggregation(QdbAggregation.Type.COUNT,
-                                                  new QdbTimeRange(dataRange.getBegin(),
-                                                                   new QdbTimespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
+                                                  new TimeRange(dataRange.getBegin(),
+                                                                new Timespec(dataRange.getEnd().asLocalDateTime().plusNanos(1)))));
 
         QdbDoubleAggregationCollection result = series.doubleAggregate(alias, aggregations);
         assertEquals(result.size(), aggregations.size());

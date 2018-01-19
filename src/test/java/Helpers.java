@@ -1,12 +1,19 @@
 package net.quasardb.qdb;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.function.Supplier;
 
+import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.*;
 
 public class Helpers {
@@ -57,10 +64,10 @@ public class Helpers {
 
 
     public static QdbColumnDefinition[] generateTableColumns(int count) {
-        return generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE, count);
+        return generateTableColumns(Value.Type.DOUBLE, count);
     }
 
-    public static QdbColumnDefinition[] generateTableColumns(QdbTimeSeriesValue.Type valueType, int count) {
+    public static QdbColumnDefinition[] generateTableColumns(Value.Type valueType, int count) {
         return Stream.generate(Helpers::createUniqueAlias)
             .limit(count)
             .map((alias) -> {
@@ -69,26 +76,26 @@ public class Helpers {
             .toArray(QdbColumnDefinition[]::new);
     }
 
-    public static QdbTimeSeriesValue generateRandomValueByType(int complexity, QdbTimeSeriesValue.Type valueType) {
+    public static Value generateRandomValueByType(int complexity, Value.Type valueType) {
         switch (valueType) {
         case INT64:
-            return QdbTimeSeriesValue.createInt64(randomInt64());
+            return Value.createInt64(randomInt64());
         case DOUBLE:
-            return QdbTimeSeriesValue.createDouble(randomDouble());
+            return Value.createDouble(randomDouble());
         case TIMESTAMP:
-            return QdbTimeSeriesValue.createTimestamp(randomTimestamp());
+            return Value.createTimestamp(randomTimestamp());
         case BLOB:
-            return QdbTimeSeriesValue.createBlob(createSampleData(complexity));
+            return Value.createBlob(createSampleData(complexity));
         }
 
-        return QdbTimeSeriesValue.createNull();
+        return Value.createNull();
 
     }
 
     /**
      * Generate table rows with standard complexity
      */
-    public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int count) {
+    public static Row[] generateTableRows(QdbColumnDefinition[] cols, int count) {
         return generateTableRows(cols, 1, count);
     }
 
@@ -99,32 +106,32 @@ public class Helpers {
      * @param complexity Arbitrary complexity variable that is used when generating data. E.g. for blobs,
      *                   this denotes the size of the blob value being generated.
      */
-    public static QdbTimeSeriesRow[] generateTableRows(QdbColumnDefinition[] cols, int complexity, int count) {
+    public static Row[] generateTableRows(QdbColumnDefinition[] cols, int complexity, int count) {
         // Generate that returns entire rows with an appropriate value for each column.
-        Supplier<QdbTimeSeriesValue[]> valueGen =
+        Supplier<Value[]> valueGen =
             (() ->
              Arrays.stream(cols)
              .map(QdbColumnDefinition::getType)
-             .map((QdbTimeSeriesValue.Type valueType) -> {
+             .map((Value.Type valueType) -> {
                      return Helpers.generateRandomValueByType(complexity, valueType);
                  })
-             .toArray(QdbTimeSeriesValue[]::new));
+             .toArray(Value[]::new));
 
 
         return Stream.generate(valueGen)
             .limit(count)
             .map((v) ->
-                 new QdbTimeSeriesRow(QdbTimespec.now(),
-                                      v))
-            .toArray(QdbTimeSeriesRow[]::new);
+                 new Row(Timespec.now(),
+                         v))
+            .toArray(Row[]::new);
     }
 
-    public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, QdbTimeSeriesRow[] rows) throws Exception {
+    public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, Row[] rows) throws Exception {
         QdbTimeSeries series = createTimeSeries(cols);
-        QdbTimeSeriesWriter writer = series.tableWriter();
+        Writer writer = series.tableWriter();
 
 
-        for (QdbTimeSeriesRow row : rows) {
+        for (Row row : rows) {
             writer.append(row);
         }
 
@@ -134,30 +141,30 @@ public class Helpers {
     }
 
     /**
-     * Generates a QdbTimeRange from an array of rows. Assumes that all rows are sorted,
+     * Generates a TimeRange from an array of rows. Assumes that all rows are sorted,
      * with the oldest row being first.
      */
-    public static QdbTimeRange rangeFromRows(QdbTimeSeriesRow[] rows) {
+    public static TimeRange rangeFromRows(Row[] rows) {
         assert(rows.length >= 1);
 
-        QdbTimespec first = rows[0].getTimestamp();
-        QdbTimespec last = rows[(rows.length - 1)].getTimestamp();
+        Timespec first = rows[0].getTimestamp();
+        Timespec last = rows[(rows.length - 1)].getTimestamp();
 
-        return new QdbTimeRange(first,
+        return new TimeRange(first,
                                 last.plusNanos(1));
     }
 
     /**
-     * Generates an array of QdbTimeRange from an array of rows. Generates exactly one timerange
+     * Generates an array of TimeRange from an array of rows. Generates exactly one timerange
      * per row.
      */
-    public static QdbTimeRange[] rangesFromRows(QdbTimeSeriesRow[] rows) {
+    public static TimeRange[] rangesFromRows(Row[] rows) {
         return Arrays.stream(rows)
-            .map(QdbTimeSeriesRow::getTimestamp)
+            .map(Row::getTimestamp)
             .map((t) -> {
-                     return new QdbTimeRange(t, t.plusNanos(1));
+                     return new TimeRange(t, t.plusNanos(1));
                 })
-            .toArray(QdbTimeRange[]::new);
+            .toArray(TimeRange[]::new);
     }
 
     public static <T extends Serializable> byte[] serialize(T obj)
@@ -310,14 +317,14 @@ public class Helpers {
         return new Random(n++).nextLong();
     }
 
-    public static QdbTimespec randomTimespec() {
+    public static Timespec randomTimespec() {
         return randomTimestamp();
 
     }
 
-    public static QdbTimespec randomTimestamp() {
-        return new QdbTimespec(new Random(n++).nextInt(),
-                               new Random(n++).nextInt());
+    public static Timespec randomTimestamp() {
+        return new Timespec(new Random(n++).nextInt(),
+                            new Random(n++).nextInt());
 
     }
 
