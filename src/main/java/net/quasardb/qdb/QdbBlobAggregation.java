@@ -2,18 +2,21 @@ package net.quasardb.qdb;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
-import net.quasardb.qdb.jni.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import net.quasardb.qdb.ts.TimeRange;
+import net.quasardb.qdb.ts.FilteredRange;
+import net.quasardb.qdb.jni.*;
+
 public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
 
-    public QdbBlobAggregation (Type type, QdbTimeRange range) {
+    public QdbBlobAggregation (Type type, TimeRange range) {
         super(type, range, 0, new QdbBlobColumnValue());
     }
 
 
-    public QdbBlobAggregation (Type type, QdbTimeRange range, long count, QdbBlobColumnValue value) {
+    public QdbBlobAggregation (Type type, TimeRange range, long count, QdbBlobColumnValue value) {
         super(type, range, count, value);
     }
 
@@ -21,7 +24,7 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
      * Converts this object to JNI-compatible representation.
      */
     protected static qdb_ts_blob_aggregation toNative(QdbBlobAggregation input) {
-        return new qdb_ts_blob_aggregation (new QdbFilteredRange(input.range),
+        return new qdb_ts_blob_aggregation (new FilteredRange(input.range),
                                             input.type.value,
                                             input.count,
                                             QdbBlobColumnValue.toNative(input.result));

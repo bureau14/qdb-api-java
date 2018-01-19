@@ -4,11 +4,13 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
+
+import net.quasardb.qdb.ts.Timespec;
 import net.quasardb.qdb.jni.*;
 
 public abstract class QdbColumnValue <T> implements Serializable {
 
-    QdbTimespec timestamp;
+    Timespec timestamp;
     protected T value;
 
     public QdbColumnValue (T value) {
@@ -16,19 +18,19 @@ public abstract class QdbColumnValue <T> implements Serializable {
     }
 
     public QdbColumnValue (Timestamp timestamp, T value) {
-        this(new QdbTimespec(timestamp), value);
+        this(new Timespec(timestamp), value);
     }
 
     public QdbColumnValue (LocalDateTime timestamp, T value) {
-        this(new QdbTimespec(timestamp), value);
+        this(new Timespec(timestamp), value);
     }
 
-    public QdbColumnValue (QdbTimespec timestamp, T value) {
+    public QdbColumnValue (Timespec timestamp, T value) {
         this.timestamp = timestamp;
         this.value = value;
     }
 
-    public QdbTimespec getTimestamp() {
+    public Timespec getTimestamp() {
         return this.timestamp;
     }
 
@@ -47,7 +49,7 @@ public abstract class QdbColumnValue <T> implements Serializable {
 
     private void readObject(java.io.ObjectInputStream stream)
         throws IOException, ClassNotFoundException {
-        this.timestamp = (QdbTimespec)(stream.readObject());
+        this.timestamp = (Timespec)(stream.readObject());
 
         // :TODO: we should provide a default implementation that uses
         // the regular serialization interface in case it is possible.

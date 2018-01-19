@@ -1,11 +1,13 @@
 package net.quasardb.qdb;
 
-import net.quasardb.qdb.jni.*;
 import java.util.*;
+
+import net.quasardb.qdb.ts.TimeRange;
+import net.quasardb.qdb.jni.qdb_ts_aggregation_type;
 
 public class QdbAggregation <T extends QdbColumnValue> {
     protected Type type;
-    protected QdbTimeRange range;
+    protected TimeRange range;
     protected long count;
     protected T result;
 
@@ -38,7 +40,7 @@ public class QdbAggregation <T extends QdbColumnValue> {
         }
     }
 
-    public QdbAggregation (Type type, QdbTimeRange range, long count, T value) {
+    public QdbAggregation (Type type, TimeRange range, long count, T value) {
         this.type = type;
         this.range = range;
         this.count = count;
@@ -57,7 +59,7 @@ public class QdbAggregation <T extends QdbColumnValue> {
         return this.count;
     }
 
-    public QdbTimeRange getRange() {
+    public TimeRange getRange() {
         return this.range;
     }
 

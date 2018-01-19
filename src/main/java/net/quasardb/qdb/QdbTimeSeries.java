@@ -2,11 +2,16 @@ package net.quasardb.qdb;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
+
+import net.quasardb.qdb.*;
+import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.jni.*;
+
 import java.util.*;
 
 /**
- * Represents a timeseries inside quasardb
+ * Legacy interface to QdbTimeSeries, which provides legacy compatibility
+ * functions.
  */
 public final class QdbTimeSeries {
 
@@ -22,6 +27,9 @@ public final class QdbTimeSeries {
         return this.name;
     }
 
+    /**
+     * Create new timeseries table with a collection of columns.
+     */
     public void create(long millisecondsShardSize, Collection<QdbColumnDefinition> columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
@@ -37,15 +45,15 @@ public final class QdbTimeSeries {
      * Table writer should be periodically flushed by invoking the .flush()
      * method, or create a new table writer using autoFlushTableWriter() instead.
      */
-    public QdbTimeSeriesWriter tableWriter() {
-        return QdbTimeSeriesTable.writer(this.session, this.name);
+    public Writer tableWriter() {
+        return Table.writer(this.session, this.name);
     }
 
     /**
      * Initializes new timeseries table writer with auto-flush enabled.
      */
-    public QdbAutoFlushTimeSeriesWriter autoFlushTableWriter() {
-        return QdbTimeSeriesTable.autoFlushWriter(this.session, this.name);
+    public AutoFlushWriter autoFlushTableWriter() {
+        return Table.autoFlushWriter(this.session, this.name);
     }
 
     /**
@@ -53,22 +61,22 @@ public final class QdbTimeSeries {
      *
      * @param threshold The amount of rows to keep in local buffer before automatic flushing occurs.
      */
-    public QdbAutoFlushTimeSeriesWriter autoFlushTableWriter(long threshold) {
-        return QdbTimeSeriesTable.autoFlushWriter(this.session, this.name, threshold);
+    public AutoFlushWriter autoFlushTableWriter(long threshold) {
+        return Table.autoFlushWriter(this.session, this.name, threshold);
     }
 
     /**
      * Initializes new timeseries table reader.
      */
-    public QdbTimeSeriesReader tableReader(QdbTimeRange[] ranges) {
-        return tableReader(Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
+    public Reader tableReader(TimeRange[] ranges) {
+        return Table.reader(this.session, this.name, ranges);
     }
 
     /**
      * Initializes new timeseries table reader.
      */
-    public QdbTimeSeriesReader tableReader(QdbFilteredRange[] ranges) {
-        return QdbTimeSeriesTable.reader(this.session, this.name, ranges);
+    public Reader tableReader(FilteredRange[] ranges) {
+        return Table.reader(this.session, this.name, ranges);
     }
 
     public void insertColumns(Collection<QdbColumnDefinition> columns) {
@@ -97,17 +105,17 @@ public final class QdbTimeSeries {
 
     /**
      * Access to timeseries doubles by column. Helper function that automatically converts
-     * QdbTimeRange objects to QdbFilteredRange objects without filter;
+     * TimeRange objects to FilteredRange objects without filter;
      */
-    public QdbDoubleColumnCollection getDoubles(String column, QdbTimeRange[] ranges) {
+    public QdbDoubleColumnCollection getDoubles(String column, TimeRange[] ranges) {
         return getDoubles(column,
-                          Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
+                          Arrays.stream(ranges).map(FilteredRange::new).toArray(FilteredRange[]::new));
     }
 
     /**
      * Access to timeseries doubles by column.
      */
-    public QdbDoubleColumnCollection getDoubles(String column, QdbFilteredRange[] ranges) {
+    public QdbDoubleColumnCollection getDoubles(String column, FilteredRange[] ranges) {
         Reference<qdb_ts_double_point[]> points = new Reference<qdb_ts_double_point[]>();
 
         int err = qdb.ts_double_get_ranges(this.session.handle(),
@@ -144,17 +152,17 @@ public final class QdbTimeSeries {
 
     /**
      * Access to timeseries blobs by column. Helper function that automatically converts
-     * QdbTimeRange objects to QdbFilteredRange objects without filter.
+     * TimeRange objects to FilteredRange objects without filter.
      */
-    public QdbBlobColumnCollection getBlobs(String column, QdbTimeRange[] ranges) {
+    public QdbBlobColumnCollection getBlobs(String column, TimeRange[] ranges) {
         return getBlobs(column,
-                        Arrays.stream(ranges).map(QdbFilteredRange::new).toArray(QdbFilteredRange[]::new));
+                        Arrays.stream(ranges).map(FilteredRange::new).toArray(FilteredRange[]::new));
     }
 
     /**
      * Access to timeseries blobs by column.
      */
-    public QdbBlobColumnCollection getBlobs(String column, QdbFilteredRange[] ranges) {
+    public QdbBlobColumnCollection getBlobs(String column, FilteredRange[] ranges) {
         Reference<qdb_ts_blob_point[]> points = new Reference<qdb_ts_blob_point[]>();
 
         int err = qdb.ts_blob_get_ranges(this.session.handle(),

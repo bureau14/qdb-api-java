@@ -2,39 +2,42 @@ package net.quasardb.qdb;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
-import net.quasardb.qdb.jni.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import net.quasardb.qdb.ts.Value;
+import net.quasardb.qdb.jni.*;
+
 public class QdbColumnDefinition {
     protected String name;
-    protected QdbTimeSeriesValue.Type type;
+    protected Value.Type type;
 
     public static class Blob extends QdbColumnDefinition {
         public Blob(String name) {
-            super(name, QdbTimeSeriesValue.Type.BLOB);
+            super(name, Value.Type.BLOB);
         }
     }
 
     public static class Double extends QdbColumnDefinition {
         public Double(String name) {
-            super(name, QdbTimeSeriesValue.Type.DOUBLE);
+            super(name, Value.Type.DOUBLE);
         }
     }
 
     public static class Int64 extends QdbColumnDefinition {
         public Int64(String name) {
-            super(name, QdbTimeSeriesValue.Type.INT64);
+            super(name, Value.Type.INT64);
         }
     }
+
 
     public static class Timestamp extends QdbColumnDefinition {
         public Timestamp(String name) {
-            super(name, QdbTimeSeriesValue.Type.TIMESTAMP);
+            super(name, Value.Type.TIMESTAMP);
         }
     }
 
-    QdbColumnDefinition(String name, QdbTimeSeriesValue.Type type) {
+    QdbColumnDefinition(String name, Value.Type type) {
         this.name = name;
         this.type = type;
     }
@@ -43,12 +46,12 @@ public class QdbColumnDefinition {
         return this.name;
     }
 
-    public QdbTimeSeriesValue.Type getType() {
+    public Value.Type getType() {
         return this.type;
     }
 
     public static qdb_ts_column_info toNative (QdbColumnDefinition d) {
-        return new qdb_ts_column_info(d.name, d.type.value);
+        return new qdb_ts_column_info(d.getName(), d.getType().asInt());
     }
 
     public static qdb_ts_column_info[] toNative (Collection<QdbColumnDefinition> columns) {
@@ -59,7 +62,7 @@ public class QdbColumnDefinition {
 
     public static QdbColumnDefinition fromNative (qdb_ts_column_info info) {
         return new QdbColumnDefinition(info.name,
-                                       QdbTimeSeriesValue.Type.fromInt(info.type));
+                                       Value.Type.fromInt(info.type));
     }
 
     public static Iterable<QdbColumnDefinition> fromNative (qdb_ts_column_info[] nativeColumns) {

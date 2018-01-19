@@ -1,7 +1,9 @@
 package net.quasardb.qdb;
 
-import net.quasardb.qdb.jni.*;
 import java.util.ArrayList;
+
+import net.quasardb.qdb.ts.TimeRange;
+import net.quasardb.qdb.jni.*;
 
 public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T> {
     QdbColumnDefinition column;
@@ -18,19 +20,19 @@ public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T>
     /**
      * Returns the interval that contains all values within this column.
      */
-    public QdbTimeRange range() {
-        QdbTimeRange cur = null;
+    public TimeRange range() {
+        TimeRange cur = null;
 
         for (T val : this) {
             if (cur == null ){
-                cur = new QdbTimeRange(val.getTimestamp(), val.getTimestamp());
+                cur = new TimeRange(val.getTimestamp(), val.getTimestamp());
             } else {
-                if (val.getTimestamp().asLocalDateTime().isBefore(cur.begin.asLocalDateTime())) {
-                    cur.begin = val.getTimestamp();
+                if (val.getTimestamp().asLocalDateTime().isBefore(cur.getBegin().asLocalDateTime())) {
+                    cur = cur.withBegin(val.getTimestamp());
                 }
 
-                if (val.getTimestamp().asLocalDateTime().isAfter(cur.end.asLocalDateTime())) {
-                    cur.end = val.getTimestamp();
+                if (val.getTimestamp().asLocalDateTime().isAfter(cur.getEnd().asLocalDateTime())) {
+                    cur = cur.withEnd(val.getTimestamp());
                 }
             }
         }
