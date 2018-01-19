@@ -50,6 +50,13 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
+     * Returns the active QdbSession.
+     */
+    public QdbSession getSession() {
+        return this.session;
+    }
+
+    /**
      * Returns true if a the legacy session object is initialised and
      * in used by other objects.
      */

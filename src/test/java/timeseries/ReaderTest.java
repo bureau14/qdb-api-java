@@ -99,9 +99,9 @@ public class ReaderTest {
     public void canReadSingleValue_afterWriting() throws Exception {
 
         Value.Type[] valueTypes = { Value.Type.INT64,
-                                                 Value.Type.DOUBLE,
-                                                 Value.Type.TIMESTAMP,
-                                                 Value.Type.BLOB };
+                                    Value.Type.DOUBLE,
+                                    Value.Type.TIMESTAMP,
+                                    Value.Type.BLOB };
 
         for (Value.Type valueType : valueTypes) {
             // Generate a 1x1 test dataset

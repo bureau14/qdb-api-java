@@ -44,6 +44,10 @@ public class Helpers {
         }
     }
 
+    public static QdbSession getSession() {
+        return cluster.getSession();
+    }
+
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {
@@ -127,7 +131,11 @@ public class Helpers {
     }
 
     public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, Row[] rows) throws Exception {
-        QdbTimeSeries series = createTimeSeries(cols);
+        return seedTable(createUniqueAlias(), cols, rows);
+    }
+
+    public static QdbTimeSeries seedTable(String tableName, QdbColumnDefinition[] cols, Row[] rows) throws Exception {
+        QdbTimeSeries series = createTimeSeries(tableName, cols);
         Writer writer = series.tableWriter();
 
 
@@ -151,7 +159,7 @@ public class Helpers {
         Timespec last = rows[(rows.length - 1)].getTimestamp();
 
         return new TimeRange(first,
-                                last.plusNanos(1));
+                             last.plusNanos(1));
     }
 
     /**
@@ -280,11 +288,19 @@ public class Helpers {
     }
 
     public static QdbTimeSeries createTimeSeries(QdbColumnDefinition[] columns) throws IOException {
-        return createTimeSeries(Arrays.asList(columns));
+        return createTimeSeries(createUniqueAlias(), columns);
+    }
+
+    public static QdbTimeSeries createTimeSeries(String alias, QdbColumnDefinition[] columns) throws IOException {
+        return createTimeSeries(alias, Arrays.asList(columns));
     }
 
     public static QdbTimeSeries createTimeSeries(Collection<QdbColumnDefinition> columns) throws IOException {
-        return cluster.createTimeSeries(createUniqueAlias(), 86400000, columns);
+        return createTimeSeries(createUniqueAlias(), columns);
+    }
+
+    public static QdbTimeSeries createTimeSeries(String alias, Collection<QdbColumnDefinition> columns) throws IOException {
+        return cluster.createTimeSeries(alias, 86400000, columns);
     }
 
     public static QdbTimeSeries getTimeSeries(String alias) throws IOException {
