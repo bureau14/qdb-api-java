@@ -15,37 +15,41 @@ public class WriterTest {
     @Test
     public void canGetWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        Writer writer =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        Writer writer = Helpers.createTimeSeries(definition).tableWriter();
     }
 
     @Test
     public void canFlushWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        Writer writer =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        Writer writer = Helpers.createTimeSeries(definition).tableWriter();
 
         writer.flush();
     }
 
     @Test
     public void canLookupColumnOffsetById() throws Exception {
-        QdbColumnDefinition[] columns = {
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias()),
-            new QdbColumnDefinition.Double(Helpers.createUniqueAlias())
+        Column[] columns = {
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias()),
+            new Column.Double(Helpers.createUniqueAlias())
         };
 
         Writer writer =
-            Helpers.createTimeSeries(Arrays.asList(columns)).tableWriter();
+            Helpers.createTimeSeries(columns).tableWriter();
 
         for (int i = 0; i < columns.length; ++i) {
-            QdbColumnDefinition column = columns[i];
+            Column column = columns[i];
             assertThat(writer.getTable().columnIndexById(column.getName()), equalTo(i));
         }
     }
@@ -54,8 +58,10 @@ public class WriterTest {
     @Test
     public void canCloseWriter() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        Writer writer =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias))).tableWriter();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        Writer writer = Helpers.createTimeSeries(definition).tableWriter();
 
         writer.close();
     }
@@ -63,7 +69,10 @@ public class WriterTest {
     @Test
     public void canInsertDoubleRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
         Value[] values = {
@@ -89,7 +98,10 @@ public class WriterTest {
     @Test
     public void canInsertMultipleDoubleRows() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
         int ROW_COUNT = 100000;
@@ -121,7 +133,10 @@ public class WriterTest {
     @Test
     public void canInsertBlobRow() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
+        Column[] definition = {
+            new Column.Blob (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
         Value[] values = {
@@ -150,8 +165,12 @@ public class WriterTest {
         String alias1 = Helpers.createUniqueAlias();
         String alias2 = Helpers.createUniqueAlias();
 
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
-                                                                      new QdbColumnDefinition.Blob (alias2)));
+        Column[] definition = {
+            new Column.Double (alias1),
+            new Column.Blob (alias2)
+        };
+
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
         Value[] values = {
@@ -182,9 +201,12 @@ public class WriterTest {
     public void canInsertNullColumns() throws Exception {
         String alias1 = Helpers.createUniqueAlias();
         String alias2 = Helpers.createUniqueAlias();
+        Column[] definition = {
+            new Column.Double (alias1),
+            new Column.Blob (alias2)
+        };
 
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias1),
-                                                                      new QdbColumnDefinition.Blob (alias2)));
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
         Value[] values = {
@@ -214,8 +236,11 @@ public class WriterTest {
     @Test
     public void writerIsFlushed_whenClosed() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        Writer writer = series.tableWriter();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
+        Writer writer = series.autoFlushTableWriter();
 
         Value[] values = {
             Value.createDouble(Helpers.randomDouble())
@@ -241,8 +266,11 @@ public class WriterTest {
     @Test
     public void autoFlushWriter_isFlushed_whenThresholdReached() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series = Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-        Writer writer = series.autoFlushTableWriter(2); // flush every 2 rows
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
+        Writer writer = series.autoFlushTableWriter(2);
 
         Value[] values = {
             Value.createDouble(Helpers.randomDouble())

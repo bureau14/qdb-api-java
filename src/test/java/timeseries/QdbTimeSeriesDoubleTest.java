@@ -27,8 +27,10 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void doesNotThrow_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
 
@@ -38,8 +40,12 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canGetResults_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+
         QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+            Helpers.createTimeSeries(definition);
 
         QdbDoubleColumnCollection data = Helpers.createDoubleColumnCollection(alias);
 
@@ -59,8 +65,11 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canGetResults_afterParallelInsert() throws Exception {
         String columnAlias = Helpers.createUniqueAlias();
+        Column[] definition = {
+            new Column.Double(columnAlias)
+        };
         QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double(columnAlias)));
+            Helpers.createTimeSeries(definition);
 
         String seriesAlias = series.getName();
 
@@ -117,9 +126,10 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canAgregate_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
         QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
         data.add(new QdbDoubleColumnValue(1.00));
@@ -140,8 +150,10 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canAgregateFirst_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
 
         QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
@@ -165,8 +177,10 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canAgregateLast_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
 
         QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
@@ -189,9 +203,10 @@ public class QdbTimeSeriesDoubleTest {
     @Test
     public void canAgregateCount_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Double (alias)));
-
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
         QdbDoubleColumnCollection data = new QdbDoubleColumnCollection(alias);
         data.add(new QdbDoubleColumnValue(1.00));

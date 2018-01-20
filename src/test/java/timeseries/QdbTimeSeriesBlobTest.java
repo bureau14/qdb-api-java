@@ -25,8 +25,10 @@ public class QdbTimeSeriesBlobTest {
     @Test
     public void doesNotThrow_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
+        Column[] definition = {
+            new Column.Blob (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
         QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
 
@@ -37,9 +39,10 @@ public class QdbTimeSeriesBlobTest {
     @Test
     public void canGetResults_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
-
+        Column[] definition = {
+            new Column.Blob (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
         QdbBlobColumnCollection data = Helpers.createBlobColumnCollection(alias);
 
         TimeRange dataRange = data.range();
@@ -60,8 +63,10 @@ public class QdbTimeSeriesBlobTest {
     @Test
     public void canAgregateCount_afterInsert() throws Exception {
         String alias = Helpers.createUniqueAlias();
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(Arrays.asList(new QdbColumnDefinition.Blob (alias)));
+        Column[] definition = {
+            new Column.Blob (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
 
         QdbBlobColumnCollection data = new QdbBlobColumnCollection(alias);
         data.add(new QdbBlobColumnValue(Helpers.createSampleData()));

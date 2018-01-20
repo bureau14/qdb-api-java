@@ -30,11 +30,11 @@ public final class QdbTimeSeries {
     /**
      * Create new timeseries table with a collection of columns.
      */
-    public void create(long millisecondsShardSize, Collection<QdbColumnDefinition> columns) {
+    public void create(long millisecondsShardSize, Column[] columns) {
         int err = qdb.ts_create(this.session.handle(),
                                 this.name,
                                 millisecondsShardSize,
-                                QdbColumnDefinition.toNative(columns));
+                                columns);
 
         QdbExceptionFactory.throwIfError(err);
     }
@@ -79,20 +79,20 @@ public final class QdbTimeSeries {
         return Table.reader(this.session, this.name, ranges);
     }
 
-    public void insertColumns(Collection<QdbColumnDefinition> columns) {
+    public void insertColumns(Column[] columns) {
         int err = qdb.ts_insert_columns(this.session.handle(),
                                         this.name,
-                                        QdbColumnDefinition.toNative(columns));
+                                        columns);
         QdbExceptionFactory.throwIfError(err);
     }
 
-    public Iterable<QdbColumnDefinition> listColumns() {
-        Reference<qdb_ts_column_info[]> nativeColumns = new Reference<qdb_ts_column_info[]>();
+    public Column[] listColumns() {
+        Reference<Column[]> nativeColumns = new Reference<Column[]>();
 
         int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
         QdbExceptionFactory.throwIfError(err);
 
-        return QdbColumnDefinition.fromNative(nativeColumns.value);
+        return nativeColumns.value;
     }
 
     public void insertDoubles(QdbDoubleColumnCollection points) {

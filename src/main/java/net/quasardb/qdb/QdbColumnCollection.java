@@ -2,18 +2,19 @@ package net.quasardb.qdb;
 
 import java.util.ArrayList;
 
+import net.quasardb.qdb.ts.Column;
 import net.quasardb.qdb.ts.TimeRange;
 import net.quasardb.qdb.jni.*;
 
 public class QdbColumnCollection <T extends QdbColumnValue> extends ArrayList<T> {
-    QdbColumnDefinition column;
+    Column column;
 
-    protected QdbColumnCollection (QdbColumnDefinition column) {
+    protected QdbColumnCollection (Column column) {
         super();
         this.column = column;
     }
 
-    QdbColumnDefinition getColumn() {
+    Column getColumn() {
         return this.column;
     }
 

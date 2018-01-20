@@ -67,17 +67,17 @@ public class Helpers {
     }
 
 
-    public static QdbColumnDefinition[] generateTableColumns(int count) {
+    public static Column[] generateTableColumns(int count) {
         return generateTableColumns(Value.Type.DOUBLE, count);
     }
 
-    public static QdbColumnDefinition[] generateTableColumns(Value.Type valueType, int count) {
+    public static Column[] generateTableColumns(Value.Type valueType, int count) {
         return Stream.generate(Helpers::createUniqueAlias)
             .limit(count)
             .map((alias) -> {
-                    return new QdbColumnDefinition(alias, valueType);
+                    return new Column(alias, valueType);
                 })
-            .toArray(QdbColumnDefinition[]::new);
+            .toArray(Column[]::new);
     }
 
     public static Value generateRandomValueByType(int complexity, Value.Type valueType) {
@@ -99,7 +99,7 @@ public class Helpers {
     /**
      * Generate table rows with standard complexity
      */
-    public static Row[] generateTableRows(QdbColumnDefinition[] cols, int count) {
+    public static Row[] generateTableRows(Column[] cols, int count) {
         return generateTableRows(cols, 1, count);
     }
 
@@ -110,12 +110,12 @@ public class Helpers {
      * @param complexity Arbitrary complexity variable that is used when generating data. E.g. for blobs,
      *                   this denotes the size of the blob value being generated.
      */
-    public static Row[] generateTableRows(QdbColumnDefinition[] cols, int complexity, int count) {
+    public static Row[] generateTableRows(Column[] cols, int complexity, int count) {
         // Generate that returns entire rows with an appropriate value for each column.
         Supplier<Value[]> valueGen =
             (() ->
              Arrays.stream(cols)
-             .map(QdbColumnDefinition::getType)
+             .map(Column::getType)
              .map((Value.Type valueType) -> {
                      return Helpers.generateRandomValueByType(complexity, valueType);
                  })
@@ -130,11 +130,11 @@ public class Helpers {
             .toArray(Row[]::new);
     }
 
-    public static QdbTimeSeries seedTable(QdbColumnDefinition[] cols, Row[] rows) throws Exception {
+    public static QdbTimeSeries seedTable(Column[] cols, Row[] rows) throws Exception {
         return seedTable(createUniqueAlias(), cols, rows);
     }
 
-    public static QdbTimeSeries seedTable(String tableName, QdbColumnDefinition[] cols, Row[] rows) throws Exception {
+    public static QdbTimeSeries seedTable(String tableName, Column[] cols, Row[] rows) throws Exception {
         QdbTimeSeries series = createTimeSeries(tableName, cols);
         Writer writer = series.tableWriter();
 
@@ -287,19 +287,11 @@ public class Helpers {
         return tag;
     }
 
-    public static QdbTimeSeries createTimeSeries(QdbColumnDefinition[] columns) throws IOException {
+    public static QdbTimeSeries createTimeSeries(Column[] columns) throws IOException {
         return createTimeSeries(createUniqueAlias(), columns);
     }
 
-    public static QdbTimeSeries createTimeSeries(String alias, QdbColumnDefinition[] columns) throws IOException {
-        return createTimeSeries(alias, Arrays.asList(columns));
-    }
-
-    public static QdbTimeSeries createTimeSeries(Collection<QdbColumnDefinition> columns) throws IOException {
-        return createTimeSeries(createUniqueAlias(), columns);
-    }
-
-    public static QdbTimeSeries createTimeSeries(String alias, Collection<QdbColumnDefinition> columns) throws IOException {
+    public static QdbTimeSeries createTimeSeries(String alias, Column[] columns) throws IOException {
         return cluster.createTimeSeries(alias, 86400000, columns);
     }
 

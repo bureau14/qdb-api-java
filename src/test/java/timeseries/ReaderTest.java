@@ -65,7 +65,7 @@ public class ReaderTest {
 
     @Test
     public void helpersRowGen_generatesDoubleRows() throws Exception {
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(Value.Type.DOUBLE, 1);
+        Column[] cols = Helpers.generateTableColumns(Value.Type.DOUBLE, 1);
         Row[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
@@ -81,7 +81,7 @@ public class ReaderTest {
 
     @Test
     public void helpersRowGen_generatesBlobRows() throws Exception {
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(Value.Type.BLOB, 1);
+        Column[] cols = Helpers.generateTableColumns(Value.Type.BLOB, 1);
         Row[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
@@ -105,7 +105,7 @@ public class ReaderTest {
 
         for (Value.Type valueType : valueTypes) {
             // Generate a 1x1 test dataset
-            QdbColumnDefinition[] cols =
+            Column[] cols =
                 Helpers.generateTableColumns(valueType, 1);
 
             Row[] rows = Helpers.generateTableRows(cols, 1);
@@ -132,7 +132,7 @@ public class ReaderTest {
         for (Value.Type valueType : valueTypes) {
             // Generate a 2x2 test dataset
 
-            QdbColumnDefinition[] cols =
+            Column[] cols =
                 Helpers.generateTableColumns(valueType, 2);
             Row[] rows = Helpers.generateTableRows(cols, 2);
             QdbTimeSeries series = Helpers.seedTable(cols, rows);
@@ -151,7 +151,7 @@ public class ReaderTest {
     public void canCallHasNext_multipleTimes() throws Exception {
         // Generate a 1x1 test dataset
 
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(1);
+        Column[] cols = Helpers.generateTableColumns(1);
         Row[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         TimeRange[] ranges = Helpers.rangesFromRows(rows);
@@ -172,7 +172,7 @@ public class ReaderTest {
     public void invalidIterator_throwsException() throws Exception {
         // Generate a 1x1 test dataset
 
-        QdbColumnDefinition[] cols = Helpers.generateTableColumns(1);
+        Column[] cols = Helpers.generateTableColumns(1);
         Row[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         TimeRange[] ranges = Helpers.rangesFromRows(rows);

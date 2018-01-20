@@ -1,5 +1,6 @@
 package net.quasardb.qdb;
 
+import net.quasardb.qdb.ts.Column;
 import net.quasardb.qdb.jni.*;
 import java.util.List;
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class QdbBlobColumnCollection extends QdbColumnCollection<QdbBlobColumnValue> {
     public QdbBlobColumnCollection (String alias) {
-        super(new QdbColumnDefinition.Blob(alias));
+        super(new Column.Blob(alias));
     }
 
     qdb_ts_blob_point[] toNative() {

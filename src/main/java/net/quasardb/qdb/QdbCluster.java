@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.regex.*;
 import java.util.Collection;
+import net.quasardb.qdb.ts.Column;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -189,7 +190,7 @@ public class QdbCluster implements AutoCloseable {
       * @return A handle to perform operations on the timeseries.
       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
       */
-    public QdbTimeSeries createTimeSeries(String alias, long shardSize, Collection<QdbColumnDefinition> columns) {
+    public QdbTimeSeries createTimeSeries(String alias, long shardSize, Column[] columns) {
         session.throwIfClosed();
         QdbTimeSeries series = new QdbTimeSeries(session, alias);
         series.create(shardSize, columns);
