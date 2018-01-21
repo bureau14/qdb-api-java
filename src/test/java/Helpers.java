@@ -97,10 +97,10 @@ public class Helpers {
     }
 
     /**
-     * Generate table rows with standard complexity
+     * Generate table rows with standard complexity of 32
      */
     public static Row[] generateTableRows(Column[] cols, int count) {
-        return generateTableRows(cols, 1, count);
+        return generateTableRows(cols, 32, count);
     }
 
     /**
@@ -199,6 +199,7 @@ public class Helpers {
     }
 
     public static ByteBuffer createSampleData(int size) {
+        System.out.println("createSampleData with size = " + size);
         ByteBuffer buffer = ByteBuffer.allocateDirect(size);
         createSampleData(size, buffer);
         return buffer;
