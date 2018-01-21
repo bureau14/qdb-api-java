@@ -62,8 +62,26 @@ public class QueryTest {
                 .asQuery()
                 .execute(Helpers.getSession());
 
+            Result.Table t = r.tables[0];
 
-            System.out.println("result = " + r.toString());
+            assertThat(r.tables.length, (is(1)));
+            assertThat(t.name, (is(series.getName())));
+
+            assertThat(t.columns.length, (is(definition.length + 1)));
+            assertThat(t.columns[0], (is("timestamp")));
+            assertThat(t.columns[1], (is(definition[0].getName())));
+            assertThat(t.rows.length, (is(rows.length)));
+
+
+            int index = 0;
+            for (Row originalRow : rows) {
+                Value[] row = t.rows[index++];
+                assertThat(row.length, (is(definition.length + 1)));
+
+                assertThat(row[0].getType(), (is(Value.Type.TIMESTAMP)));
+                assertThat(row[0].getTimestamp(), (is(originalRow.getTimestamp())));
+                assertThat(row[1], (is(originalRow.getValues()[0])));
+            }
         }
 
     }
