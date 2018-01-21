@@ -39,25 +39,32 @@ public class QueryTest {
 
     @Test
     public void canExecuteValidQuery() throws Exception {
-        Column[] definition =
-            Helpers.generateTableColumns(Value.Type.INT64, 1);
+        Value.Type[] valueTypes = { Value.Type.INT64,
+                                    Value.Type.DOUBLE,
+                                    Value.Type.TIMESTAMP,
+                                    Value.Type.BLOB };
 
-        Row[] rows = Helpers.generateTableRows(definition, 1);
-        TimeRange range = Helpers.rangeFromRows(rows);
+        for (Value.Type valueType : valueTypes) {
+            Column[] definition =
+                Helpers.generateTableColumns(valueType, 1);
 
-        QdbTimeSeries series = Helpers.seedTable(definition, rows);
+            Row[] rows = Helpers.generateTableRows(definition, 1);
+            TimeRange range = Helpers.rangeFromRows(rows);
 
-        Result r = new QueryBuilder()
-            .add("select")
-            .add(definition[0].getName())
-            .add("from")
-            .add(series.getName())
-            .in(range)
-            .asQuery()
-            .execute(Helpers.getSession());
+            QdbTimeSeries series = Helpers.seedTable(definition, rows);
+
+            Result r = new QueryBuilder()
+                .add("select")
+                .add(definition[0].getName())
+                .add("from")
+                .add(series.getName())
+                .in(range)
+                .asQuery()
+                .execute(Helpers.getSession());
 
 
-        System.out.println("result = " + r.toString());
+            System.out.println("result = " + r.toString());
+        }
 
     }
 }
