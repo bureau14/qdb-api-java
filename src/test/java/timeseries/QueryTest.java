@@ -67,11 +67,17 @@ public class QueryTest {
             assertThat(r.tables.length, (is(1)));
             assertThat(t.name, (is(series.getName())));
 
+
+            // Note that there is quite a bit of 'implicit' rules being
+            // checked here, specifically that the first column is always
+            // the timestamp.
+            //
+            // These  tests could start failing if the qdb core server's
+            // or C api behaviour changes.
             assertThat(t.columns.length, (is(definition.length + 1)));
             assertThat(t.columns[0], (is("timestamp")));
             assertThat(t.columns[1], (is(definition[0].getName())));
             assertThat(t.rows.length, (is(rows.length)));
-
 
             int index = 0;
             for (Row originalRow : rows) {
