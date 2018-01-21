@@ -86,6 +86,8 @@ public class QueryTest {
 
                 assertThat(row[0].getType(), (is(Value.Type.TIMESTAMP)));
                 assertThat(row[0].getTimestamp(), (is(originalRow.getTimestamp())));
+
+                System.out.println("comparing row value, original = " + originalRow.getValues()[0].toString() + ", from query = " + row[1].toString());
                 assertThat(row[1], (is(originalRow.getValues()[0])));
             }
         }
