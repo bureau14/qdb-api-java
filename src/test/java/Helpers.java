@@ -89,7 +89,7 @@ public class Helpers {
         case TIMESTAMP:
             return Value.createTimestamp(randomTimestamp());
         case BLOB:
-            return Value.createBlob(createSampleData(complexity));
+            return Value.createSafeBlob(createSampleData(complexity));
         }
 
         return Value.createNull();
