@@ -199,7 +199,6 @@ public class Helpers {
     }
 
     public static ByteBuffer createSampleData(int size) {
-        System.out.println("createSampleData with size = " + size);
         ByteBuffer buffer = ByteBuffer.allocateDirect(size);
         createSampleData(size, buffer);
         return buffer;
