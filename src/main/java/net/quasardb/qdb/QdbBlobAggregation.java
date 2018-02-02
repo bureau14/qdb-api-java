@@ -34,9 +34,6 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
      * Creates this object from JNI-compatible representation.
      */
     protected static QdbBlobAggregation fromNative(qdb_ts_blob_aggregation input) {
-        // :TODO: implement actual filtered ranges here, we're assuming everything is 'no filter' here.
-        assert(input.getFilteredRange().getFilter().getType() == 0);
-
         return new QdbBlobAggregation(Type.values()[(int)input.getAggregationType()],
                                       input.getFilteredRange().getRange(),
                                       input.getCount(),

@@ -34,8 +34,6 @@ public class QdbDoubleAggregation extends QdbAggregation<QdbDoubleColumnValue> {
      * Creates this object from JNI-compatible representation.
      */
     protected static QdbDoubleAggregation fromNative(qdb_ts_double_aggregation input) {
-        assert(input.getFilteredRange().getFilter().getType() == 0);
-
         return new QdbDoubleAggregation(Type.values()[(int)input.getAggregationType()],
                                         input.getFilteredRange().getRange(),
                                         input.getCount(),
