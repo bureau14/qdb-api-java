@@ -34,8 +34,8 @@ public final class QdbBatch implements AutoCloseable {
      *
      * @param alias The alias of the blob you want to add operations for.
      * @return A handle to a virtual blob on with to perform the operation.
-     * @throws QdbBatchClosedException If close() has been called.
-     * @throws QdbBatchAlreadyRunException If the run() has been called.
+     * @throws BatchClosedException If close() has been called.
+     * @throws BatchAlreadyRunException If the run() has been called.
      */
     public QdbBatchBlob blob(String alias) {
         throwIfClosed();
@@ -47,10 +47,10 @@ public final class QdbBatch implements AutoCloseable {
      * Executes all operations in the batch.
      *
      * A batch can only be run once.
-     * Once a batch is run, most method will throw a QdbBatchAlreadyRunException.
+     * Once a batch is run, most method will throw a BatchAlreadyRunException.
      *
-     * @throws QdbBatchClosedException If close() has been called.
-     * @throws QdbBatchAlreadyRunException If the run() has been called.
+     * @throws BatchClosedException If close() has been called.
+     * @throws BatchAlreadyRunException If the run() has been called.
      */
     public void run() {
         throwIfClosed();
@@ -80,7 +80,7 @@ public final class QdbBatch implements AutoCloseable {
     /**
      * Release the memory allocated by quasardb.
      *
-     * Once this method has been called, most other methods will throw QdbBatchClosedException.
+     * Once this method has been called, most other methods will throw BatchClosedException.
      */
     public void close() {
         if (batch != 0) {
@@ -94,8 +94,8 @@ public final class QdbBatch implements AutoCloseable {
      * Check if all operations executed successfully.
      *
      * @return true if all operations succeeded, false if any operation failed.
-     * @throws QdbBatchClosedException If close() has been called.
-     * @throws QdbBatchNotRunException If run() has not been called.
+     * @throws BatchClosedException If close() has been called.
+     * @throws BatchNotRunException If run() has not been called.
      */
     public boolean success() {
         throwIfClosed();
@@ -107,7 +107,7 @@ public final class QdbBatch implements AutoCloseable {
      * Gets the total number of operations in the batch
      *
      * @return The number of operations that the batch contains.
-     * @throws QdbBatchClosedException If close() has been called.
+     * @throws BatchClosedException If close() has been called.
      */
     public int operationCount() {
         throwIfClosed();
@@ -118,8 +118,8 @@ public final class QdbBatch implements AutoCloseable {
      * Gets the number of successful operations
      *
      * @return The number of successful operations
-     * @throws QdbBatchClosedException If close() has been called.
-     * @throws QdbBatchNotRunException If run() has not been called.
+     * @throws BatchClosedException If close() has been called.
+     * @throws BatchNotRunException If run() has not been called.
      */
     public int successCount() {
         throwIfClosed();

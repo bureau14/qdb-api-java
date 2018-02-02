@@ -2,6 +2,7 @@ package net.quasardb.qdb;
 
 import java.nio.channels.SeekableByteChannel;
 import net.quasardb.qdb.exception.ExceptionFactory;
+import net.quasardb.qdb.exception.ClusterClosedException;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -29,7 +30,7 @@ public final class QdbStream extends QdbEntry {
      *
      * @param mode How to open the stream: READ or APPEND
      * @return A SeekableByteChannel
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public SeekableByteChannel open(Mode mode) {
         session.throwIfClosed();

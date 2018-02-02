@@ -1,6 +1,6 @@
 package net.quasardb.qdb;
 
-import net.quasardb.qdb.exception.ExceptionFactory;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -42,7 +42,7 @@ public final class QdbNode {
      * Retrieve the configuration node.
      *
      * @return A JSON string containing the configuration of the node.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public String config() {
         session.throwIfClosed();
@@ -56,7 +56,7 @@ public final class QdbNode {
      * Retrieve the status of the node.
      *
      * @return A JSON string containing the status of the node.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public String status() {
         session.throwIfClosed();
@@ -81,7 +81,7 @@ public final class QdbNode {
      * Retrieve the topology of the node.
      *
      * @return A JSON string containing the topology of the node.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public String topology() {
         session.throwIfClosed();

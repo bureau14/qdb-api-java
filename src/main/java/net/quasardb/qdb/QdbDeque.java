@@ -19,10 +19,10 @@ public final class QdbDeque extends QdbEntry {
      * Retrieves the item at the back of the queue. The queue must already exist.
      *
      * @return The content of the item, or null if the deque was empty.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer back() {
         session.throwIfClosed();
@@ -39,11 +39,11 @@ public final class QdbDeque extends QdbEntry {
      *
      * @param index The zero-based index you wish to retrieve.
      * @return The content of the item.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbOutOfBoundsException If the index is negative, or greater or equal than deque size.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws OutOfBoundsException If the index is negative, or greater or equal than deque size.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer get(long index) {
         session.throwIfClosed();
@@ -57,10 +57,10 @@ public final class QdbDeque extends QdbEntry {
      * Retrieves the item at the front of the queue. The queue must already exist.
      *
      * @return The content of the item, or null if the deque was empty.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer front() {
         session.throwIfClosed();
@@ -76,10 +76,10 @@ public final class QdbDeque extends QdbEntry {
      * Removes and retrieves the item at the back of the queue. The queue must already exist.
      *
      * @return The content of the removed item, or null if the deque was empty.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer popBack() {
         session.throwIfClosed();
@@ -95,10 +95,10 @@ public final class QdbDeque extends QdbEntry {
      * Removes and retrieves the item at the front of the queue. The queue must already exist.
      *
      * @return The content of the removed item, or null if the deque was empty.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer popFront() {
         session.throwIfClosed();
@@ -114,9 +114,9 @@ public final class QdbDeque extends QdbEntry {
      * Inserts the content at the back of the queue. Creates the queue if it does not exist.
      *
      * @param content The content that will be added to the queue.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void pushBack(ByteBuffer content) {
         session.throwIfClosed();
@@ -128,9 +128,9 @@ public final class QdbDeque extends QdbEntry {
      * Inserts the content at the front of the queue. Creates the queue if it does not exist.
      *
      * @param content The content that will be added to the queue.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void pushFront(ByteBuffer content) {
         session.throwIfClosed();
@@ -142,10 +142,10 @@ public final class QdbDeque extends QdbEntry {
      * Retrieves the size of the queue. The queue must already exist.
      *
      * @return The number of items in the deque.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long size() {
         session.throwIfClosed();

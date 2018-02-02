@@ -1,7 +1,7 @@
 package net.quasardb.qdb;
 
 import java.util.*;
-import net.quasardb.qdb.exception.ExceptionFactory;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -16,9 +16,9 @@ public class QdbExpirableEntry extends QdbEntry {
      * Sets the expiry time of an existing entry.
      *
      * @param expiryTime The new expiry time of the entry.
-     * @throws QdbAliasNotFoundException If the entry does not exist.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
+     * @throws AliasNotFoundException If the entry does not exist.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws InvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      */
     public void expiryTime(QdbExpiryTime expiryTime) {
         session.throwIfClosed();
@@ -30,8 +30,8 @@ public class QdbExpirableEntry extends QdbEntry {
      * Retrieves the expiry time of the entry. A value of zero means the entry never expires.
      *
      * @return The expiry time of the entry.
-     * @throws QdbAliasNotFoundException If the entry does not exist.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws AliasNotFoundException If the entry does not exist.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbExpiryTime expiryTime() {
         session.throwIfClosed();

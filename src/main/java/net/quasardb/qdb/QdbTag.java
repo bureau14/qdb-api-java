@@ -1,7 +1,7 @@
 package net.quasardb.qdb;
 
 import java.util.*;
-import net.quasardb.qdb.exception.ExceptionFactory;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -17,9 +17,9 @@ public final class QdbTag extends QdbEntry {
      *
      * @param entry The entry to attach.
      * @return true if the tag has been attached, false if it was already attached
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean attachEntry(QdbEntry entry) {
         return attachEntry(entry.alias());
@@ -30,9 +30,9 @@ public final class QdbTag extends QdbEntry {
      *
      * @param entry The alias of the entry to attach.
      * @return true if the tag has been attached, false if it was already attached
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean attachEntry(String entry) {
         session.throwIfClosed();
@@ -45,7 +45,7 @@ public final class QdbTag extends QdbEntry {
      * Gets the entries tagged with this tag.
      *
      * @return A collection of subclasses of QdbEntry, whose types depends on the actual type of the entries in the database.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public Iterable<QdbEntry> entries() {
         return new QdbTagEntries(session, alias);
@@ -56,9 +56,9 @@ public final class QdbTag extends QdbEntry {
      *
      * @param entry The entry to detach.
      * @return true if the tag has been detached, false if the tag was not attached
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean detachEntry(QdbEntry entry) {
         return detachEntry(entry.alias());
@@ -69,9 +69,9 @@ public final class QdbTag extends QdbEntry {
      *
      * @param entry The alias of the entry to detach.
      * @return true if the tag has been detached, false if the tag was not attached
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean detachEntry(String entry) {
         session.throwIfClosed();

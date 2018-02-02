@@ -21,10 +21,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @param newContent The content to be updated to the server in case of match.
      * @param comparand The content to be compared to.
      * @return Returns The original content if comparand doesn't match. Returns null otherwise.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
         return this.compareAndSwap(newContent, comparand, QdbExpiryTime.PRESERVE_EXPIRATION);
@@ -37,11 +37,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @param comparand The content to be compared to.
      * @param expiryTime The new expiry time of the blob, in case of match
      * @return Returns The original content if comparand doesn't match. Returns null otherwise.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws InvalidArgumentException If the expiry time is in the past (with a certain tolerance)
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
@@ -55,9 +55,9 @@ public final class QdbBlob extends QdbExpirableEntry {
       * Read the content of the blob.
       *
       * @return The current content.
-      * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+      * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+      * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
     public Buffer get() {
         session.throwIfClosed();
@@ -71,10 +71,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      * Atomically reads the content of the blob and removes it.
      *
      * @return The content of the blob, before being removed.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer getAndRemove() {
         session.throwIfClosed();
@@ -89,10 +89,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      *
      * @param content The content of the blob to be set, before being replaced.
      * @return A buffer representing the content of the blob, before the update.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer getAndUpdate(ByteBuffer content) {
         return this.getAndUpdate(content, QdbExpiryTime.PRESERVE_EXPIRATION);
@@ -104,11 +104,11 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @param content The content of the blob to be set, before being replaced.
      * @param expiryTime The new expiry time of the blob.
      * @return The content of the blob to be set, before being replaced.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws InvalidArgumentException If the expiry time is in the past (with a certain tolerance)
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
@@ -122,9 +122,9 @@ public final class QdbBlob extends QdbExpirableEntry {
      * Create a new blob with the specified content. Fails if the blob already exists.
      *
      * @param content The content of the blob to be created.
-     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content) {
         this.put(content, QdbExpiryTime.NEVER_EXPIRES);
@@ -135,10 +135,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      *
      * @param content The content of the blob to be created.
      * @param expiryTime The expiry time of the blob.
-     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws InvalidArgumentException If the expiry time is in the past (with a certain tolerance)
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
@@ -151,10 +151,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      *
      * @param comparand The content to be compared to.
      * @return true if the blob was actually removed, false if not.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeIf(ByteBuffer comparand) {
         session.throwIfClosed();
@@ -168,9 +168,9 @@ public final class QdbBlob extends QdbExpirableEntry {
       *
       * @param content The content of the blob to be set.
       * @return true if the blob was created, or false it it was updated.
-      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+      * @throws ClusterClosedException If QdbCluster.close() has been called.
+      * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
     public boolean update(ByteBuffer content) {
         return this.update(content, QdbExpiryTime.PRESERVE_EXPIRATION);
@@ -182,10 +182,10 @@ public final class QdbBlob extends QdbExpirableEntry {
       * @param content The content of the blob to be set.
       * @param expiryTime The new expiry time of the blob.
       * @return true if the blob was created, or false it it was updated.
-      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
-      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+      * @throws ClusterClosedException If QdbCluster.close() has been called.
+      * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+      * @throws InvalidArgumentException If the expiry time is in the past (with a certain tolerance)
+      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
     public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();

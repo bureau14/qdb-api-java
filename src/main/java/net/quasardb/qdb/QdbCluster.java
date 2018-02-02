@@ -20,8 +20,8 @@ public class QdbCluster implements AutoCloseable {
      * Having more than one node in the URI allows to connect to the cluster even if the first node is down.
      *
      * @param uri a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
-     * @throws QdbConnectionRefusedException If the connection to the cluster is refused.
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
+     * @throws ConnectionRefusedException If the connection to the cluster is refused.
+     * @throws InvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri) {
         this.session = new Session();
@@ -35,8 +35,8 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param uri a string in the form of <code>qdb://&lt;address1&gt;:&lt;port1&gt;[,&lt;address2&gt;:&lt;port2&gt;...]</code>
      * @param securityOptions An instance of QdbCluster.SecurityOptions for authentication.
-     * @throws QdbConnectionRefusedException If the connection to the cluster is refused.
-     * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
+     * @throws ConnectionRefusedException If the connection to the cluster is refused.
+     * @throws InvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri,
                       Session.SecurityOptions securityOptions) {
@@ -71,7 +71,7 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the blob.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbBlob blob(String alias) {
         session.throwIfClosed();
@@ -83,7 +83,7 @@ public class QdbCluster implements AutoCloseable {
        *
        * @param alias The entry unique key/identifier in the database.
        * @return A handle to perform operations on the deque.
-       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+       * @throws ClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbDeque deque(String alias) {
         session.throwIfClosed();
@@ -95,8 +95,8 @@ public class QdbCluster implements AutoCloseable {
        *
        * @param alias The entry unique key/identifier in the database.
        * @return A subclass of QdbEntry depending on the type of entry currently in the database.
-       * @throws QdbAliasNotFoundException If the entry does not exist.
-       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+       * @throws AliasNotFoundException If the entry does not exist.
+       * @throws ClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbEntry entry(String alias) {
         session.throwIfClosed();
@@ -108,7 +108,7 @@ public class QdbCluster implements AutoCloseable {
        *
        * @param alias The entry unique key/identifier in the database.
        * @return A handle to perform operations on the hash-set.
-       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+       * @throws ClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbHashSet hashSet(String alias) {
         session.throwIfClosed();
@@ -120,7 +120,7 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the integer.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbInteger integer(String alias) {
         session.throwIfClosed();
@@ -132,7 +132,7 @@ public class QdbCluster implements AutoCloseable {
        *
        * @param uri The URI of the node, in the form qdb://10.0.0.1:2836
        * @return The node
-       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+       * @throws ClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbNode node(String uri) {
         Pattern pattern = Pattern.compile("^qdb://(.*):(\\d+)/?$");
@@ -153,7 +153,7 @@ public class QdbCluster implements AutoCloseable {
       *
       * @param alias The entry unique key/identifier in the database.
       * @return A handle to perform operations on the stream.
-      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+      * @throws ClusterClosedException If QdbCluster.close() has been called.
       */
     public QdbStream stream(String alias) {
         session.throwIfClosed();
@@ -165,7 +165,7 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param alias The entry unique key/identifier in the database.
      * @return A handle to perform operations on the tag.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public QdbTag tag(String alias) {
         session.throwIfClosed();
@@ -177,7 +177,7 @@ public class QdbCluster implements AutoCloseable {
       *
       * @param alias The timeseries unique key/identifier in the database.
       * @return A handle to perform operations on the timeseries.
-      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+      * @throws ClusterClosedException If QdbCluster.close() has been called.
       */
     public QdbTimeSeries timeSeries(String alias) {
         session.throwIfClosed();
@@ -189,7 +189,7 @@ public class QdbCluster implements AutoCloseable {
       *
       * @param alias The timeseries unique key/identifier in the database.
       * @return A handle to perform operations on the timeseries.
-      * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+      * @throws ClusterClosedException If QdbCluster.close() has been called.
       */
     public QdbTimeSeries createTimeSeries(String alias, long shardSize, Column[] columns) {
         session.throwIfClosed();
@@ -203,7 +203,7 @@ public class QdbCluster implements AutoCloseable {
        *
        * @param alias The entry unique key/identifier in the database.
        * @return the location, i.e. node's address and port, on which the entry with the provided alias is stored.
-       * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+       * @throws ClusterClosedException If QdbCluster.close() has been called.
        */
     public QdbNode findNodeFor(String alias) {
         session.throwIfClosed();
@@ -216,8 +216,8 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param timeoutMillis The timeout of the operation, in milliseconds
      *
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbOperationDisabledException If the operation has been disabled on the server.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws OperationDisabledException If the operation has been disabled on the server.
      */
     public void purgeAll(int timeoutMillis) {
         session.throwIfClosed();
@@ -230,7 +230,7 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param timeoutMillis The timeout of the operation, in milliseconds
      *
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public void trimAll(int timeoutMillis) {
         session.throwIfClosed();
@@ -253,7 +253,7 @@ public class QdbCluster implements AutoCloseable {
      *
      * @param timeoutMillis The timeout of the operation, in milliseconds
      *
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
      */
     public void setTimeout(int timeoutMillis) {
         session.throwIfClosed();

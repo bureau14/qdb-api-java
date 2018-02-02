@@ -17,10 +17,10 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param delta The increment to add to the current value.
      * @return The resulting value after the operation.
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long add(long delta) {
         session.throwIfClosed();
@@ -34,10 +34,10 @@ public final class QdbInteger extends QdbExpirableEntry {
      * Reads the current value of the integer.
      *
      * @return The current value
-     * @throws QdbAliasNotFoundException If an entry matching the provided alias cannot be found.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasNotFoundException If an entry matching the provided alias cannot be found.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public long get() {
         session.throwIfClosed();
@@ -51,9 +51,9 @@ public final class QdbInteger extends QdbExpirableEntry {
      * Creates a new integer. Errors if the integer already exists.
      *
      * @param initialValue The value of the new integer.
-     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue) {
         this.put(initialValue, QdbExpiryTime.NEVER_EXPIRES);
@@ -64,9 +64,9 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param initialValue The value of the new integer.
      * @param expiryTime The expiry time of the entry.
-     * @throws QdbAliasAlreadyExistsException If an entry matching the provided alias already exists.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws AliasAlreadyExistsException If an entry matching the provided alias already exists.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
@@ -79,9 +79,9 @@ public final class QdbInteger extends QdbExpirableEntry {
      *
      * @param newValue The new value of the integer.
      * @return true if the integer was created, or false it it was updated.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean update(long newValue) {
         return update(newValue, QdbExpiryTime.PRESERVE_EXPIRATION);
@@ -93,9 +93,9 @@ public final class QdbInteger extends QdbExpirableEntry {
      * @param newValue The new value of the integer.
      * @param expiryTime The expiry time of the entry.
      * @return true if the integer was created, or false it it was updated.
-     * @throws QdbClusterClosedException If QdbCluster.close() has been called.
-     * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
-     * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     * @throws IncompatibleTypeException If the alias has a type incompatible for this operation.
+     * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean update(long newValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
