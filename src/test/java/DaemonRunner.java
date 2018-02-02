@@ -1,5 +1,6 @@
 package net.quasardb.qdb;
 
+import net.quasardb.qdb.exception.*;
 import java.lang.Runtime;
 
 public class DaemonRunner {
@@ -52,7 +53,7 @@ public class DaemonRunner {
             Thread.sleep(10000);
             System.out.println(path + " ready");
 
-        } catch (Exception e) {
+        } catch (java.lang.Exception e) {
             String message = "Failed to start " + path + " -> " + e.getMessage();
             System.err.println(message);
             throw new RuntimeException(message);
@@ -72,7 +73,7 @@ public class DaemonRunner {
             Thread.sleep(10000);
             System.out.println(path + " ready");
 
-        } catch (Exception e) {
+        } catch (java.lang.Exception e) {
             String message = "Failed to start " + path + " -> " + e.getMessage();
             System.err.println(message);
             throw new RuntimeException(message);

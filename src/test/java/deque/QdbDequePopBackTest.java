@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;
@@ -11,8 +12,8 @@ public class QdbDequePopBackTest {
 
         deque.pushBack(content1);
         deque.pushBack(content2);
-        QdbBuffer result1 = deque.popBack();
-        QdbBuffer result2 = deque.popBack();
+        Buffer result1 = deque.popBack();
+        Buffer result2 = deque.popBack();
 
         Assert.assertEquals(content2, result1.toByteBuffer());
         Assert.assertEquals(content1, result2.toByteBuffer());
@@ -25,19 +26,19 @@ public class QdbDequePopBackTest {
 
         deque.pushBack(content);
         deque.popBack();
-        QdbBuffer result = deque.popBack();
+        Buffer result = deque.popBack();
 
         Assert.assertNull(result);
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound() {
         QdbDeque deque = Helpers.createEmptyDeque();
 
         deque.popBack(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -47,7 +48,7 @@ public class QdbDequePopBackTest {
         deque.popBack(); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -57,7 +58,7 @@ public class QdbDequePopBackTest {
         deque.popBack(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         QdbDeque deque = Helpers.getDeque(Helpers.RESERVED_ALIAS);
         deque.popBack(); // <- throws

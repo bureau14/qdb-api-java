@@ -1,8 +1,10 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbClusterSetTimeoutTest {
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingClose() {
         QdbCluster cluster = Helpers.createCluster();
 
@@ -10,7 +12,7 @@ public class QdbClusterSetTimeoutTest {
         cluster.setTimeout(60 * 1000); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenTimeoutIsLessThanOneSecond() {
         QdbCluster cluster = Helpers.createCluster();
 

@@ -1,4 +1,6 @@
 apply plugin: 'java'
+apply plugin: "me.champeau.gradle.jmh"
+
 group = 'net.quasardb'
 archivesBaseName = 'qdb'
 
@@ -29,8 +31,6 @@ buildscript {
   }
 }
 
-apply plugin: "me.champeau.gradle.jmh"
-
 dependencies {
    compile group: 'junit', name: 'junit', version: '4.+'
    compile group: 'net.quasardb', name: 'jni'
@@ -44,6 +44,7 @@ javadoc {
 
 test {
     systemProperty "qdbd.path", project.getProperty("qdbd.path")
+    jvmArgs '-XX:+UseG1GC'
 }
 
 jmh {

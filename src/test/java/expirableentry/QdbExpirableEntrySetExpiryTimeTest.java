@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbExpirableEntrySetExpiryTimeTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_whenEntryDoesntExists() {
         QdbExpirableEntry entry = Helpers.createEmptyBlob();
         QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(42);
@@ -11,7 +13,7 @@ public class QdbExpirableEntrySetExpiryTimeTest {
         entry.expiryTime(expiry); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();

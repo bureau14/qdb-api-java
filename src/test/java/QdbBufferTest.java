@@ -1,24 +1,26 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 import java.nio.ByteBuffer;
 
 public class QdbBufferTest {
-    @Test(expected = QdbBufferClosedException.class)
-    public void toByteBuffer_throwsQdbBufferClosedException_afterQdbBufferClose() {
+    @Test(expected = BufferClosedException.class)
+    public void toByteBuffer_throwsBufferClosedException_afterBufferClose() {
         QdbBlob blob = Helpers.createBlob();
-        QdbBuffer buffer = blob.get();
+        Buffer buffer = blob.get();
 
         buffer.close();
         buffer.toByteBuffer(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
-    public void toByteBuffer_throwsQdbClusterClosedException_afterCallingQdbClusterClose() {
+    @Test(expected = ClusterClosedException.class)
+    public void toByteBuffer_throwsClusterClosedException_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         QdbBlob blob = cluster.blob(Helpers.createUniqueAlias());
         blob.put(Helpers.createSampleData());
 
-        QdbBuffer buffer = blob.get();
+        Buffer buffer = blob.get();
         cluster.close();
         buffer.toByteBuffer(); // <- throws
     }

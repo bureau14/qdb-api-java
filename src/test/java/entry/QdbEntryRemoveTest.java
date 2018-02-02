@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbEntryRemoveTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_ifCalledTwice() {
         QdbEntry entry = Helpers.createBlob();
 
@@ -11,7 +13,7 @@ public class QdbEntryRemoveTest {
         entry.remove(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -21,7 +23,7 @@ public class QdbEntryRemoveTest {
         entry.remove(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 

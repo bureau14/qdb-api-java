@@ -4,16 +4,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 import java.util.*;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.jni.*;
 
 /**
  * An entry in the database.
  */
 public class QdbEntry {
-    protected final transient QdbSession session;
+    protected final transient Session session;
     protected final String alias;
 
-    protected QdbEntry(QdbSession session, String alias) {
+    protected QdbEntry(Session session, String alias) {
         this.session = session;
         this.alias = alias;
     }
@@ -52,7 +53,7 @@ public class QdbEntry {
     public boolean attachTag(String tag) {
         session.throwIfClosed();
         int err = qdb.attach_tag(session.handle(), alias, tag);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.tag_already_set;
     }
 
@@ -111,7 +112,7 @@ public class QdbEntry {
     public boolean hasTag(String tag) {
         session.throwIfClosed();
         int err = qdb.has_tag(session.handle(), alias, tag);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.tag_not_set;
     }
 
@@ -125,7 +126,7 @@ public class QdbEntry {
     public void remove() {
         session.throwIfClosed();
         int err = qdb.remove(session.handle(), alias);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -153,7 +154,7 @@ public class QdbEntry {
     public boolean detachTag(String tag) {
         session.throwIfClosed();
         int err = qdb.detach_tag(session.handle(), alias, tag);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.tag_not_set;
     }
 
@@ -172,7 +173,7 @@ public class QdbEntry {
         ByteBuffer meta = ByteBuffer.allocateDirect(80);
 
         int err = qdb.get_metadata(session.handle(), alias, meta);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         meta.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -189,7 +190,7 @@ public class QdbEntry {
         Reference<String> address = new Reference<String>();
         Reference<Integer> port = new Reference<Integer>();
         int err = qdb.get_location(session.handle(), alias, address, port);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return new QdbNode(session, address.value, port.value);
     }
 }

@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import java.lang.instrument.Instrumentation;
 
 public class ObjectSizeFetcher {

@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
 import org.junit.*;

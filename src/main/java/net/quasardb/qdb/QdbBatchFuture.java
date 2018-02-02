@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 public final class QdbBatchFuture<T> implements QdbFuture<T> {
     private final QdbBatch batch;
@@ -13,14 +14,14 @@ public final class QdbBatchFuture<T> implements QdbFuture<T> {
 
     public final T get() {
         if (!batch.hasRun())
-            throw new QdbBatchNotRunException();
-        QdbExceptionFactory.throwIfError(op.error);
+            throw new BatchNotRunException();
+        ExceptionFactory.throwIfError(op.error);
         return (T)op.result;
     }
 
     public boolean success() {
         if (!batch.hasRun())
-            throw new QdbBatchNotRunException();
+            throw new BatchNotRunException();
         return qdb_error.severity(op.error) == qdb_err_severity.info;
     }
 }

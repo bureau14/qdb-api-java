@@ -1,5 +1,7 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbDequeFrontTest {
@@ -11,8 +13,8 @@ public class QdbDequeFrontTest {
 
         deque.pushBack(content1);
         deque.pushBack(content2);
-        QdbBuffer result1 = deque.front();
-        QdbBuffer result2 = deque.front();
+        Buffer result1 = deque.front();
+        Buffer result2 = deque.front();
 
         Assert.assertEquals(content1, result1.toByteBuffer());
         Assert.assertEquals(content1, result2.toByteBuffer());
@@ -25,19 +27,19 @@ public class QdbDequeFrontTest {
 
         deque.pushBack(content);
         deque.popBack();
-        QdbBuffer result = deque.front();
+        Buffer result = deque.front();
 
         Assert.assertNull(result);
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound() {
         QdbDeque deque = Helpers.createEmptyDeque();
 
         deque.front(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -47,7 +49,7 @@ public class QdbDequeFrontTest {
         deque.front(); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleTypeFound_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -57,7 +59,7 @@ public class QdbDequeFrontTest {
         deque.front(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         QdbDeque deque = Helpers.getDeque(Helpers.RESERVED_ALIAS);
         deque.front(); // <- throws

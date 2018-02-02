@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbIntegerUpdateTest {
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwIncompatibleType() {
         String alias = Helpers.createUniqueAlias();
         QdbBlob blob = Helpers.getBlob(alias);
@@ -14,7 +16,7 @@ public class QdbIntegerUpdateTest {
         integer.update(666); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -24,7 +26,7 @@ public class QdbIntegerUpdateTest {
         integer.update(666); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.update(666); // <- throws

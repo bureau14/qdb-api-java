@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import java.nio.channels.SeekableByteChannel;
+import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 /**
@@ -19,7 +20,7 @@ public final class QdbStream extends QdbEntry {
         }
     }
 
-    protected QdbStream(QdbSession session, String alias) {
+    protected QdbStream(Session session, String alias) {
         super(session, alias);
     }
 
@@ -35,7 +36,7 @@ public final class QdbStream extends QdbEntry {
 
         Reference<Long> stream = new Reference<Long>();
         int err = qdb.stream_open(session.handle(), alias, mode.value, stream);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return new QdbStreamChannel(stream.value);
     }

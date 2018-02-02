@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBlobUpdateTest {
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -14,7 +16,7 @@ public class QdbBlobUpdateTest {
         blob.update(newContent); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -25,7 +27,7 @@ public class QdbBlobUpdateTest {
         blob.update(newContent); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -34,7 +36,7 @@ public class QdbBlobUpdateTest {
         blob.update(content, fewMinutesAgo); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer newContent = Helpers.createSampleData();
 

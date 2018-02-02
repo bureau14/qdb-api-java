@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.jni.*;
 
@@ -15,10 +16,10 @@ import java.util.*;
  */
 public final class QdbTimeSeries {
 
-    QdbSession session;
+    Session session;
     String name;
 
-    QdbTimeSeries(QdbSession session, String name) {
+    QdbTimeSeries(Session session, String name) {
         this.session = session;
         this.name = name;
     }
@@ -36,7 +37,7 @@ public final class QdbTimeSeries {
                                 millisecondsShardSize,
                                 columns);
 
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -83,14 +84,14 @@ public final class QdbTimeSeries {
         int err = qdb.ts_insert_columns(this.session.handle(),
                                         this.name,
                                         columns);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     public Column[] listColumns() {
         Reference<Column[]> nativeColumns = new Reference<Column[]>();
 
         int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return nativeColumns.value;
     }
@@ -100,7 +101,7 @@ public final class QdbTimeSeries {
                                        this.name,
                                        points.getColumn().getName(),
                                        points.toNative());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -123,7 +124,7 @@ public final class QdbTimeSeries {
                                            column,
                                            ranges,
                                            points);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return QdbDoubleColumnCollection.fromNative(column, points.value);
     }
@@ -136,7 +137,7 @@ public final class QdbTimeSeries {
                                           column,
                                           QdbDoubleAggregationCollection.toNative(input),
                                           aggregations);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return QdbDoubleAggregationCollection.fromNative(aggregations.value);
     }
@@ -146,7 +147,7 @@ public final class QdbTimeSeries {
                                      this.name,
                                      points.getColumn().getName(),
                                      points.toNative());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
 
@@ -170,7 +171,7 @@ public final class QdbTimeSeries {
                                          column,
                                          ranges,
                                          points);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return QdbBlobColumnCollection.fromNative(column, points.value);
     }
@@ -183,7 +184,7 @@ public final class QdbTimeSeries {
                                         column,
                                         QdbBlobAggregationCollection.toNative(input),
                                         aggregations);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
 
         return QdbBlobAggregationCollection.fromNative(aggregations.value);
     }

@@ -1,6 +1,9 @@
-import net.quasardb.qdb.*;
-import org.junit.*;
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
+import org.junit.*;
+
+import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 
 public class QdbBatchSuccessTest {
     QdbBatch batch;
@@ -10,13 +13,13 @@ public class QdbBatchSuccessTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsBatchClosed_afterCallingClose() {
         batch.close();
         batch.success(); // <- throw
     }
 
-    @Test(expected = QdbBatchNotRunException.class)
+    @Test(expected = BatchNotRunException.class)
     public void throwsBatchNotRun_beforeCallingRun() {
         batch.success(); // <- throw
     }

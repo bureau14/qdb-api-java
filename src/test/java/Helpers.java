@@ -22,10 +22,10 @@ public class Helpers {
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    public static final QdbSession.SecurityOptions SECURITRY_OPTIONS =
-        new QdbSession.SecurityOptions("qdb-api-python",
-                                       "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
-                                       "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
+    public static final Session.SecurityOptions SECURITRY_OPTIONS =
+        new Session.SecurityOptions("qdb-api-python",
+                                    "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
+                                    "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 
     public static QdbCluster createCluster() {
         try {
@@ -44,7 +44,7 @@ public class Helpers {
         }
     }
 
-    public static QdbSession getSession() {
+    public static Session getSession() {
         return cluster.getSession();
     }
 

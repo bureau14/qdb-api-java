@@ -3,6 +3,7 @@ package net.quasardb.qdb;
 import java.lang.AutoCloseable;
 import java.util.LinkedList;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 /**
  * A batch containing a list of operation.
@@ -10,14 +11,14 @@ import net.quasardb.qdb.jni.*;
  * Batches are used to reduce the number of requests by performing several operations in one request.
  */
 public final class QdbBatch implements AutoCloseable {
-    private final QdbSession session;
+    private final Session session;
     private LinkedList<QdbBatchOperation> operations; // <- to keep O(1) insertion time
     private boolean hasRun;
     private int successCount;
     private long batch;
 
     // Protected constructor. Call  QdbCluster.createBatch() to create a batch.
-    protected QdbBatch(QdbSession session) {
+    protected QdbBatch(Session session) {
         this.session = session;
         operations = new LinkedList<QdbBatchOperation>();
     }
@@ -148,29 +149,29 @@ public final class QdbBatch implements AutoCloseable {
 
     private void throwIfClosed() {
         if (isClosed())
-            throw new QdbBatchClosedException();
+            throw new BatchClosedException();
     }
 
     private void throwIfHasRun() {
         if (hasRun)
-            throw new QdbBatchAlreadyRunException();
+            throw new BatchAlreadyRunException();
     }
 
     private void throwIfNotRun() {
         if (!hasRun)
-            throw new QdbBatchNotRunException();
+            throw new BatchNotRunException();
     }
 
-    private static long create_batch(QdbSession session, int count) {
+    private static long create_batch(Session session, int count) {
         Reference<Long> batch = new Reference<Long>();
         int err = qdb.init_operations(session.handle(), count, batch);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return batch.value;
     }
 
-    private static void delete_batch(QdbSession session, long batch) {
+    private static void delete_batch(Session session, long batch) {
         int err = qdb.delete_batch(session.handle(), batch);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     private static void write_operations_to_batch(long batch, Iterable<QdbBatchOperation> operations) {

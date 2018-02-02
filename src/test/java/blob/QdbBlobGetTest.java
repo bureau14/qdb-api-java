@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBlobGetTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingCompareAndSwap_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -17,7 +19,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingSetExpiryTime_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -29,7 +31,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingGetAndRemove() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -39,7 +41,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingGetAndUpdate_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -51,7 +53,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingPut_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -62,7 +64,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingRemove() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -72,7 +74,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingUpdate_thenWaitingExpiration() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -84,7 +86,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         ByteBuffer content = Helpers.createSampleData();
@@ -95,7 +97,7 @@ public class QdbBlobGetTest {
         blob.get(); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -114,7 +116,7 @@ public class QdbBlobGetTest {
 
         batch.blob(alias).put(content);
         batch.run();
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(content, result.toByteBuffer());
     }
@@ -128,7 +130,7 @@ public class QdbBlobGetTest {
 
         batch.blob(alias).update(content);
         batch.run();
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(content, result.toByteBuffer());
     }
@@ -139,7 +141,7 @@ public class QdbBlobGetTest {
         ByteBuffer content = Helpers.createSampleData();
 
         blob.put(content);
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(content, result.toByteBuffer());
     }
@@ -153,7 +155,7 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.compareAndSwap(newContent, comparand);
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(content, result.toByteBuffer());
     }
@@ -166,7 +168,7 @@ public class QdbBlobGetTest {
 
         blob.put(content1);
         blob.getAndUpdate(content2);
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(content2, result.toByteBuffer());
     }
@@ -179,7 +181,7 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.update(newContent);
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(newContent, result.toByteBuffer());
     }
@@ -193,7 +195,7 @@ public class QdbBlobGetTest {
 
         blob.put(content);
         blob.compareAndSwap(newContent, comparand);
-        QdbBuffer result = blob.get();
+        Buffer result = blob.get();
 
         Assert.assertEquals(newContent, result.toByteBuffer());
     }

@@ -1,5 +1,7 @@
+import net.quasardb.qdb.exception.*;
 import java.util.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbTagEntriesTest {
@@ -67,7 +69,7 @@ public class QdbTagEntriesTest {
         Assert.assertTrue(resultAsList.get(0) instanceof QdbBlob);
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -78,7 +80,7 @@ public class QdbTagEntriesTest {
         tag.entries().iterator(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);
 

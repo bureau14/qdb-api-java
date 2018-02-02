@@ -1,18 +1,19 @@
 package net.quasardb.qdb;
 
+import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 /**
  * A node in the quasardb cluster.
  */
 public final class QdbNode {
-    private transient QdbSession session;
+    private transient Session session;
     private final String hostName;
     private final int port;
     private final String uri;
 
     // Protected constructor. Call QdbCluster.node() to get an instance.
-    protected QdbNode(QdbSession session, String hostName, int port) {
+    protected QdbNode(Session session, String hostName, int port) {
         this.session = session;
         this.hostName = hostName;
         this.port = port;
@@ -47,7 +48,7 @@ public final class QdbNode {
         session.throwIfClosed();
         Reference<String> config = new Reference<String>();
         int err = qdb.node_config(session.handle(), uri, config);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return config.value;
     }
 
@@ -61,7 +62,7 @@ public final class QdbNode {
         session.throwIfClosed();
         Reference<String> status = new Reference<String>();
         int err = qdb.node_status(session.handle(), uri, status);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return status.value;
     }
 
@@ -73,7 +74,7 @@ public final class QdbNode {
     public void stop(String reason) {
         session.throwIfClosed();
         int err = qdb.node_stop(session.handle(), uri, reason);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -86,7 +87,7 @@ public final class QdbNode {
         session.throwIfClosed();
         Reference<String> topology = new Reference<String>();
         int err = qdb.node_topology(session.handle(), uri, topology);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return topology.value;
     }
 }

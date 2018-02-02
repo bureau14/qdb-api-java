@@ -4,6 +4,7 @@ import org.junit.*;
 import org.hamcrest.Matcher;
 
 import net.quasardb.qdb.ts.Column;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -11,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class QdbTimeSeriesCreateTest {
     @Test
-    public void doesNotThrow_afterCreation() throws Exception {
+    public void doesNotThrow_afterCreation() throws java.lang.Exception {
         Column[] definitions = {
                 new Column.Blob (Helpers.createUniqueAlias()),
                 new Column.Double (Helpers.createUniqueAlias())
@@ -20,7 +21,7 @@ public class QdbTimeSeriesCreateTest {
     }
 
     @Test
-    public void listsColumns_afterCreation() throws Exception {
+    public void listsColumns_afterCreation() throws java.lang.Exception {
         Column[] definitions = {
             new Column.Blob (Helpers.createUniqueAlias()),
             new Column.Double (Helpers.createUniqueAlias())
@@ -36,7 +37,7 @@ public class QdbTimeSeriesCreateTest {
     }
 
     @Test
-    public void canAddColumns_afterCreation() throws Exception {
+    public void canAddColumns_afterCreation() throws java.lang.Exception {
         Column[] definitions1 = {
             new Column.Blob (Helpers.createUniqueAlias()),
             new Column.Double (Helpers.createUniqueAlias())
@@ -66,8 +67,8 @@ public class QdbTimeSeriesCreateTest {
         }
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
-    public void throws_afterCreatingDuplicateColumns() throws Exception {
+    @Test(expected = InvalidArgumentException.class)
+    public void throws_afterCreatingDuplicateColumns() throws java.lang.Exception {
         Column[] definitions = {
             new Column.Blob ("b1"),
             new Column.Double ("b1")
@@ -76,8 +77,8 @@ public class QdbTimeSeriesCreateTest {
         QdbTimeSeries series = Helpers.createTimeSeries(definitions);
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
-    public void throws_afterInsertingDuplicateColumns() throws Exception {
+    @Test(expected = InvalidArgumentException.class)
+    public void throws_afterInsertingDuplicateColumns() throws java.lang.Exception {
         Column[] definitions1 = {
             new Column.Blob ("b2")
         };

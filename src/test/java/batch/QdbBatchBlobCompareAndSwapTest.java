@@ -1,5 +1,7 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBatchBlobCompareAndSwapTest {
@@ -18,32 +20,32 @@ public class QdbBatchBlobCompareAndSwapTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchNotRunException.class)
+    @Test(expected = BatchNotRunException.class)
     public void throwsBatchNotRun_beforeCallingRun() {
         result = batch.blob(alias).compareAndSwap(newContent, comparand);
         result.get(); // <- throw
     }
 
-    @Test(expected = QdbBatchAlreadyRunException.class)
+    @Test(expected = BatchAlreadyRunException.class)
     public void throwsBatchAlreadyRun_afterCallingRun() {
         batch.run();
         batch.blob(alias).compareAndSwap(newContent, comparand); // <- throw
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsClosedBatch_afterCallingClose() {
         batch.close();
         batch.blob(alias).compareAndSwap(newContent, comparand); // <- throw
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_whenAliasIsRandom() {
         result = batch.blob(alias).compareAndSwap(newContent, comparand);
         batch.run();
         result.get(); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         QdbInteger integer = Helpers.getInteger(alias);
 
@@ -53,7 +55,7 @@ public class QdbBatchBlobCompareAndSwapTest {
         result.get(); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
@@ -63,7 +65,7 @@ public class QdbBatchBlobCompareAndSwapTest {
         result.get(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         result = batch.blob(Helpers.RESERVED_ALIAS).compareAndSwap(newContent, comparand);
         batch.run();

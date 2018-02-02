@@ -1,6 +1,7 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.BatchAlreadyRunException;
 
 /**
  * Add operations in a batch.
@@ -16,6 +17,6 @@ public class QdbBatchEntry {
 
     protected void assertNotAlreadyRun() {
         if (batch.hasRun())
-            throw new QdbBatchAlreadyRunException();
+            throw new BatchAlreadyRunException();
     }
 }

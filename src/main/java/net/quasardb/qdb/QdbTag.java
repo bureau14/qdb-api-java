@@ -1,13 +1,14 @@
 package net.quasardb.qdb;
 
 import java.util.*;
+import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 /**
  * Represents a tag in a quasardb database.
  */
 public final class QdbTag extends QdbEntry {
-    protected QdbTag(QdbSession session, String alias) {
+    protected QdbTag(Session session, String alias) {
         super(session, alias);
     }
 
@@ -36,7 +37,7 @@ public final class QdbTag extends QdbEntry {
     public boolean attachEntry(String entry) {
         session.throwIfClosed();
         int err = qdb.attach_tag(session.handle(), entry, alias);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.tag_already_set;
     }
 
@@ -75,7 +76,7 @@ public final class QdbTag extends QdbEntry {
     public boolean detachEntry(String entry) {
         session.throwIfClosed();
         int err = qdb.detach_tag(session.handle(), entry, alias);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.tag_not_set;
     }
 }

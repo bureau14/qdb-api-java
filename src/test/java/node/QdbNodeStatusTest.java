@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
@@ -11,7 +12,7 @@ public class QdbNodeStatusTest {
         Assert.assertTrue("This is not JSON: \"" + status + "\"", Helpers.looksLikeJson(status));
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String uri = DaemonRunner.uri();

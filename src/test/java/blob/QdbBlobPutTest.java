@@ -1,5 +1,7 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBlobPutTest {
@@ -14,7 +16,7 @@ public class QdbBlobPutTest {
         blob.put(content);
     }
 
-    @Test(expected = QdbAliasAlreadyExistsException.class)
+    @Test(expected = AliasAlreadyExistsException.class)
     public void throwsAliasAlreadyExists_whenCalledTwice() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -23,7 +25,7 @@ public class QdbBlobPutTest {
         blob.put(content); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         ByteBuffer content = Helpers.createSampleData();
@@ -34,7 +36,7 @@ public class QdbBlobPutTest {
         blob.put(content); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -43,7 +45,7 @@ public class QdbBlobPutTest {
         blob.put(content, fewMinutesAgo); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 

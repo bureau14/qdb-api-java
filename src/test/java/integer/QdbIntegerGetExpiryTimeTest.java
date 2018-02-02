@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import java.util.Date;
 import net.quasardb.qdb.*;
 import org.junit.*;

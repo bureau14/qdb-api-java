@@ -1,13 +1,14 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
+import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 /**
  * A hash-set in the database
  */
 public final class QdbHashSet extends QdbEntry {
-    protected QdbHashSet(QdbSession session, String alias) {
+    protected QdbHashSet(Session session, String alias) {
         super(session, alias);
     }
 
@@ -24,7 +25,7 @@ public final class QdbHashSet extends QdbEntry {
     public boolean contains(ByteBuffer content) {
         session.throwIfClosed();
         int err = qdb.hset_contains(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.element_not_found;
     }
 
@@ -41,7 +42,7 @@ public final class QdbHashSet extends QdbEntry {
     public boolean erase(ByteBuffer content) {
         session.throwIfClosed();
         int err = qdb.hset_erase(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.element_not_found;
     }
 
@@ -57,7 +58,7 @@ public final class QdbHashSet extends QdbEntry {
     public boolean insert(ByteBuffer content) {
         session.throwIfClosed();
         int err = qdb.hset_insert(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.element_already_exists;
     }
 }

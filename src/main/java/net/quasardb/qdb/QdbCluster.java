@@ -6,12 +6,13 @@ import java.util.regex.*;
 import java.util.Collection;
 import net.quasardb.qdb.ts.Column;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 /**
  * A connection to a quasardb cluster.
  */
 public class QdbCluster implements AutoCloseable {
-    private QdbSession session;
+    private Session session;
 
     /**
      * Connects to a quasardb cluster through the specified URI. Requires security settings to be disabled.
@@ -23,7 +24,7 @@ public class QdbCluster implements AutoCloseable {
      * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri) {
-        this.session = new QdbSession();
+        this.session = new Session();
         this.session.connect(uri);
     }
 
@@ -38,8 +39,8 @@ public class QdbCluster implements AutoCloseable {
      * @throws QdbInvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri,
-                      QdbSession.SecurityOptions securityOptions) {
-        this.session = new QdbSession(securityOptions);
+                      Session.SecurityOptions securityOptions) {
+        this.session = new Session(securityOptions);
         this.session.connect(uri);
     }
 
@@ -51,9 +52,9 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
-     * Returns the active QdbSession.
+     * Returns the active Session.
      */
-    public QdbSession getSession() {
+    public Session getSession() {
         return this.session;
     }
 
@@ -138,7 +139,7 @@ public class QdbCluster implements AutoCloseable {
         Matcher matcher = pattern.matcher(uri);
 
         if (!matcher.find())
-            throw new QdbInvalidArgumentException("URI format is incorrect.");
+            throw new InvalidArgumentException("URI format is incorrect.");
 
         String hostName = matcher.group(1);
         int port = Integer.parseInt(matcher.group(2));
@@ -221,7 +222,7 @@ public class QdbCluster implements AutoCloseable {
     public void purgeAll(int timeoutMillis) {
         session.throwIfClosed();
         int err = qdb.purge_all(session.handle(), timeoutMillis);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -234,7 +235,7 @@ public class QdbCluster implements AutoCloseable {
     public void trimAll(int timeoutMillis) {
         session.throwIfClosed();
         int err = qdb.trim_all(session.handle(), timeoutMillis);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -257,7 +258,7 @@ public class QdbCluster implements AutoCloseable {
     public void setTimeout(int timeoutMillis) {
         session.throwIfClosed();
         int err = qdb.option_set_timeout(session.handle(), timeoutMillis);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**

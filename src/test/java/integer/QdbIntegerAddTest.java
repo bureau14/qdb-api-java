@@ -1,16 +1,18 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbIntegerAddTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound() {
         QdbInteger integer = Helpers.createEmptyInteger();
 
         integer.add(666); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -20,7 +22,7 @@ public class QdbIntegerAddTest {
         integer.add(666); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType() {
         String alias = Helpers.createUniqueAlias();
         QdbBlob blob = Helpers.getBlob(alias);
@@ -31,7 +33,7 @@ public class QdbIntegerAddTest {
         integer.add(666); // <- throws
     }
 
-    @Test(expected = QdbOverflowException.class)
+    @Test(expected = OverflowException.class)
     public void throwsOverflow_whenAddingOneToMaxValue() {
         QdbInteger integer = Helpers.createEmptyInteger();
 
@@ -39,7 +41,7 @@ public class QdbIntegerAddTest {
         integer.add(1); // <- throws
     }
 
-    @Test(expected = QdbUnderflowException.class)
+    @Test(expected = UnderflowException.class)
     public void throwsUnderflow_whenSubtractingOneToMinValue() {
         QdbInteger integer = Helpers.createEmptyInteger();
 
@@ -47,7 +49,7 @@ public class QdbIntegerAddTest {
         integer.add(-1); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.add(666); // <- throws

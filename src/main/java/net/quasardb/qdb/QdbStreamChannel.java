@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.io.IOException;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 final class QdbStreamChannel implements SeekableByteChannel {
     private long handle;
@@ -108,6 +109,6 @@ final class QdbStreamChannel implements SeekableByteChannel {
     private void throwIfError(int err) throws IOException {
         if (qdb_error.severity(err) == qdb_err_severity.info)
             return;
-        throw new IOException(QdbExceptionFactory.createException(err));
+        throw new IOException(ExceptionFactory.createException(err));
     }
 }

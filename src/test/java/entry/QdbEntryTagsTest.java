@@ -1,10 +1,12 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbEntryTagsTest {
-    // @Test(expected = QdbClusterClosedException.class)
+    // @Test(expected = ClusterClosedException.class)
     // public void throwsClusterClosed_afterCallingQdbClusterClose() {
     //     QdbCluster cluster = Helpers.createCluster();
     //     String alias = Helpers.createUniqueAlias();
@@ -14,7 +16,7 @@ public class QdbEntryTagsTest {
     //     entry.tags().iterator(); // <- throws
     // }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
 

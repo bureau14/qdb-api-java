@@ -1,10 +1,12 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbExpirableEntryTest {
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     @Ignore(value = "It's not clear what the right behavior should be.")
     public void getExpiryTime_throwsReservedAlias() {
         QdbExpirableEntry entry = Helpers.getBlob(Helpers.RESERVED_ALIAS);
@@ -22,7 +24,7 @@ public class QdbExpirableEntryTest {
         Assert.assertEquals(expiry, result);
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void setExpiryTime_throwsInvalidArgument_whenDateIsInThePast() {
         QdbExpirableEntry entry = Helpers.createBlob();
 

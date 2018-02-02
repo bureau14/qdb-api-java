@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBlobCompareAndSwapTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer comparand = Helpers.createSampleData();
@@ -12,7 +14,7 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -24,7 +26,7 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingIntegerPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -36,7 +38,7 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(newContent, comparand); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbBlob blob = Helpers.createEmptyBlob();
         ByteBuffer content = Helpers.createSampleData();
@@ -46,7 +48,7 @@ public class QdbBlobCompareAndSwapTest {
         blob.compareAndSwap(content, content, fewMinutesAgo); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer comparand = Helpers.createSampleData();
         ByteBuffer newContent = Helpers.createSampleData();
@@ -63,7 +65,7 @@ public class QdbBlobCompareAndSwapTest {
         ByteBuffer newContent = Helpers.createSampleData();
 
         blob.put(content);
-        QdbBuffer result = blob.compareAndSwap(newContent, comparand);
+        Buffer result = blob.compareAndSwap(newContent, comparand);
 
         Assert.assertNull(result);
     }
@@ -76,7 +78,7 @@ public class QdbBlobCompareAndSwapTest {
         ByteBuffer newContent = Helpers.createSampleData();
 
         blob.put(content);
-        QdbBuffer result = blob.compareAndSwap(newContent, comparand);
+        Buffer result = blob.compareAndSwap(newContent, comparand);
 
         Assert.assertEquals(content, result.toByteBuffer());
     }

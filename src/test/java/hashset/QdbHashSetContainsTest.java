@@ -1,9 +1,12 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
-import net.quasardb.qdb.*;
 import org.junit.*;
 
+import net.quasardb.qdb.exception.*;
+import net.quasardb.qdb.*;
+
 public class QdbHashSetContainsTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound() {
         QdbHashSet hset = Helpers.createEmptyHashSet();
         ByteBuffer content = Helpers.createSampleData();
@@ -11,7 +14,7 @@ public class QdbHashSetContainsTest {
         hset.contains(content); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         ByteBuffer content = Helpers.createSampleData();
@@ -22,7 +25,7 @@ public class QdbHashSetContainsTest {
         hset.contains(content); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingBlobPut() {
         String alias = Helpers.createUniqueAlias();
         QdbBlob blob = Helpers.getBlob(alias);
@@ -33,7 +36,7 @@ public class QdbHashSetContainsTest {
         hset.contains(content); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 

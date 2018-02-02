@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbIntegerGetTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingPut_thenWaitingExpiration() {
         QdbInteger integer = Helpers.createEmptyInteger();
         QdbExpiryTime expiry = QdbExpiryTime.makeSecondsFromNow(1);
@@ -13,7 +15,7 @@ public class QdbIntegerGetTest {
         integer.get(); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -23,7 +25,7 @@ public class QdbIntegerGetTest {
         integer.get(); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_afterCallingRemove() {
         QdbInteger integer = Helpers.createEmptyInteger();
 
@@ -32,7 +34,7 @@ public class QdbIntegerGetTest {
         integer.get(); // <- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType_afterCallingBlobPut() {
         String alias = Helpers.createUniqueAlias();
         QdbInteger integer = Helpers.getInteger(alias);
@@ -43,7 +45,7 @@ public class QdbIntegerGetTest {
         integer.get(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.get(); // <- throws

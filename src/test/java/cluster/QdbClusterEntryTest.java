@@ -1,8 +1,11 @@
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.AliasNotFoundException;
+import net.quasardb.qdb.exception.InvalidArgumentException;
+import net.quasardb.qdb.exception.ClusterClosedException;
 import org.junit.*;
 
 public class QdbClusterEntryTest {
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -11,19 +14,19 @@ public class QdbClusterEntryTest {
         cluster.entry(alias); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_whenAliasIsRandom() {
         String alias = Helpers.createUniqueAlias();
 
         Helpers.getEntry(alias); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenAliasIsEmpty() {
         Helpers.getEntry(""); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenAliasIsNull() {
         Helpers.getEntry(null); // <- throws
     }
@@ -69,7 +72,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void returnsQdbStream_whenEntryIsStream() throws Exception {
+    public void returnsStream_whenEntryIsStream() throws Exception {
         QdbStream stream = Helpers.createStream();
 
         String alias = stream.alias();
@@ -79,7 +82,7 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void returnsQdbTag_whenEntryIsTag() throws Exception {
+    public void returnsTag_whenEntryIsTag() throws Exception {
         QdbTag tag = Helpers.createTag();
 
         String alias = tag.alias();

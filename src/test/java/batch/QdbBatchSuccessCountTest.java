@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 import java.nio.ByteBuffer;
@@ -10,12 +11,12 @@ public class QdbBatchSuccessCountTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchNotRunException.class)
+    @Test(expected = BatchNotRunException.class)
     public void throwsBatchNotRun_beforeCallingRun() {
         batch.successCount(); // <- throw
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsBatchClosed_afterCallingClose() {
         batch.close();
         batch.successCount(); // <- throw

@@ -2,10 +2,11 @@ package net.quasardb.qdb;
 
 import java.util.*;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 final class QdbTagEntries implements Iterable<QdbEntry> {
     QdbEntryFactory factory;
-    QdbSession session;
+    Session session;
     String tag;
 
     class QdbTagEntriesIterator implements Iterator<QdbEntry> {
@@ -21,7 +22,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
             hasNext = err == qdb_error.ok;
             // CAUTION: set hasNext before throwing
-            QdbExceptionFactory.throwIfError(err);
+            ExceptionFactory.throwIfError(err);
         }
 
         public boolean hasNext() {
@@ -36,7 +37,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
 
             hasNext = err == qdb_error.ok;
             // CAUTION: set hasNext before throwing
-            QdbExceptionFactory.throwIfError(err);
+            ExceptionFactory.throwIfError(err);
 
             return entry;
         }
@@ -52,7 +53,7 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
         }
     }
 
-    protected QdbTagEntries(QdbSession session, String tag) {
+    protected QdbTagEntries(Session session, String tag) {
         this.session = session;
         this.tag = tag;
         factory = new QdbEntryFactory(session);

@@ -1,5 +1,7 @@
 import java.util.*;
 import java.time.*;
+import java.lang.Exception;
+
 import org.junit.*;
 import org.hamcrest.Matcher;
 
@@ -8,6 +10,8 @@ import static org.junit.Assert.*;
 
 import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.InvalidIteratorException;
+import net.quasardb.qdb.exception.InvalidArgumentException;
 
 public class ReaderTest {
 
@@ -38,7 +42,7 @@ public class ReaderTest {
         reader.close();
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void readWithoutRanges_throwsException() throws Exception {
         String alias = Helpers.createUniqueAlias();
 
@@ -168,7 +172,7 @@ public class ReaderTest {
         assertThat(reader.hasNext(), (is(false)));
     }
 
-    @Test(expected = QdbInvalidIteratorException.class)
+    @Test(expected = InvalidIteratorException.class)
     public void invalidIterator_throwsException() throws Exception {
         // Generate a 1x1 test dataset
 

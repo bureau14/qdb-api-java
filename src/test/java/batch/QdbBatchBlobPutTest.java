@@ -1,5 +1,7 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBatchBlobPutTest {
@@ -16,25 +18,25 @@ public class QdbBatchBlobPutTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchNotRunException.class)
+    @Test(expected = BatchNotRunException.class)
     public void throwsBatchNotRun_beforeCallingRun() {
         result = batch.blob(alias).put(content);
         result.get(); // <- throw
     }
 
-    @Test(expected = QdbBatchAlreadyRunException.class)
+    @Test(expected = BatchAlreadyRunException.class)
     public void throwsBatchAlreadyRun_afterCallingRun() {
         batch.run();
         batch.blob(alias).put(content); // <- throw
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsBatchClosed_afterCallingClose() {
         batch.close();
         batch.blob(alias).put(content); // <- throw
     }
 
-    @Test(expected = QdbAliasAlreadyExistsException.class)
+    @Test(expected = AliasAlreadyExistsException.class)
     public void throwsAliasAlreadyExists_afterCallingPut() {
         result = batch.blob(alias).put(content);
         blob.put(content);
@@ -42,7 +44,7 @@ public class QdbBatchBlobPutTest {
         result.get(); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenExpiryTimeIsInThePast() {
         QdbExpiryTime fewMinutesAgo = QdbExpiryTime.makeMinutesFromNow(-7);
 
@@ -51,7 +53,7 @@ public class QdbBatchBlobPutTest {
         result.get(); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         alias = Helpers.RESERVED_ALIAS;
 

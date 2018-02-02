@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbTagDetachEntryTest {
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_whenAliasDoesntExists() {
         QdbTag tag = Helpers.createTag();
         String entry = Helpers.createUniqueAlias();
@@ -11,7 +13,7 @@ public class QdbTagDetachEntryTest {
         tag.detachEntry(entry); // <- throws
     }
 
-    @Test(expected = QdbAliasNotFoundException.class)
+    @Test(expected = AliasNotFoundException.class)
     public void throwsAliasNotFound_whenEntryDoesntExists() {
         QdbTag tag = Helpers.createTag();
         QdbEntry entry = Helpers.createEmptyBlob();
@@ -19,7 +21,7 @@ public class QdbTagDetachEntryTest {
         tag.detachEntry(entry); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -30,14 +32,14 @@ public class QdbTagDetachEntryTest {
         tag.detachEntry(entry); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenAliasIsQdb() {
         QdbTag tag = Helpers.getTag(Helpers.RESERVED_ALIAS);
 
         tag.detachEntry("toto"); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias_whenTagIsQdb() {
         QdbTag tag = Helpers.createTag();
 

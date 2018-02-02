@@ -1,4 +1,6 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbClusterFindNodeForTest {
@@ -12,7 +14,7 @@ public class QdbClusterFindNodeForTest {
         Assert.assertEquals(DaemonRunner.port(), node.port());
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();

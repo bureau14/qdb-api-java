@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
 public class QdbIntegerPutTest {
-    @Test(expected = QdbAliasAlreadyExistsException.class)
+    @Test(expected = AliasAlreadyExistsException.class)
     public void throwAliasAlreadyExists_whenCalledTwice() {
         QdbInteger integer = Helpers.createEmptyInteger();
 
@@ -11,7 +13,7 @@ public class QdbIntegerPutTest {
         integer.put(666); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         String alias = Helpers.createUniqueAlias();
@@ -21,7 +23,7 @@ public class QdbIntegerPutTest {
         integer.put(666); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwReservedAlias() {
         QdbInteger integer = Helpers.getInteger(Helpers.RESERVED_ALIAS);
         integer.put(666); // <- throws

@@ -1,7 +1,9 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
+import net.quasardb.qdb.Buffer;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 /**
  * A blob in the database.
@@ -9,7 +11,7 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbBlob extends QdbExpirableEntry {
     // Protected constructor. Call QdbCluster.blob() to get an instance.
-    protected QdbBlob(QdbSession session, String alias) {
+    protected QdbBlob(Session session, String alias) {
         super(session, alias);
     }
 
@@ -24,7 +26,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
+    public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
         return this.compareAndSwap(newContent, comparand, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -41,12 +43,12 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
+    public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
         int err = qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toMillisSinceEpoch(), originalContent);
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(originalContent);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, originalContent);
     }
 
     /**
@@ -57,12 +59,12 @@ public final class QdbBlob extends QdbExpirableEntry {
       * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
       * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
-    public QdbBuffer get() {
+    public Buffer get() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.blob_get(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -74,12 +76,12 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer getAndRemove() {
+    public Buffer getAndRemove() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.blob_get_and_remove(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -92,7 +94,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer getAndUpdate(ByteBuffer content) {
+    public Buffer getAndUpdate(ByteBuffer content) {
         return this.getAndUpdate(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -108,12 +110,12 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws QdbInvalidArgumentException If the expiry time is in the past (with a certain tolerance)
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
+    public Buffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
         int err = qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch(), originalContent);
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(originalContent);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, originalContent);
     }
 
     /**
@@ -141,7 +143,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.blob_put(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -157,7 +159,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public boolean removeIf(ByteBuffer comparand) {
         session.throwIfClosed();
         int err = qdb.blob_remove_if(session.handle(), alias, comparand);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err != qdb_error.unmatched_content;
     }
 
@@ -188,7 +190,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.blob_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }
 }

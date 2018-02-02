@@ -15,8 +15,9 @@ import net.quasardb.qdb.ts.Row;
 import net.quasardb.qdb.ts.Value;
 import net.quasardb.qdb.ts.TimeRange;
 
+import net.quasardb.qdb.exception.InputException;
+
 import net.quasardb.qdb.Helpers;
-import net.quasardb.qdb.QdbInputException;
 import net.quasardb.qdb.QdbTimeSeries;
 
 public class QueryTest {
@@ -31,7 +32,7 @@ public class QueryTest {
         Query q = Query.of("");
     }
 
-    @Test(expected = QdbInputException.class)
+    @Test(expected = InputException.class)
     public void cannotExecuteEmptyQuery() throws Exception {
         Query.create()
             .execute(Helpers.getSession());

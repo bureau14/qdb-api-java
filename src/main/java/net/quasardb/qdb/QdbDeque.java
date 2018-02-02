@@ -1,7 +1,9 @@
 package net.quasardb.qdb;
 
 import java.nio.ByteBuffer;
+import net.quasardb.qdb.Buffer;
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 /**
  * A deque in the database.
@@ -9,7 +11,7 @@ import net.quasardb.qdb.jni.*;
  */
 public final class QdbDeque extends QdbEntry {
     // Protected constructor. Call QdbCluster.deque() to get an instance.
-    protected QdbDeque(QdbSession session, String alias) {
+    protected QdbDeque(Session session, String alias) {
         super(session, alias);
     }
 
@@ -22,14 +24,14 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer back() {
+    public Buffer back() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.deque_back(session.handle(), alias, content);
         if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -43,12 +45,12 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbOutOfBoundsException If the index is negative, or greater or equal than deque size.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer get(long index) {
+    public Buffer get(long index) {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.deque_get_at(session.handle(), alias, index, content);
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -60,14 +62,14 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer front() {
+    public Buffer front() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.deque_front(session.handle(), alias, content);
         if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -79,14 +81,14 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer popBack() {
+    public Buffer popBack() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.deque_pop_back(session.handle(), alias, content);
         if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -98,14 +100,14 @@ public final class QdbDeque extends QdbEntry {
      * @throws QdbIncompatibleTypeException If the alias has a type incompatible for this operation.
      * @throws QdbReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
-    public QdbBuffer popFront() {
+    public Buffer popFront() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
         int err = qdb.deque_pop_front(session.handle(), alias, content);
         if (err == qdb_error.container_empty)
             return null;
-        QdbExceptionFactory.throwIfError(err);
-        return session.wrapBuffer(content);
+        ExceptionFactory.throwIfError(err);
+        return Buffer.wrap(session, content);
     }
 
     /**
@@ -119,7 +121,7 @@ public final class QdbDeque extends QdbEntry {
     public void pushBack(ByteBuffer content) {
         session.throwIfClosed();
         int err = qdb.deque_push_back(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -133,7 +135,7 @@ public final class QdbDeque extends QdbEntry {
     public void pushFront(ByteBuffer content) {
         session.throwIfClosed();
         int err = qdb.deque_push_front(session.handle(), alias, content);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -149,7 +151,7 @@ public final class QdbDeque extends QdbEntry {
         session.throwIfClosed();
         Reference<Long> size = new Reference<Long>();
         int err = qdb.deque_size(session.handle(), alias, size);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return size.value.longValue();
     }
 }

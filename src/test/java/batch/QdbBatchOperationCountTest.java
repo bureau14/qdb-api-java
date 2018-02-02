@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 import org.junit.*;
 
@@ -9,7 +10,7 @@ public class QdbBatchOperationCountTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsBatchClosed_afterCallingClose() {
         batch.close();
         batch.operationCount(); // <- throw

@@ -1,9 +1,11 @@
+import net.quasardb.qdb.exception.*;
 import java.nio.ByteBuffer;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbHashSetInsertTest {
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsIncompatibleType() {
         String alias = Helpers.createUniqueAlias();
         QdbBlob blob = Helpers.getBlob(alias);
@@ -14,7 +16,7 @@ public class QdbHashSetInsertTest {
         hset.insert(content); // <- throws
     }
 
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
         ByteBuffer content = Helpers.createSampleData();
@@ -25,7 +27,7 @@ public class QdbHashSetInsertTest {
         hset.insert(content); // <- throws
     }
 
-    @Test(expected = QdbReservedAliasException.class)
+    @Test(expected = ReservedAliasException.class)
     public void throwsReservedAlias() {
         ByteBuffer content = Helpers.createSampleData();
 

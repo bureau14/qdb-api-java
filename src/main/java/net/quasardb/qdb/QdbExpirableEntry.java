@@ -1,13 +1,14 @@
 package net.quasardb.qdb;
 
 import java.util.*;
+import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 /**
  * An entry that has the ability to expire.
  */
 public class QdbExpirableEntry extends QdbEntry {
-    protected QdbExpirableEntry(QdbSession session, String alias) {
+    protected QdbExpirableEntry(Session session, String alias) {
         super(session, alias);
     }
 
@@ -22,7 +23,7 @@ public class QdbExpirableEntry extends QdbEntry {
     public void expiryTime(QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.expires_at(session.handle(), alias, expiryTime.toMillisSinceEpoch());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -36,7 +37,7 @@ public class QdbExpirableEntry extends QdbEntry {
         session.throwIfClosed();
         Reference<Long> expiry = new Reference<Long>();
         int err = qdb.get_expiry_time(session.handle(), alias, expiry);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return QdbExpiryTime.makeMillisSinceEpoch(expiry.value);
     }
 }

@@ -1,3 +1,4 @@
+import net.quasardb.qdb.exception.*;
 import java.time.Instant;
 import java.util.*;
 import net.quasardb.qdb.*;

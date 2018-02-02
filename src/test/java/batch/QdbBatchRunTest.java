@@ -1,4 +1,6 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbBatchRunTest {
@@ -9,7 +11,7 @@ public class QdbBatchRunTest {
         batch = Helpers.createBatch();
     }
 
-    @Test(expected = QdbBatchAlreadyRunException.class)
+    @Test(expected = BatchAlreadyRunException.class)
     public void throwsBatchAlreadyRun_whenCalledTwice() {
         batch.run();
         batch.run();
@@ -20,7 +22,7 @@ public class QdbBatchRunTest {
         batch.run();
     }
 
-    @Test(expected = QdbBatchClosedException.class)
+    @Test(expected = BatchClosedException.class)
     public void throwsBatchClosed_afterCallingClose() {
         batch.close();
         batch.run(); // <- throw

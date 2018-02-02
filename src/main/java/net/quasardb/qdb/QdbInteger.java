@@ -1,13 +1,14 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 /**
  * A signed 64-bit integer in the database.
  */
 public final class QdbInteger extends QdbExpirableEntry {
     // Protected constructor. Call QdbCluster.integer() to get an instance.
-    protected QdbInteger(QdbSession session, String alias) {
+    protected QdbInteger(Session session, String alias) {
         super(session, alias);
     }
 
@@ -25,7 +26,7 @@ public final class QdbInteger extends QdbExpirableEntry {
         session.throwIfClosed();
         Reference<Long> result = new Reference<Long>();
         int err = qdb.int_add(session.handle(), alias, delta, result);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return result.value;
     }
 
@@ -42,7 +43,7 @@ public final class QdbInteger extends QdbExpirableEntry {
         session.throwIfClosed();
         Reference<Long> value = new Reference<Long>();
         int err = qdb.int_get(session.handle(), alias, value);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return value.value;
     }
 
@@ -70,7 +71,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public void put(long initialValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toMillisSinceEpoch());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
     }
 
     /**
@@ -99,7 +100,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public boolean update(long newValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toMillisSinceEpoch());
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }
 }

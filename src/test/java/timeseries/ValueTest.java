@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 import net.quasardb.qdb.ts.Value;
 import net.quasardb.qdb.ts.Timespec;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.IncompatibleTypeException;
 
 public class ValueTest {
 
@@ -55,14 +56,14 @@ public class ValueTest {
         assertThat(value1, equalTo(value2));
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsError_whenDoubleTypesDontMatch() throws Exception {
         ByteBuffer b = Helpers.createSampleData();
         Value value = Value.createBlob(b);
         value.getDouble(); // <-- throws
     }
 
-    @Test(expected = QdbIncompatibleTypeException.class)
+    @Test(expected = IncompatibleTypeException.class)
     public void throwsError_whenBlobTypesDontMatch() throws Exception {
         double d = Helpers.randomDouble();
         Value value = Value.createDouble(d);

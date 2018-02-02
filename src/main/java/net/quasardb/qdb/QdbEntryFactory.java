@@ -1,18 +1,19 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
+import net.quasardb.qdb.exception.*;
 
 final class QdbEntryFactory {
-    final QdbSession session;
+    final Session session;
 
-    public QdbEntryFactory(QdbSession session) {
+    public QdbEntryFactory(Session session) {
         this.session = session;
     }
 
     public QdbEntry createEntry(String alias) {
         Reference<Integer> type = new Reference<Integer>();
         int err = qdb.get_type(session.handle(), alias, type);
-        QdbExceptionFactory.throwIfError(err);
+        ExceptionFactory.throwIfError(err);
         return createEntry(type.value, alias);
     }
 

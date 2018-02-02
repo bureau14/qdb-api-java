@@ -1,8 +1,10 @@
+import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.exception.*;
 import org.junit.*;
 
 public class QdbClusterNodeTest {
-    @Test(expected = QdbClusterClosedException.class)
+    @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingClose() {
         QdbCluster cluster = Helpers.createCluster();
         String uri = DaemonRunner.uri();
@@ -11,7 +13,7 @@ public class QdbClusterNodeTest {
         cluster.node(uri); // <- throws
     }
 
-    @Test(expected = QdbInvalidArgumentException.class)
+    @Test(expected = InvalidArgumentException.class)
     public void throwsInvalidArgument_whenUriIsInvalid() {
         Helpers.getCluster().node("wrong_uri"); // <- throws
     }
