@@ -50,7 +50,6 @@ public class QueryTest {
                 Helpers.generateTableColumns(valueType, 1);
 
             Row[] rows = Helpers.generateTableRows(definition, 1);
-            TimeRange range = Helpers.rangeFromRows(rows);
 
             QdbTimeSeries series = Helpers.seedTable(definition, rows);
 
@@ -59,7 +58,7 @@ public class QueryTest {
                 .add(definition[0].getName())
                 .add("from")
                 .add(series.getName())
-                .in(range)
+                .in(Helpers.rangeFromRows(rows))
                 .asQuery()
                 .execute(Helpers.getSession());
 
