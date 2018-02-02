@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.ts.Row;
+import net.quasardb.qdb.ts.Writer;
+import net.quasardb.qdb.ts.AutoFlushWriter;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -20,11 +23,11 @@ public class QdbTimeSeriesWriterBenchmark {
     @State(Scope.Thread)
     public static class TimeSeries {
         QdbTimeSeries series;
-        Iterator<QdbTimeSeriesRow> iterator;
+        Iterator<Row> iterator;
 
         @Setup(Level.Iteration)
         public void setup(Table table) throws Exception {
-            this.series = Helpers.createTimeSeries(Arrays.asList(table.cols));
+            this.series = Helpers.createTimeSeries(table.cols);
             this.iterator = Arrays.stream(table.rows).iterator();
         }
     }
@@ -34,7 +37,7 @@ public class QdbTimeSeriesWriterBenchmark {
         @Param({"1", "100", "10000", "100000"})
         public int flushThreshold;
 
-        QdbTimeSeriesWriter writer;
+        net.quasardb.qdb.ts.Writer writer;
 
         @Setup(Level.Iteration)
         public void setup(TimeSeries ts) throws Exception {

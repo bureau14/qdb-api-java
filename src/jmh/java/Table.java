@@ -9,7 +9,10 @@ import java.util.Iterator;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import net.quasardb.qdb.*;
+import net.quasardb.qdb.Helpers;
+import net.quasardb.qdb.ts.Value;
+import net.quasardb.qdb.ts.Column;
+import net.quasardb.qdb.ts.Row;
 
 @State(Scope.Thread)
 public class Table {
@@ -29,8 +32,8 @@ public class Table {
     @Param({"INT64", "DOUBLE", "TIMESTAMP", "BLOB_1", "BLOB_256", "BLOB_1024"})
     public ValueType valueType;
 
-    QdbColumnDefinition[] cols;
-    QdbTimeSeriesRow[] rows;
+    Column[] cols;
+    Row[] rows;
 
     @Setup(Level.Trial)
     public void setup() {
@@ -38,33 +41,33 @@ public class Table {
 
         switch(this.valueType) {
         case DOUBLE:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.DOUBLE,
+            this.cols = Helpers.generateTableColumns(Value.Type.DOUBLE,
                                                      colCount);
             break;
 
         case INT64:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.INT64,
+            this.cols = Helpers.generateTableColumns(Value.Type.INT64,
                                                      colCount);
             break;
 
         case TIMESTAMP:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.TIMESTAMP,
+            this.cols = Helpers.generateTableColumns(Value.Type.TIMESTAMP,
                                                      colCount);
             break;
 
         case BLOB_1:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.BLOB,
+            this.cols = Helpers.generateTableColumns(Value.Type.BLOB,
                                                      colCount);
             break;
 
         case BLOB_256:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.BLOB,
+            this.cols = Helpers.generateTableColumns(Value.Type.BLOB,
                                                      colCount);
             complexity = 256;
             break;
 
         case BLOB_1024:
-            this.cols = Helpers.generateTableColumns(QdbTimeSeriesValue.Type.BLOB,
+            this.cols = Helpers.generateTableColumns(Value.Type.BLOB,
                                                      colCount);
             complexity = 256;
             break;

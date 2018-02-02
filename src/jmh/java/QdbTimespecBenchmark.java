@@ -7,30 +7,32 @@ import org.openjdk.jmh.runner.*;
 import org.openjdk.jmh.runner.options.*;
 
 import net.quasardb.qdb.*;
+import net.quasardb.qdb.ts.NanoClock;
+import net.quasardb.qdb.ts.Timespec;
 
 @State(Scope.Thread)
 public class QdbTimespecBenchmark {
 
-    public QdbClock clock;
+    public NanoClock clock;
 
     @Setup
     public void setup() throws Exception {
-        this.clock = new QdbClock();
+        this.clock = new NanoClock();
     }
 
     @Benchmark
-    public QdbTimespec jni() {
-        return QdbTimespec.now();
+    public Timespec jni() {
+        return Timespec.now();
     }
 
     @Benchmark
-    public QdbTimespec clock() {
-        return QdbTimespec.now(this.clock);
+    public Timespec clock() {
+        return Timespec.now(this.clock);
     }
 
     @Benchmark
-    public QdbTimespec instant() {
-        return new QdbTimespec(Instant.now());
+    public Timespec instant() {
+        return new Timespec(Instant.now());
     }
 
     public static void main(String[] args) throws RunnerException {
