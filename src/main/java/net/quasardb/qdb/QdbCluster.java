@@ -24,8 +24,7 @@ public class QdbCluster implements AutoCloseable {
      * @throws InvalidArgumentException If the syntax of the URI is incorrect.
      */
     public QdbCluster(String uri) {
-        this.session = new Session();
-        this.session.connect(uri);
+        this.session = Session.connect(uri);
     }
 
     /**
@@ -40,8 +39,7 @@ public class QdbCluster implements AutoCloseable {
      */
     public QdbCluster(String uri,
                       Session.SecurityOptions securityOptions) {
-        this.session = new Session(securityOptions);
-        this.session.connect(uri);
+        this.session = Session.connect(securityOptions, uri);
     }
 
     /**
