@@ -32,12 +32,7 @@ public final class QdbTimeSeries {
      * Create new timeseries table with a collection of columns.
      */
     public void create(long millisecondsShardSize, Column[] columns) {
-        int err = qdb.ts_create(this.session.handle(),
-                                this.name,
-                                millisecondsShardSize,
-                                columns);
-
-        ExceptionFactory.throwIfError(err);
+        Table.create(this.session, this.name, columns, millisecondsShardSize);
     }
 
     /**
