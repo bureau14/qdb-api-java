@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import java.util.StringJoiner;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import net.quasardb.qdb.ts.Column;
 import net.quasardb.qdb.ts.Query;
@@ -90,6 +91,38 @@ public class QueryTest {
                 System.out.println("comparing row value, original = " + originalRow.getValues()[0].toString() + ", from query = " + row[1].toString());
                 assertThat(row[1], (is(originalRow.getValues()[0])));
             }
+        }
+
+    }
+
+    @Test
+    public void canAccessResultAsStream() throws Exception {
+        Value.Type[] valueTypes = { Value.Type.INT64,
+                                    Value.Type.DOUBLE,
+                                    Value.Type.TIMESTAMP,
+                                    Value.Type.BLOB };
+
+        for (Value.Type valueType : valueTypes) {
+            Column[] definition =
+                Helpers.generateTableColumns(valueType, 2);
+
+            Row[] rows = Helpers.generateTableRows(definition, 10);
+
+            QdbTimeSeries series = Helpers.seedTable(definition, rows);
+
+            Result r = new QueryBuilder()
+                .add("select")
+                .add(definition[0].getName())
+                .add("from")
+                .add(series.getName())
+                .in(Helpers.rangeFromRows(rows))
+                .asQuery()
+                .execute(Helpers.getSession());
+
+            Result.Table t = r.tables[0];
+
+
+            assertThat(r.stream().count(), is(equalTo(Long.valueOf(t.rows.length))));
         }
 
     }
