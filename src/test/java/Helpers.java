@@ -221,7 +221,7 @@ public class Helpers {
     }
 
     public static String createUniqueAlias() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     public static QdbBlob createEmptyBlob() {
