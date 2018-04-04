@@ -1,7 +1,7 @@
 import org.junit.*;
 import org.hamcrest.Matcher;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.util.StringJoiner;
@@ -63,6 +63,7 @@ public class QueryTest {
                 .asQuery()
                 .execute(Helpers.getSession());
 
+            assertThat(r.tables, arrayWithSize(1));
             Result.Table t = r.tables[0];
 
             assertThat(r.tables.length, (is(1)));
