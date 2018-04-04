@@ -11,7 +11,7 @@ public class QdbClusterFindNodeForTest {
 
         QdbNode node = cluster.findNodeFor(alias);
         Assert.assertEquals("127.0.0.1", node.hostName());
-        Assert.assertEquals(DaemonRunner.port(), node.port());
+        Assert.assertEquals(Daemon.port(), node.port());
     }
 
     @Test(expected = ClusterClosedException.class)

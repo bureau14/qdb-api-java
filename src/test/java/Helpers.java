@@ -29,7 +29,7 @@ public class Helpers {
 
     public static QdbCluster createCluster() {
         try {
-            return new QdbCluster(DaemonRunner.uri());
+            return new QdbCluster(Daemon.uri());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +37,7 @@ public class Helpers {
 
     public static QdbCluster createSecureCluster() {
         try {
-            return new QdbCluster(DaemonRunner.secureUri(),
+            return new QdbCluster(Daemon.secureUri(),
                                   SECURITRY_OPTIONS);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -372,7 +372,7 @@ public class Helpers {
     }
 
     public static QdbNode getNode() {
-        return cluster.node(DaemonRunner.uri());
+        return cluster.node(Daemon.uri());
     }
 
     public static QdbStream getStream(String alias) {

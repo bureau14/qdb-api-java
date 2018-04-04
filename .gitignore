@@ -1,6 +1,7 @@
 *.dll
 *.exe
 *.iml
+qdbd.*.txt
 .idea/
 /*.log
 /bin/

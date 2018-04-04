@@ -9,6 +9,6 @@ public class QdbNodePortTest {
 
         int port = node.port();
 
-        Assert.assertEquals(DaemonRunner.port(), port);
+        Assert.assertEquals(Daemon.port(), port);
     }
 }

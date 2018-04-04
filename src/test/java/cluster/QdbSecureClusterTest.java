@@ -6,7 +6,7 @@ public class QdbSecureClusterTest {
     @Test
     public void canClose_afterOpen() {
         QdbCluster cluster = Helpers.createSecureCluster();
-        String uri = DaemonRunner.secureUri();
+        String uri = Daemon.secureUri();
 
         cluster.node(uri); // does not throw
         cluster.close();

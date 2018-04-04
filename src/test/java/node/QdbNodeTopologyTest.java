@@ -15,7 +15,7 @@ public class QdbNodeTopologyTest {
     @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingQdbClusterClose() {
         QdbCluster cluster = Helpers.createCluster();
-        String uri = DaemonRunner.uri();
+        String uri = Daemon.uri();
 
         QdbNode node = cluster.node(uri);
         cluster.close();

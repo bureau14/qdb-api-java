@@ -7,7 +7,7 @@ public class QdbClusterNodeTest {
     @Test(expected = ClusterClosedException.class)
     public void throwsClusterClosed_afterCallingClose() {
         QdbCluster cluster = Helpers.createCluster();
-        String uri = DaemonRunner.uri();
+        String uri = Daemon.uri();
 
         cluster.close();
         cluster.node(uri); // <- throws

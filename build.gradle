@@ -43,7 +43,8 @@ javadoc {
 }
 
 test {
-    systemProperty "qdbd.path", project.getProperty("qdbd.path")
+    systemProperty "qdbd.port", project.getProperty("qdbd.port")
+    systemProperty "qdbd.secure.port", project.getProperty("qdbd.secure.port")
     jvmArgs '-XX:+UseG1GC'
 }
 

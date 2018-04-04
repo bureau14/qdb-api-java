@@ -9,6 +9,6 @@ public class QdbEntryNodeTest {
 
         QdbNode node = blob.node();
         Assert.assertEquals("127.0.0.1", node.hostName());
-        Assert.assertEquals(DaemonRunner.port(), node.port());
+        Assert.assertEquals(Daemon.port(), node.port());
     }
 }
