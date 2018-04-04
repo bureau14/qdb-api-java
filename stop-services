@@ -1,3 +1,3 @@
 #!/bin/bash
 
-killall -SIGKILL qdb/bin/qdbd
+pkill -SIGKILL -f qdbd
