@@ -1,5 +1,3 @@
 #!/bin/sh
 
-echo "Killall all qdbd..."
-
 pkill -SIGKILL -f qdbd
