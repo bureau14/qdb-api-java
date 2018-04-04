@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 CMD="qdb/bin/qdbd"
 ARGS="-a 127.0.0.1:28360 --security=false --transient -r qdb/db"
