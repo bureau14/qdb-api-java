@@ -52,16 +52,6 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void returnsQdbHashSet_whenEntryIsHashSet() {
-        QdbHashSet hset = Helpers.createHashSet();
-
-        String alias = hset.alias();
-        QdbEntry result = Helpers.getEntry(alias);
-
-        Assert.assertTrue(result instanceof QdbHashSet);
-    }
-
-    @Test
     public void returnsQdbInteger_whenEntryIsInteger() {
         QdbInteger integer = Helpers.createInteger();
 

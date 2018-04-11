@@ -102,18 +102,6 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
-       * Gets a handle to a hash-set in the database.
-       *
-       * @param alias The entry unique key/identifier in the database.
-       * @return A handle to perform operations on the hash-set.
-       * @throws ClusterClosedException If QdbCluster.close() has been called.
-       */
-    public QdbHashSet hashSet(String alias) {
-        session.throwIfClosed();
-        return new QdbHashSet(session, alias);
-    }
-
-    /**
      * Gets a handle to an integer in the database.
      *
      * @param alias The entry unique key/identifier in the database.

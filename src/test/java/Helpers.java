@@ -246,10 +246,6 @@ public class Helpers {
         return getDeque(createUniqueAlias());
     }
 
-    public static QdbHashSet createEmptyHashSet() {
-        return getHashSet(createUniqueAlias());
-    }
-
     public static QdbInteger createEmptyInteger() {
         return getInteger(createUniqueAlias());
     }
@@ -260,12 +256,6 @@ public class Helpers {
 
     public static QdbTag createEmptyTag() {
         return getTag(createUniqueAlias());
-    }
-
-    public static QdbHashSet createHashSet() {
-        QdbHashSet hset = createEmptyHashSet();
-        hset.insert(createSampleData());
-        return hset;
     }
 
     public static QdbInteger createInteger() {
@@ -361,10 +351,6 @@ public class Helpers {
 
     public static QdbEntry getEntry(String alias) {
         return cluster.entry(alias);
-    }
-
-    public static QdbHashSet getHashSet(String alias) {
-        return cluster.hashSet(alias);
     }
 
     public static QdbInteger getInteger(String alias) {

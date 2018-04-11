@@ -25,9 +25,6 @@ final class QdbEntryFactory {
         case qdb_entry_type.deque:
             return new QdbDeque(session, alias);
 
-        case qdb_entry_type.hset:
-            return new QdbHashSet(session, alias);
-
         case qdb_entry_type.integer:
             return new QdbInteger(session, alias);
 
