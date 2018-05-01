@@ -19,9 +19,17 @@ Step 1, unzip JNI package:
 - extract quasardb daemon archive to `qdb/`
 - copy net.quasardb.qdb.jni jar files to `qdb/`
 
-Step 2, build:
+Step 2, launch qdbd:
 
-    gradle build -Pqdbd.path=$PWD/qdb/qdbd
+If you're planning to run the tests, you need to launch two qdbd processes,
+one secure and one normal instance:
+
+ - qdbd -a 127.0.0.1:2836 --security=false --root qdb/insecure
+ - qdbd -a 127.0.0.1:2837 --cluster-private-file=$PWD/cluster-secret-key.txt --user-list $PWD/users.txt --root qdb/secure
+
+Step 3, build:
+
+    gradle build -Pqdbd.port=2836 -Pqdbd.secure.port=2837
 
 or, on Windows:
 
