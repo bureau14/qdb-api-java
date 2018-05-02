@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import net.quasardb.qdb.ts.TimeRange;
-import net.quasardb.qdb.ts.FilteredRange;
 import net.quasardb.qdb.jni.*;
 
 public class QdbDoubleAggregation extends QdbAggregation<QdbDoubleColumnValue> {
@@ -23,8 +22,7 @@ public class QdbDoubleAggregation extends QdbAggregation<QdbDoubleColumnValue> {
      * Converts this object to JNI-compatible representation.
      */
     protected static qdb_ts_double_aggregation toNative(QdbDoubleAggregation input) {
-        // :TODO: implement actual filtered ranges here, we're assuming everything is 'no filter' here.
-        return new qdb_ts_double_aggregation (new FilteredRange(input.range),
+        return new qdb_ts_double_aggregation (input.range,
                                               input.type.value,
                                               input.count,
                                               QdbDoubleColumnValue.toNative(input.result));
@@ -35,7 +33,7 @@ public class QdbDoubleAggregation extends QdbAggregation<QdbDoubleColumnValue> {
      */
     protected static QdbDoubleAggregation fromNative(qdb_ts_double_aggregation input) {
         return new QdbDoubleAggregation(Type.values()[(int)input.getAggregationType()],
-                                        input.getFilteredRange().getRange(),
+                                        input.getTimeRange(),
                                         input.getCount(),
                                         QdbDoubleColumnValue.fromNative(input.getResult()));
     }

@@ -68,13 +68,6 @@ public final class QdbTimeSeries {
         return Table.reader(this.session, this.name, ranges);
     }
 
-    /**
-     * Initializes new timeseries table reader.
-     */
-    public Reader tableReader(FilteredRange[] ranges) {
-        return Table.reader(this.session, this.name, ranges);
-    }
-
     public void insertColumns(Column[] columns) {
         int err = qdb.ts_insert_columns(this.session.handle(),
                                         this.name,
@@ -100,18 +93,9 @@ public final class QdbTimeSeries {
     }
 
     /**
-     * Access to timeseries doubles by column. Helper function that automatically converts
-     * TimeRange objects to FilteredRange objects without filter;
-     */
-    public QdbDoubleColumnCollection getDoubles(String column, TimeRange[] ranges) {
-        return getDoubles(column,
-                          Arrays.stream(ranges).map(FilteredRange::new).toArray(FilteredRange[]::new));
-    }
-
-    /**
      * Access to timeseries doubles by column.
      */
-    public QdbDoubleColumnCollection getDoubles(String column, FilteredRange[] ranges) {
+    public QdbDoubleColumnCollection getDoubles(String column, TimeRange[] ranges) {
         Reference<qdb_ts_double_point[]> points = new Reference<qdb_ts_double_point[]>();
 
         int err = qdb.ts_double_get_ranges(this.session.handle(),
@@ -145,20 +129,10 @@ public final class QdbTimeSeries {
         ExceptionFactory.throwIfError(err);
     }
 
-
-    /**
-     * Access to timeseries blobs by column. Helper function that automatically converts
-     * TimeRange objects to FilteredRange objects without filter.
-     */
-    public QdbBlobColumnCollection getBlobs(String column, TimeRange[] ranges) {
-        return getBlobs(column,
-                        Arrays.stream(ranges).map(FilteredRange::new).toArray(FilteredRange[]::new));
-    }
-
     /**
      * Access to timeseries blobs by column.
      */
-    public QdbBlobColumnCollection getBlobs(String column, FilteredRange[] ranges) {
+    public QdbBlobColumnCollection getBlobs(String column, TimeRange[] ranges) {
         Reference<qdb_ts_blob_point[]> points = new Reference<qdb_ts_blob_point[]>();
 
         int err = qdb.ts_blob_get_ranges(this.session.handle(),

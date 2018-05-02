@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import net.quasardb.qdb.ts.TimeRange;
-import net.quasardb.qdb.ts.FilteredRange;
 import net.quasardb.qdb.jni.*;
 
 public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
@@ -24,7 +23,7 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
      * Converts this object to JNI-compatible representation.
      */
     protected static qdb_ts_blob_aggregation toNative(QdbBlobAggregation input) {
-        return new qdb_ts_blob_aggregation (new FilteredRange(input.range),
+        return new qdb_ts_blob_aggregation (input.range,
                                             input.type.value,
                                             input.count,
                                             QdbBlobColumnValue.toNative(input.result));
@@ -35,7 +34,7 @@ public class QdbBlobAggregation extends QdbAggregation<QdbBlobColumnValue> {
      */
     protected static QdbBlobAggregation fromNative(qdb_ts_blob_aggregation input) {
         return new QdbBlobAggregation(Type.values()[(int)input.getAggregationType()],
-                                      input.getFilteredRange().getRange(),
+                                      input.getTimeRange(),
                                       input.getCount(),
                                       QdbBlobColumnValue.fromNative(input.getResult()));
     }
