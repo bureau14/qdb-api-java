@@ -39,7 +39,7 @@
       <groupId>net.quasardb</groupId>
       <artifactId>qdb</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-${jni.os.name}-${jni.os.arch}</classifier>
+      <classifier>jni-${os.detected.name}-${os.detected.arch}</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -62,6 +62,13 @@
   </distributionManagement>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.6.0</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
@@ -148,7 +155,7 @@
                   <classifier>jni</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.basedir}/qdb/jni-linux-x64.jar</file>
+                  <file>${project.basedir}/qdb/jni-${os.detected.name}-${os.detected.arch}.jar</file>
                   <type>jar</type>
                   <classifier>jni-linux-x64</classifier>
                 </artifact>
