@@ -150,14 +150,34 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.basedir}/qdb/jni.jar</file>
+                  <file>${project.basedir}/jni.jar</file>
                   <type>jar</type>
                   <classifier>jni</classifier>
                 </artifact>
                 <artifact>
-                  <file>${project.basedir}/qdb/jni-${os.detected.name}-${os.detected.arch}.jar</file>
+                  <file>${project.basedir}/jni-linux-x86_64.jar</file>
                   <type>jar</type>
-                  <classifier>jni-linux-x64</classifier>
+                  <classifier>jni-linux-x86_64</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.basedir}/jni-osx-x86_64.jar</file>
+                  <type>jar</type>
+                  <classifier>jni-osx-x86_64</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.basedir}/jni-freebsd-x86_64.jar</file>
+                  <type>jar</type>
+                  <classifier>jni-freebsd-x86_64</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.basedir}/jni-windows-x86_64.jar</file>
+                  <type>jar</type>
+                  <classifier>jni-windows-x86_64</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.basedir}/jni-windows-x86_32.jar</file>
+                  <type>jar</type>
+                  <classifier>jni-windows-x86_32</classifier>
                 </artifact>
               </artifacts>
             </configuration>
