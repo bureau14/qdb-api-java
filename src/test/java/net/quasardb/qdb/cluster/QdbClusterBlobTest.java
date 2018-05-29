@@ -1,3 +1,5 @@
+package net.quasardb.qdb.cluster;
+
 import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.*;
 import net.quasardb.qdb.exception.*;

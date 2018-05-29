@@ -1,3 +1,5 @@
+package net.quasardb.qdb.timeseries;
+
 import java.nio.ByteBuffer;
 import java.lang.Exception;
 import java.util.*;
