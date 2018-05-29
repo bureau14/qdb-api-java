@@ -4,24 +4,43 @@
   <artifactId>qdb</artifactId>
   <packaging>jar</packaging>
   <name>quasardb</name>
-  <version>0.0.1</version>
+  <description>Java API for the QuasarDB database</description>
+  <version>${qdb.api.version}</version>
   <url>http://www.quasardb.net/</url>
-
-  <description>
-    Quasardb API for Java
-  </description>
+  <licenses>
+    <license>
+      <name>3-Clause BSD License</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>https://github.com/bureau14/qdb-api-java</url>
+    <connection>scm:git:git://github.com/bureau14/qdb-api-java.git</connection>
+    <developerConnection>scm:git:git@github.com:bureau14/qdb-api-java.git</developerConnection>
+  </scm>
+  <developers>
+    <developer>
+      <email>leon@quasardb.net</email>
+      <name>Leon Mergen</name>
+      <url>https://github.com/solatis</url>
+      <id>solatis</id>
+    </developer>
+  </developers>
 
   <dependencies>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>jni</artifactId>
-      <version>0.0.1</version>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni</classifier>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>jni</artifactId>
-      <version>0.0.1</version>
-      <classifier>linux-x64</classifier>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni-${jni.os.name}-${jni.os.arch}</classifier>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -55,7 +74,6 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -65,6 +83,81 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId>
+	<version>2.2.1</version>
+	<executions>
+	  <execution>
+	    <id>package-sources</id>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>jar-no-fork</goal>
+	      <goal>test-jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-javadoc-plugin</artifactId>
+	<version>2.9.1</version>
+	<executions>
+	  <execution>
+	    <id>package-javadocs</id>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>jar</goal>
+	      <goal>test-jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.basedir}/qdb/jni.jar</file>
+                  <type>jar</type>
+                  <classifier>jni</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.basedir}/qdb/jni-linux-x64.jar</file>
+                  <type>jar</type>
+                  <classifier>jni-linux-x64</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>
