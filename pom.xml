@@ -39,18 +39,48 @@
       <groupId>net.quasardb</groupId>
       <artifactId>qdb</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-${os.detected.name}-${os.detected.arch}</classifier>
+      <classifier>jni-linux-x86_64</classifier>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.quasardb</groupId>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni-osx-x86_64</classifier>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.quasardb</groupId>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni-freebsd-x86_64</classifier>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.quasardb</groupId>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni-windows-x86_64</classifier>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.quasardb</groupId>
+      <artifactId>qdb</artifactId>
+      <version>${qdb.api.version}</version>
+      <classifier>jni-windows-x86_32</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
       <version>1.3</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -62,13 +92,6 @@
   </distributionManagement>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.0</version>
-      </extension>
-    </extensions>
     <plugins>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
