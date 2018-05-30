@@ -5,41 +5,56 @@ Java API for [quasardb](https://www.quasardb.net/).
 
 See documentation at [doc.quasardb.net](https://doc.quasardb.net/master/api/java.html)
 
-### Requirements
+## Requirements
 
 1. [quasardb daemon](https://download.quasardb.net/quasardb/)
-2. [quasardb JNI API](https://download.quasardb.net/quasardb/)
-3. Gradle
-4. JDK 6 or above
+2. JDK 8 or higher
 
-### Build instructions:
+## Adding QuasarDB to your build
 
-Step 1, unzip JNI package:
+QuasarDB's Maven group ID is `net.quasardb` and the artifact ID is `qdb`.
 
-- extract quasardb daemon archive to `qdb/`
-- copy net.quasardb.qdb.jni jar files to `qdb/`
+### Maven
 
-Step 2, launch qdbd:
+To add a dependency on the QuasarDB Java API using Maven, use the following:
 
-If you're planning to run the tests, you need to launch two qdbd processes,
-one secure and one normal instance:
+```xml
+<dependency>
+  <groupId>net.quasardb</groupId>
+  <artifactId>qdb</artifactId>
+  <version>2.5.0</version>
+</dependency>
+```
 
- - qdbd -a 127.0.0.1:2836 --security=false --root qdb/insecure
- - qdbd -a 127.0.0.1:2837 --cluster-private-file=$PWD/cluster-secret-key.txt --user-list $PWD/users.txt --root qdb/secure
+### Gradle
 
-Step 3, build:
+To add a dependency using Gradle:
 
-    gradle build -Pqdbd.port=2836 -Pqdbd.secure.port=2837
+```
+dependencies {
+  compile net.quasardb.qdb:2.5.0'
+}
+```
 
-or, on Windows:
+### Snapshot releases
 
-    gradle build -Pqdbd.path=%CD%/qdb/qdbd.exe
+We continuously release snapshot releases on Sonatype's OSS repository. To gain access to it, please add Sonatype's snapshot repository to your build profile. For Maven, this can be achieved by adding the following profile to your `settings.xml`:
 
-### Troubleshooting
+```xml
+<profile>
+  <id>allow-snapshots</id>
+    <activation><activeByDefault>true</activeByDefault></activation>
+    <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
+</profile>
+```
 
-If you encounter strange build or test errors, try to clean the directory:
+### Documentation
 
-    gradle clean -Pqdbd.path=
-
-You may verify as well that the given paths are absolute.
-On Windows, do not use symbolic links for `qdb_api.dll`, otherwise all the tests will fail.
+For more information on how to use this API, please refer to the [official documentation](http://doc.quasardb.net/master/api/java.html) at doc.quasardb.net.
