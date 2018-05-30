@@ -16,18 +16,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <artifactId>qdb</artifactId>
     <version>${qdb.api.version}</version>
     <packaging>jar</packaging>
-    <classifier>jni-${os.detected.name}-${os.detected.arch}</classifier>
-    <file>jni-${os.detected.name}-${os.detected.arch}.jar</file>
+    <classifier>jni-${arch}</classifier>
+    <file>jni-${arch}.jar</file>
   </properties>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.0</version>
-      </extension>
-    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
