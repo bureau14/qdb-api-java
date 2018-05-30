@@ -55,6 +55,8 @@ We continuously release snapshot releases on Sonatype's OSS repository. To gain 
 </profile>
 ```
 
+Please adjust your artifact version accordingly by appending the appropriate `-SNAPSHOT` qualifier as documented at [the official Maven documentation](https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm#MAVEN401).
+
 ### Documentation
 
 For more information on how to use this API, please refer to the [official documentation](http://doc.quasardb.net/master/api/java.html) at doc.quasardb.net.
