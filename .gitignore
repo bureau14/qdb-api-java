@@ -8,6 +8,7 @@ qdbd.*.txt
 /lib/
 /out/
 /target/
+/jni/target/
 .gradle/
 .settings/
 build/
