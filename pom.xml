@@ -31,43 +31,42 @@
   <dependencies>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni</classifier>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-linux-x86_64</classifier>
+      <classifier>linux-x86_64</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-osx-x86_64</classifier>
+      <classifier>osx-x86_64</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-freebsd-x86_64</classifier>
+      <classifier>freebsd-x86_64</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-windows-x86_64</classifier>
+      <classifier>windows-x86_64</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>net.quasardb</groupId>
-      <artifactId>qdb</artifactId>
+      <artifactId>jni</artifactId>
       <version>${qdb.api.version}</version>
-      <classifier>jni-windows-x86_32</classifier>
+      <classifier>windows-x86_32</classifier>
       <scope>runtime</scope>
     </dependency>
     <dependency>
