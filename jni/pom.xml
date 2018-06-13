@@ -20,6 +20,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     </license>
   </licenses>
 
+  <properties>
+    <groupId>net.quasardb</groupId>
+    <artifactId>jni</artifactId>
+    <version>${qdb.api.version}</version>
+    <packaging>jar</packaging>
+    <file>target/jni-${qdb.api.version}.jar</file>
+  </properties>
+
   <scm>
     <url>https://github.com/bureau14/qdb-api-java</url>
     <connection>scm:git:git://github.com/bureau14/qdb-api-java.git</connection>
@@ -71,6 +79,19 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <configuration>
           <skip>true</skip>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
