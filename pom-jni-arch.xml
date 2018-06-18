@@ -3,7 +3,7 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.quasardb</groupId>
-  <artifactId>qdb</artifactId>
+  <artifactId>jni</artifactId>
   <packaging>jar</packaging>
   <version>${qdb.api.version}</version>
 
@@ -13,7 +13,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <properties>
     <groupId>net.quasardb</groupId>
-    <artifactId>qdb</artifactId>
+    <artifactId>jni</artifactId>
     <version>${qdb.api.version}</version>
     <packaging>jar</packaging>
     <classifier>${arch}</classifier>
