@@ -50,7 +50,7 @@ public class WriterTest {
 
         for (int i = 0; i < columns.length; ++i) {
             Column column = columns[i];
-            assertThat(writer.getTable().columnIndexById(column.getName()), equalTo(i));
+            assertThat(writer.getTables()[0].columnIndexById(column.getName()), equalTo(i));
         }
     }
 
