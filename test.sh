@@ -2,9 +2,25 @@
 ##
 # This is a helper script for development, do not use for CI or anything
 ##
+QDB_API_VERSION="2.8.0-SNAPSHOT"
 
 echo "Rebuilding JNI..."
-cd ../qdb-api-jni/build/ && rm -rf ./* && cmake .. && make -j4 && cp ./jni* ../../qdb-api-java/qdb && cp ./libqdb_api_jni.so ../../qdb-api-java/qdb && cd ../../qdb-api-java
+rm -rf jni \
+    && mkdir jni \
+    && cd ../qdb-api-jni/build/ \
+    && rm -rf ./* \
+    && cmake -DQDB_API_VERSION=${QDB_API_VERSION} .. \
+    && make -j32 \
+    && cp ./jni* ../../qdb-api-java/jni/ \
+    && cd ../../qdb-api-java
+
+echo "Installing JNI"
+mvn install:install-file -f pom-jni.xml -Dqdb.api.version="${QDB_API_VERSION}"
+mvn install:install-file -f pom-jni-arch.xml -Dqdb.api.version="${QDB_API_VERSION}"  -Darch=linux-x86_64
 
 echo "Running tests"
-./gradlew test -Pqdbd.port=2836 -Pqdbd.secure.port=2837 --info
+mvn \
+    -Dqdbd.port=28360 \
+    -Dqdbd.secure.port=28361 \
+    -Dqdb.api.version="${QDB_API_VERSION}" \
+    test
