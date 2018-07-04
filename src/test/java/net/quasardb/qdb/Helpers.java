@@ -28,20 +28,12 @@ public class Helpers {
                                     "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 
     public static QdbCluster createCluster() {
-        try {
-            return new QdbCluster(Daemon.uri());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return new QdbCluster(Daemon.uri());
     }
 
     public static QdbCluster createSecureCluster() {
-        try {
-            return new QdbCluster(Daemon.secureUri(),
-                                  SECURITRY_OPTIONS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return new QdbCluster(Daemon.secureUri(),
+                              SECURITRY_OPTIONS);
     }
 
     public static Session getSession() {
