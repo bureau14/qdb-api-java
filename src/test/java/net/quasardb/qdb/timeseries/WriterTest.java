@@ -33,7 +33,7 @@ public class WriterTest {
     }
 
     @Test
-    public void canLookupColumnOffsetById() throws Exception {
+    public void canLookupTableOffsetById() throws Exception {
         Column[] columns = {
             new Column.Double(Helpers.createUniqueAlias()),
             new Column.Double(Helpers.createUniqueAlias()),
@@ -45,13 +45,11 @@ public class WriterTest {
             new Column.Double(Helpers.createUniqueAlias())
         };
 
-        Writer writer =
-            Helpers.createTimeSeries(columns).tableWriter();
+        QdbTimeSeries series =
+            Helpers.createTimeSeries(columns);
+        Writer writer = series.tableWriter();
 
-        for (int i = 0; i < columns.length; ++i) {
-            Column column = columns[i];
-            assertThat(writer.getTables()[0].columnIndexById(column.getName()), equalTo(i));
-        }
+        assertThat(writer.tableIndexByName(series.getName()), equalTo(0));
     }
 
 
