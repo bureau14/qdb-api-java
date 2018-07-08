@@ -271,6 +271,14 @@ public class Helpers {
         return tag;
     }
 
+    public static Table createTable(Column[] columns) throws IOException {
+        return Table.create(getSession(), createUniqueAlias(), columns);
+    }
+
+    public static Table createTable(Column[] columns, long shardSize) throws IOException {
+        return Table.create(getSession(), createUniqueAlias(), columns, shardSize);
+    }
+
     public static QdbTimeSeries createTimeSeries(Column[] columns) throws IOException {
         return createTimeSeries(createUniqueAlias(), columns);
     }

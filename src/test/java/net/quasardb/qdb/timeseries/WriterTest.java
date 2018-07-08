@@ -45,13 +45,17 @@ public class WriterTest {
             new Column.Double(Helpers.createUniqueAlias())
         };
 
-        QdbTimeSeries series =
-            Helpers.createTimeSeries(columns);
-        Writer writer = series.tableWriter();
+        Session session = Helpers.getSession();
+        Table table1 = Helpers.createTable(columns);
+        Table table2 = Helpers.createTable(columns);
 
-        assertThat(writer.tableIndexByName(series.getName()), equalTo(0));
+        Tables tables = new Tables(new Table[] {table1, table2});
+
+        Writer writer = Tables.writer(session, tables);
+
+        assertThat(writer.tableIndexByName(table1.getName()), equalTo(0));
+        assertThat(writer.tableIndexByName(table2.getName()), equalTo(columns.length));
     }
-
 
     @Test
     public void canCloseWriter() throws Exception {
@@ -194,6 +198,71 @@ public class WriterTest {
         assertThat(results1.get(0).getValue(), equalTo(values[0].getDouble()));
         assertThat(results2.get(0).getValue(), equalTo(values[1].getBlob()));
     }
+
+    @Test
+    public void canInsertMultipleTables() throws Exception {
+        String alias1 = Helpers.createUniqueAlias();
+        String alias2 = Helpers.createUniqueAlias();
+        String alias3 = Helpers.createUniqueAlias();
+        String alias4 = Helpers.createUniqueAlias();
+
+        Column[] definition1 = {
+            new Column.Double (alias1),
+            new Column.Blob (alias2)
+        };
+
+        Column[] definition2 = {
+            new Column.Double (alias3),
+            new Column.Blob (alias4)
+        };
+
+        Table table1 = Helpers.createTable(definition1);
+        Table table2 = Helpers.createTable(definition2);
+        Writer writer = Tables.writer(Helpers.getSession(),
+                                      new Tables(new Table[] {table1,
+                                                              table2}));
+
+        Value[] values1 = {
+            Value.createDouble(Helpers.randomDouble()),
+            Value.createBlob(Helpers.createSampleData())
+        };
+
+        Value[] values2 = {
+            Value.createDouble(Helpers.randomDouble()),
+            Value.createBlob(Helpers.createSampleData())
+        };
+
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+
+        writer.append(table1.getName(), timestamp, values1);
+        writer.append(table2.getName(), timestamp, values2);
+        writer.flush();
+
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
+        };
+
+
+        Reader reader1 = Table.reader(Helpers.getSession(), table1.getName(), ranges);
+        Reader reader2 = Table.reader(Helpers.getSession(), table2.getName(), ranges);
+
+        assertThat(reader1.hasNext(), (is(true)));
+        assertThat(reader2.hasNext(), (is(true)));
+
+        Row row1 = reader1.next();
+        Row row2 = reader2.next();
+
+        assertThat(reader1.hasNext(), (is(false)));
+        assertThat(reader2.hasNext(), (is(false)));
+
+        assertThat(row1.getTimestamp(), (equalTo(timestamp)));
+        assertThat(row1.getValues(), (equalTo(values1)));
+
+        assertThat(row2.getTimestamp(), (equalTo(timestamp)));
+        assertThat(row2.getValues(), (equalTo(values2)));
+    }
+
 
     @Test
     public void canInsertNullColumns() throws Exception {
