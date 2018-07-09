@@ -1,3 +1,9 @@
 #!/bin/sh
 
 pkill -SIGKILL -f qdbd
+
+echo "qdbd.err.txt: "
+cat qdbd.err.txt
+
+echo "qdbd.secure.err.txt: "
+cat qdbd.secure.err.txt
