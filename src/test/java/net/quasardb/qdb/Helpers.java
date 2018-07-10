@@ -28,10 +28,12 @@ public class Helpers {
                                     "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 
     public static QdbCluster createCluster() {
+        System.out.println("establishing connection with cluster: " + Daemon.uri());
         return new QdbCluster(Daemon.uri());
     }
 
     public static QdbCluster createSecureCluster() {
+        System.out.println("establishing connection with cluster: " + Daemon.secureUri());
         return new QdbCluster(Daemon.secureUri(),
                               SECURITRY_OPTIONS);
     }
