@@ -13,3 +13,4 @@ qdbd.*.txt
 .settings/
 build/
 /qdb/
+/jni/
