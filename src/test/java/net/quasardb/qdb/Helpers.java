@@ -230,16 +230,6 @@ public class Helpers {
         return blob;
     }
 
-    public static QdbDeque createDeque() {
-        QdbDeque deque = createEmptyDeque();
-        deque.pushBack(createSampleData());
-        return deque;
-    }
-
-    public static QdbDeque createEmptyDeque() {
-        return getDeque(createUniqueAlias());
-    }
-
     public static QdbInteger createEmptyInteger() {
         return getInteger(createUniqueAlias());
     }
@@ -345,10 +335,6 @@ public class Helpers {
 
     public static QdbCluster getCluster() {
         return cluster;
-    }
-
-    public static QdbDeque getDeque(String alias) {
-        return cluster.deque(alias);
     }
 
     public static QdbEntry getEntry(String alias) {

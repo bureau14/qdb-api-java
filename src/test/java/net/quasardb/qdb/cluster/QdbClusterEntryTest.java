@@ -42,16 +42,6 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void returnsQdbDeque_whenEntryIsDeque() {
-        QdbDeque deque = Helpers.createDeque();
-
-        String alias = deque.alias();
-        QdbEntry result = Helpers.getEntry(alias);
-
-        Assert.assertTrue(result instanceof QdbDeque);
-    }
-
-    @Test
     public void returnsQdbInteger_whenEntryIsInteger() {
         QdbInteger integer = Helpers.createInteger();
 

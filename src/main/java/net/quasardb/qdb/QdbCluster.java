@@ -77,18 +77,6 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
-       * Gets a handle to a deque (double-ended queue) in the database.
-       *
-       * @param alias The entry unique key/identifier in the database.
-       * @return A handle to perform operations on the deque.
-       * @throws ClusterClosedException If QdbCluster.close() has been called.
-       */
-    public QdbDeque deque(String alias) {
-        session.throwIfClosed();
-        return new QdbDeque(session, alias);
-    }
-
-    /**
        * Gets a handle to an entry in the database, the entry must exist.
        *
        * @param alias The entry unique key/identifier in the database.
