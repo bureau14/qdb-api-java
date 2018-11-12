@@ -46,6 +46,17 @@ public final class QdbTimeSeries {
     }
 
     /**
+     * Initializes new timeseries table writer that makes use of high-speed buffered
+     * writes.
+     *
+     * Table writer should be periodically flushed by invoking the .flush()
+     * method, or create a new table writer using autoFlushTableWriter() instead.
+     */
+    public Writer asyncTableWriter() {
+        return Table.asyncWriter(this.session, this.name);
+    }
+
+    /**
      * Initializes new timeseries table writer with auto-flush enabled.
      */
     public AutoFlushWriter autoFlushTableWriter() {

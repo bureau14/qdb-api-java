@@ -97,6 +97,38 @@ public class WriterTest {
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
     }
 
+
+    @Test
+    public void canAsyncInsertDoubleRow() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        Column[] definition = {
+            new Column.Double (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
+        Writer writer = series.asyncTableWriter();
+
+        Value[] values = {
+            Value.createDouble(Helpers.randomDouble())
+        };
+
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        Row row = new Row(timestamp, values);
+        writer.append(row);
+        writer.flush();
+
+        Thread.sleep(4000);
+
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
+        };
+
+        QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
+
+        assertThat(results.size(), (is(1)));
+        assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
+    }
+
     @Test
     public void canInsertMultipleDoubleRows() throws Exception {
         String alias = Helpers.createUniqueAlias();
