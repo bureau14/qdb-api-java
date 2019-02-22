@@ -23,7 +23,7 @@ public class Helpers {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     public static final Session.SecurityOptions SECURITRY_OPTIONS =
-        new Session.SecurityOptions("qdb-api-python",
+        new Session.SecurityOptions("qdb-api-java",
                                     "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
                                     "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
 

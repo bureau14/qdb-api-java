@@ -1,7 +1,9 @@
 {
     "users": [
         {
-            "username": "qdb-api-python",
+            "username": "qdb-api-java",
+            "uid": 1,
+            "superuser": true,
             "public_key": "PEt66yMXbLbq4Cm3uV6useofRnSqSPXSeY7xWXpB12xw="
         }
     ]
