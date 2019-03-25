@@ -159,6 +159,10 @@ public class WriterTest {
         assertThat(results.size(), (is(rows.length)));
 
         for (int i = 0; i < rows.length; ++i) {
+            System.out.println("written: " + rows[i].getValues()[0].getDouble() + "\t read: " + results.get(i).getValue());
+        }
+
+        for (int i = 0; i < rows.length; ++i) {
             assertThat(results.get(i).getValue(), equalTo(rows[i].getValues()[0].getDouble()));
         }
 
