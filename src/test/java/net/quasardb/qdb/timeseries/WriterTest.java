@@ -159,7 +159,7 @@ public class WriterTest {
         assertThat(results.size(), (is(rows.length)));
 
         for (int i = 0; i < rows.length; ++i) {
-            System.out.println("written: " + rows[i].getValues()[0].getDouble() + "\t read: " + results.get(i).getValue());
+            System.out.println("written: " + rows[i].getValues()[0].getDouble() + " [" + rows[i].getTimestamp() + "]\t read: " + results.get(i).getValue() + " [" + results.get(i).getTimestamp() + "]");
         }
 
         for (int i = 0; i < rows.length; ++i) {
