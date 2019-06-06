@@ -77,7 +77,7 @@ public class QueryTest {
             // These  tests could start failing if the qdb core server's
             // or C api behaviour changes.
             assertThat(t.columns.length, (is(definition.length + 1)));
-            assertThat(t.columns[0], (is("timestamp")));
+            assertThat(t.columns[0], (is("$timestamp")));
             assertThat(t.columns[1], (is(definition[0].getName())));
             assertThat(t.rows.length, (is(rows.length)));
 
