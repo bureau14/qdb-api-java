@@ -162,6 +162,8 @@ public class QdbCluster implements AutoCloseable {
       * Gets creates a new timeseries in the database and returns handle.
       *
       * @param alias The timeseries unique key/identifier in the database.
+      * @param shardSize The length of a single shard in the timeseries.
+      * @param columns Array of column descriptions.
       * @return A handle to perform operations on the timeseries.
       * @throws ClusterClosedException If QdbCluster.close() has been called.
       */
