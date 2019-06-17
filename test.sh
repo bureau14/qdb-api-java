@@ -27,6 +27,5 @@ echo "Running tests"
 mvn \
     -Dqdbd.port=28360 \
     -Dqdbd.secure.port=28361 \
-    -Dqdb.api.version="${QDB_API_VERSION}" \
-    '-Dtest=WriterTest#canAsyncInsertDoubleRow*' \
+#    '-Dtest=WriterTest*' \
     test
