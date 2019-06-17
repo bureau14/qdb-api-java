@@ -7,7 +7,7 @@
     </Appenders>
 
     <Loggers>
-        <Root level="debug" additivity="false">
+        <Root level="trace" additivity="false">
             <appender-ref ref="consoleLogger" />
         </Root>
     </Loggers>
