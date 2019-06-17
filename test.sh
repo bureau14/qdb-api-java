@@ -27,5 +27,6 @@ echo "Running tests"
 mvn \
     -Dqdbd.port=28360 \
     -Dqdbd.secure.port=28361 \
-#    '-Dtest=WriterTest*' \
     test
+
+#    '-Dtest=WriterTest*' \
