@@ -1,0 +1,14 @@
+<Configuration status="warn" name="xml_configuration">
+
+    <Appenders>
+        <Console name="consoleLogger" target="SYSTEM_OUT">
+          <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="trace" additivity="false">
+            <appender-ref ref="consoleLogger" />
+        </Root>
+    </Loggers>
+</Configuration>
