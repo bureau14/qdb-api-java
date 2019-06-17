@@ -7,16 +7,21 @@ QDB_API_VERSION="3.4.0-SNAPSHOT"
 echo "Rebuilding JNI..."
 rm -rf jni \
     && mkdir jni \
-    && cd ../qdb-api-jni/build/ \
-    && rm -rf ./* \
-    && cmake -DQDB_API_VERSION=${QDB_API_VERSION} .. \
-    && make -j32 \
-    && cp ./jni* ../../qdb-api-java/jni/ \
-    && cd ../../qdb-api-java
+    && cd ../qdb-api-jni/ \
+    && mvn compile \
+    && rm -rf build \
+    && mkdir build  \
+    && cd build \
+    && cmake -G Ninja .. \
+    && cmake --build . \
+    && cd .. \
+    && mvn install \
+    && cp target/jni* ../qdb-api-java/jni/ \
+    && cd ../qdb-api-java
 
 echo "Installing JNI"
-mvn install:install-file -f pom-jni.xml -Dqdb.api.version="${QDB_API_VERSION}"
-mvn install:install-file -f pom-jni-arch.xml -Dqdb.api.version="${QDB_API_VERSION}"  -Darch=linux-x86_64
+mvn install:install-file -f pom-jni.xml
+mvn install:install-file -f pom-jni-arch.xml -Darch=linux-x86_64
 
 echo "Running tests"
 mvn \
