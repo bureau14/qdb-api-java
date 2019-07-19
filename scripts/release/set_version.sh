@@ -34,5 +34,5 @@ sed -i -e 's/"net.quasardb.qdb:*[^"]*"/"net.quasardb.qdb:'"${FULL_XYZ_VERSION}"'
 # QDB_API_VERSION="2.8.0-SNAPSHOT"
 sed -i -e 's/\(QDB_API_VERSION="\)[^"]*\("\)/\1'"${FULL_XYZ_VERSION}"'\2/' test.sh
 
-sed -i -e '/<groupId>net.quasardb<\/groupId>/,/<\/\(properties\|dependency\)>/ s/<version>[0-9.]*[0-9]\(-SNAPSHOT\)\?<\/version>/<version>'"${FULL_XYZ_VERSION}"'<\/version>/' pom.xml pom-jni.xml pom-jni-arch.xml
-sed -i -e '/<groupId>net.quasardb<\/groupId>/,/<\/properties>/ s/<file>\([-a-zA-Z_/]*\)[0-9.]*[0-9]\(-SNAPSHOT\)\?\([-.${}a-zA-Z]*\)<\/file>/<file>\1'"${FULL_XYZ_VERSION}"'\3<\/file>/' pom.xml pom-jni.xml pom-jni-arch.xml
+sed -i -e '/<groupId>net.quasardb<\/groupId>/,/<\/version>/ s/<version>[0-9.]*[0-9]\(-SNAPSHOT\)\?<\/version>/<version>'"${FULL_XYZ_VERSION}"'<\/version>/' pom.xml pom-jni.xml pom-jni-arch.xml
+sed -i -e '/<groupId>net.quasardb<\/groupId>/,/<\/file>/ s/<file>\([-a-zA-Z_/]*\)[0-9.]*[0-9]\(-SNAPSHOT\)\?\([-.${}a-zA-Z]*\)<\/file>/<file>\1'"${FULL_XYZ_VERSION}"'\3<\/file>/' pom.xml pom-jni.xml pom-jni-arch.xml
