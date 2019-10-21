@@ -160,7 +160,7 @@ public class Helpers {
      */
     public static TimeRange[] rangesFromRows(WritableRow[] rows) {
         return Arrays.stream(rows)
-            .map(Row::getTimestamp)
+            .map(WritableRow::getTimestamp)
             .map((t) -> {
                      return new TimeRange(t, t.plusNanos(1));
                 })
