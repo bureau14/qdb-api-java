@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -x
+
 ##
 # This is a helper script for development, do not use for CI or anything
 ##
@@ -26,7 +29,7 @@ mvn install:install-file -f pom-jni-arch.xml -Darch=linux-x86_64
 echo "Running tests"
 mvn \
     -Dqdbd.port=28360 \
-    -Dqdbd.secure.port=28361 \
+    -Dqdbd.secure.port=28362 \
     test
 
 #    '-Dtest=WriterTest*' \
