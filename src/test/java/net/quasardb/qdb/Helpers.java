@@ -91,7 +91,7 @@ public class Helpers {
     /**
      * Generate table rows with standard complexity of 32
      */
-    public static Row[] generateTableRows(Column[] cols, int count) {
+    public static WritableRow[] generateTableRows(Column[] cols, int count) {
         return generateTableRows(cols, 32, count);
     }
 
@@ -102,7 +102,7 @@ public class Helpers {
      * @param complexity Arbitrary complexity variable that is used when generating data. E.g. for blobs,
      *                   this denotes the size of the blob value being generated.
      */
-    public static Row[] generateTableRows(Column[] cols, int complexity, int count) {
+    public static WritableRow[] generateTableRows(Column[] cols, int complexity, int count) {
         // Generate that returns entire rows with an appropriate value for each column.
         Supplier<Value[]> valueGen =
             (() ->
@@ -117,21 +117,21 @@ public class Helpers {
         return Stream.generate(valueGen)
             .limit(count)
             .map((v) ->
-                 new Row(Timespec.now(),
-                         v))
-            .toArray(Row[]::new);
+                 new WritableRow(Timespec.now(),
+                                 v))
+            .toArray(WritableRow[]::new);
     }
 
-    public static QdbTimeSeries seedTable(Column[] cols, Row[] rows) throws Exception {
+    public static QdbTimeSeries seedTable(Column[] cols, WritableRow[] rows) throws Exception {
         return seedTable(createUniqueAlias(), cols, rows);
     }
 
-    public static QdbTimeSeries seedTable(String tableName, Column[] cols, Row[] rows) throws Exception {
+    public static QdbTimeSeries seedTable(String tableName, Column[] cols, WritableRow[] rows) throws Exception {
         QdbTimeSeries series = createTimeSeries(tableName, cols);
         Writer writer = series.tableWriter();
 
 
-        for (Row row : rows) {
+        for (WritableRow row : rows) {
             writer.append(row);
         }
 
@@ -144,7 +144,7 @@ public class Helpers {
      * Generates a TimeRange from an array of rows. Assumes that all rows are sorted,
      * with the oldest row being first.
      */
-    public static TimeRange rangeFromRows(Row[] rows) {
+    public static TimeRange rangeFromRows(WritableRow[] rows) {
         assert(rows.length >= 1);
 
         Timespec first = rows[0].getTimestamp();
@@ -158,7 +158,7 @@ public class Helpers {
      * Generates an array of TimeRange from an array of rows. Generates exactly one timerange
      * per row.
      */
-    public static TimeRange[] rangesFromRows(Row[] rows) {
+    public static TimeRange[] rangesFromRows(WritableRow[] rows) {
         return Arrays.stream(rows)
             .map(Row::getTimestamp)
             .map((t) -> {

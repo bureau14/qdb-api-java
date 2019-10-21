@@ -82,7 +82,7 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp, values);
+        WritableRow row = new WritableRow(timestamp, values);
         writer.append(row);
         writer.flush();
 
@@ -112,7 +112,7 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp, values);
+        WritableRow row = new WritableRow(timestamp, values);
         writer.append(row);
         writer.flush();
 
@@ -139,12 +139,12 @@ public class WriterTest {
         Writer writer = series.tableWriter();
 
         int ROW_COUNT = 100000;
-        Row[] rows = new Row[ROW_COUNT];
+        WritableRow[] rows = new WritableRow[ROW_COUNT];
         for (int i = 0; i < rows.length; ++i) {
             rows[i] =
-                new Row (LocalDateTime.now(),
-                                      new Value[] {
-                                          Value.createDouble(Helpers.randomDouble())});
+                new WritableRow (LocalDateTime.now(),
+                                 new Value[] {
+                                     Value.createDouble(Helpers.randomDouble())});
             writer.append(rows[i]);
         }
 
@@ -178,8 +178,8 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp,
-                                                    values);
+        WritableRow row = new WritableRow(timestamp,
+                                          values);
         writer.append(row);
         writer.flush();
 
@@ -282,8 +282,8 @@ public class WriterTest {
         assertThat(reader1.hasNext(), (is(true)));
         assertThat(reader2.hasNext(), (is(true)));
 
-        Row row1 = reader1.next();
-        Row row2 = reader2.next();
+        WritableRow row1 = reader1.next();
+        WritableRow row2 = reader2.next();
 
         assertThat(reader1.hasNext(), (is(false)));
         assertThat(reader2.hasNext(), (is(false)));
@@ -314,7 +314,7 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp, values);
+        WritableRow row = new WritableRow(timestamp, values);
 
         writer.append(row);
         writer.flush();
@@ -369,8 +369,8 @@ public class WriterTest {
             values2table2[1]
         };
 
-        Row row1 = new Row(timestamp1, values1);
-        Row row2 = new Row(timestamp2, values2);
+        WritableRow row1 = new WritableRow(timestamp1, values1);
+        WritableRow row2 = new WritableRow(timestamp2, values2);
 
         writer.append(row1);
         writer.flush();
@@ -387,18 +387,18 @@ public class WriterTest {
         Reader reader1 = Table.reader(session, table1.getName(), ranges);
         assertThat(reader1.hasNext(), (is(true)));
 
-        Row table1row1 = reader1.next();
+        WritableRow table1row1 = reader1.next();
         assertThat(table1row1, (is(row1)));
 
         assertThat(reader1.hasNext(), (is(true)));
-        Row table1row2 = reader1.next();
+        WritableRow table1row2 = reader1.next();
         assertThat(Arrays.equals(table1row2.getValues(), values2table1), (is(true)));
         assertThat(table1row2.getTimestamp(), (is(timestamp2)));
         assertThat(reader1.hasNext(), (is(false)));
 
         Reader reader2 = Table.reader(session, table2.getName(), ranges);
         assertThat(reader2.hasNext(), (is(true)));
-        Row table2row2 = reader2.next();
+        WritableRow table2row2 = reader2.next();
         assertThat(Arrays.equals(table2row2.getValues(), values2table2), (is(true)));
         assertThat(table2row2.getTimestamp(), (is(timestamp2)));
         assertThat(reader2.hasNext(), (is(false)));
@@ -441,8 +441,8 @@ public class WriterTest {
             values2table2[1]
         };
 
-        Row row1 = new Row(timestamp1, values1);
-        Row row2 = new Row(timestamp2, values2);
+        WritableRow row1 = new WritableRow(timestamp1, values1);
+        WritableRow row2 = new WritableRow(timestamp2, values2);
 
         writer.append(row1);
 
@@ -458,18 +458,19 @@ public class WriterTest {
         Reader reader1 = Table.reader(session, table1.getName(), ranges);
         assertThat(reader1.hasNext(), (is(true)));
 
-        Row table1row1 = reader1.next();
+
+        WritableRow table1row1 = reader1.next();
         assertThat(table1row1, (is(row1)));
 
         assertThat(reader1.hasNext(), (is(true)));
-        Row table1row2 = reader1.next();
+        WritableRow table1row2 = reader1.next();
         assertThat(Arrays.equals(table1row2.getValues(), values2table1), (is(true)));
         assertThat(table1row2.getTimestamp(), (is(timestamp2)));
         assertThat(reader1.hasNext(), (is(false)));
 
         Reader reader2 = Table.reader(session, table2.getName(), ranges);
         assertThat(reader2.hasNext(), (is(true)));
-        Row table2row2 = reader2.next();
+        WritableRow table2row2 = reader2.next();
         assertThat(Arrays.equals(table2row2.getValues(), values2table2), (is(true)));
         assertThat(table2row2.getTimestamp(), (is(timestamp2)));
         assertThat(reader2.hasNext(), (is(false)));
@@ -489,8 +490,7 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp,
-                          values);
+        WritableRow row = new WritableRow(timestamp, values);
         writer.append(row);
         writer.close();
 
@@ -519,7 +519,7 @@ public class WriterTest {
         };
 
         Timespec timestamp = new Timespec(LocalDateTime.now());
-        Row row = new Row(timestamp, values);
+        WritableRow row = new WritableRow(timestamp, values);
         writer.append(row);
 
         TimeRange[] ranges = {

@@ -70,7 +70,7 @@ public class ReaderTest {
     @Test
     public void helpersRowGen_generatesDoubleRows() throws Exception {
         Column[] cols = Helpers.generateTableColumns(Value.Type.DOUBLE, 1);
-        Row[] rows = Helpers.generateTableRows(cols, 1);
+        WritableRow[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
             .forEach((col) ->
@@ -86,7 +86,7 @@ public class ReaderTest {
     @Test
     public void helpersRowGen_generatesBlobRows() throws Exception {
         Column[] cols = Helpers.generateTableColumns(Value.Type.BLOB, 1);
-        Row[] rows = Helpers.generateTableRows(cols, 1);
+        WritableRow[] rows = Helpers.generateTableRows(cols, 1);
 
         Arrays.stream(cols)
             .forEach((col) ->
@@ -112,7 +112,7 @@ public class ReaderTest {
             Column[] cols =
                 Helpers.generateTableColumns(valueType, 1);
 
-            Row[] rows = Helpers.generateTableRows(cols, 1);
+            WritableRow[] rows = Helpers.generateTableRows(cols, 1);
             QdbTimeSeries series = Helpers.seedTable(cols, rows);
             TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
@@ -138,7 +138,7 @@ public class ReaderTest {
 
             Column[] cols =
                 Helpers.generateTableColumns(valueType, 2);
-            Row[] rows = Helpers.generateTableRows(cols, 2);
+            WritableRow[] rows = Helpers.generateTableRows(cols, 2);
             QdbTimeSeries series = Helpers.seedTable(cols, rows);
             TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
@@ -156,7 +156,7 @@ public class ReaderTest {
         // Generate a 1x1 test dataset
 
         Column[] cols = Helpers.generateTableColumns(1);
-        Row[] rows = Helpers.generateTableRows(cols, 1);
+        WritableRow[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
@@ -177,7 +177,7 @@ public class ReaderTest {
         // Generate a 1x1 test dataset
 
         Column[] cols = Helpers.generateTableColumns(1);
-        Row[] rows = Helpers.generateTableRows(cols, 1);
+        WritableRow[] rows = Helpers.generateTableRows(cols, 1);
         QdbTimeSeries series = Helpers.seedTable(cols, rows);
         TimeRange[] ranges = Helpers.rangesFromRows(rows);
 
