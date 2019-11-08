@@ -30,8 +30,11 @@ public class QdbDoubleColumnValue extends QdbColumnValue<Double> {
     }
 
     protected static QdbDoubleColumnValue fromNative(qdb_ts_double_point input) {
-        return new QdbDoubleColumnValue(input.getTimestamp(),
-                                        input.getValue());
+        return
+            input != null
+            ? new QdbDoubleColumnValue(input.getTimestamp(),
+                                       input.getValue())
+            : null;
     }
 
     protected static qdb_ts_double_point toNative(QdbColumnValue<Double> point) {

@@ -31,8 +31,11 @@ public class QdbBlobColumnValue extends QdbColumnValue<ByteBuffer> {
     }
 
     protected static QdbBlobColumnValue fromNative(qdb_ts_blob_point input) {
-        return new QdbBlobColumnValue(input.getTimestamp(),
-                                      input.getValue());
+        return
+            input != null
+            ? new QdbBlobColumnValue(input.getTimestamp(),
+                                     input.getValue())
+            : null;
     }
 
     protected static qdb_ts_blob_point toNative(QdbColumnValue<ByteBuffer> point) {

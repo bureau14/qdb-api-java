@@ -300,6 +300,8 @@ public class WriterTest {
     public void canInsertNullColumns() throws Exception {
         String alias1 = Helpers.createUniqueAlias();
         String alias2 = Helpers.createUniqueAlias();
+        String alias3 = Helpers.createUniqueAlias();
+        String alias4 = Helpers.createUniqueAlias();
         Column[] definition = {
             new Column.Double (alias1),
             new Column.Blob (alias2)
@@ -308,28 +310,39 @@ public class WriterTest {
         QdbTimeSeries series = Helpers.createTimeSeries(definition);
         Writer writer = series.tableWriter();
 
-        Value[] values = {
+        Value[] values1 = {
             Value.createDouble(Helpers.randomDouble()),
             Value.createNull()
         };
 
-        Timespec timestamp = new Timespec(LocalDateTime.now());
-        WritableRow row = new WritableRow(timestamp, values);
+        Value[] values2 = {
+            Value.createNull(),
+            Value.createBlob(Helpers.createSampleData(32))
+        };
 
-        writer.append(row);
+        Timespec timestamp1 = new Timespec(LocalDateTime.now());
+        Timespec timestamp2 = new Timespec(LocalDateTime.now());
+        WritableRow row1 = new WritableRow(timestamp1, values1);
+        WritableRow row2 = new WritableRow(timestamp2, values2);
+
+        writer.append(row1);
+        writer.append(row2);
         writer.flush();
 
         TimeRange[] ranges = {
-            new TimeRange(timestamp,
-                          timestamp.plusNanos(1))
+            new TimeRange(timestamp1,
+                          timestamp2.plusNanos(1))
         };
 
         QdbDoubleColumnCollection results1 = series.getDoubles(alias1, ranges);
         QdbBlobColumnCollection results2 = series.getBlobs(alias2, ranges);
 
-        assertThat(results1.size(), (is(1)));
-        assertThat(results2.size(), (is(0)));
-        assertThat(results1.get(0).getValue(), equalTo(values[0].getDouble()));
+        assertThat(results1.size(), (is(2)));
+        assertThat(results2.size(), (is(2)));
+        assertThat(results1.get(0).getValue(), equalTo(values1[0].getDouble()));
+        assertThat(results1.get(1), equalTo(null));
+        assertThat(results2.get(0), equalTo(null));
+        assertThat(results2.get(1).getValue(), equalTo(values2[1].getBlob()));
     }
 
     @Test
