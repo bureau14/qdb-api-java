@@ -116,7 +116,7 @@ public class WriterTest {
         writer.append(row);
         writer.flush();
 
-        Thread.sleep(4000);
+        Thread.sleep(8000);
 
         TimeRange[] ranges = {
             new TimeRange(timestamp,
