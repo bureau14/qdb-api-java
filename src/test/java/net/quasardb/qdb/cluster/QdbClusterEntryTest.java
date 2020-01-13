@@ -52,16 +52,6 @@ public class QdbClusterEntryTest {
     }
 
     @Test
-    public void returnsStream_whenEntryIsStream() throws Exception {
-        QdbStream stream = Helpers.createStream();
-
-        String alias = stream.alias();
-        QdbEntry result = Helpers.getEntry(alias);
-
-        Assert.assertTrue(result instanceof QdbStream);
-    }
-
-    @Test
     public void returnsTag_whenEntryIsTag() throws Exception {
         QdbTag tag = Helpers.createTag();
 

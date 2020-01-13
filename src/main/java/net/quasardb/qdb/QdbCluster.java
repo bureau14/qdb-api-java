@@ -123,18 +123,6 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
-      * Gets a handle to a stream in the database.
-      *
-      * @param alias The entry unique key/identifier in the database.
-      * @return A handle to perform operations on the stream.
-      * @throws ClusterClosedException If QdbCluster.close() has been called.
-      */
-    public QdbStream stream(String alias) {
-        session.throwIfClosed();
-        return new QdbStream(session, alias);
-    }
-
-    /**
      * Get a handle to a tag to in the database
      *
      * @param alias The entry unique key/identifier in the database.

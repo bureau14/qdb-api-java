@@ -25,9 +25,6 @@ final class QdbEntryFactory {
         case qdb_entry_type.integer:
             return new QdbInteger(session, alias);
 
-        case qdb_entry_type.stream:
-            return new QdbStream(session, alias);
-
         case qdb_entry_type.tag:
             return new QdbTag(session, alias);
 

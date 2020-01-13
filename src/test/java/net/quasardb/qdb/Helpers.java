@@ -232,10 +232,6 @@ public class Helpers {
         return getInteger(createUniqueAlias());
     }
 
-    public static QdbStream createEmptyStream() {
-        return getStream(createUniqueAlias());
-    }
-
     public static QdbTag createEmptyTag() {
         return getTag(createUniqueAlias());
     }
@@ -244,14 +240,6 @@ public class Helpers {
         QdbInteger integer = createEmptyInteger();
         integer.put(42);
         return integer;
-    }
-
-    public static QdbStream createStream() throws IOException {
-        QdbStream stream = createEmptyStream();
-        try (SeekableByteChannel channel = stream.open(QdbStream.Mode.APPEND)) {
-            channel.write(createSampleData());
-        }
-        return stream;
     }
 
     public static QdbTag createTag() {
@@ -345,10 +333,6 @@ public class Helpers {
 
     public static QdbNode getNode() {
         return cluster.node(Daemon.uri());
-    }
-
-    public static QdbStream getStream(String alias) {
-        return cluster.stream(alias);
     }
 
     public static QdbTag getTag(String alias) {
