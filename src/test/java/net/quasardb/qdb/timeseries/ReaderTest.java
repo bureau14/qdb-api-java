@@ -105,7 +105,8 @@ public class ReaderTest {
         Value.Type[] valueTypes = { Value.Type.INT64,
                                     Value.Type.DOUBLE,
                                     Value.Type.TIMESTAMP,
-                                    Value.Type.BLOB };
+                                    Value.Type.BLOB,
+                                    Value.Type.STRING };
 
         for (Value.Type valueType : valueTypes) {
             // Generate a 1x1 test dataset
@@ -131,7 +132,8 @@ public class ReaderTest {
         Value.Type[] valueTypes = { Value.Type.INT64,
                                     Value.Type.DOUBLE,
                                     Value.Type.TIMESTAMP,
-                                    Value.Type.BLOB };
+                                    Value.Type.BLOB,
+                                    Value.Type.STRING };
 
         for (Value.Type valueType : valueTypes) {
             // Generate a 2x2 test dataset

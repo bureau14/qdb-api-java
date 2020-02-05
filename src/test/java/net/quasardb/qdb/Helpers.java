@@ -82,6 +82,8 @@ public class Helpers {
             return Value.createTimestamp(randomTimestamp());
         case BLOB:
             return Value.createSafeBlob(createSampleData(complexity));
+        case STRING:
+            return Value.createString(randomString(complexity));
         }
 
         return Value.createNull();
@@ -207,6 +209,16 @@ public class Helpers {
     public static void createSampleData(byte[] b) {
         new Random(n++).nextBytes(b);
     }
+
+
+    public static String randomString() {
+        return randomString(32);
+    }
+
+    public static String randomString(int complexity) {
+        return createUniqueAlias();
+    }
+
 
     public static QdbBatch createBatch() {
         return cluster.createBatch();

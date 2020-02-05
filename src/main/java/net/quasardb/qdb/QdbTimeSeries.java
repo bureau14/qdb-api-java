@@ -156,6 +156,22 @@ public final class QdbTimeSeries {
         return QdbBlobColumnCollection.fromNative(column, points.value);
     }
 
+    /**
+     * Access to timeseries strings by column.
+     */
+    public QdbStringColumnCollection getStrings(String column, TimeRange[] ranges) {
+        Reference<qdb_ts_string_point[]> points = new Reference<qdb_ts_string_point[]>();
+
+        int err = qdb.ts_string_get_ranges(this.session.handle(),
+                                           this.name,
+                                           column,
+                                           ranges,
+                                           points);
+        ExceptionFactory.throwIfError(err);
+
+        return QdbStringColumnCollection.fromNative(column, points.value);
+    }
+
     public QdbBlobAggregationCollection blobAggregate(String column, QdbBlobAggregationCollection input) {
         Reference<qdb_ts_blob_aggregation[]> aggregations = new Reference<qdb_ts_blob_aggregation[]>();
 
