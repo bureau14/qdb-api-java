@@ -194,6 +194,37 @@ public class WriterTest {
         assertThat(results.get(0).getValue(), equalTo(values[0].getBlob()));
     }
 
+
+    @Test
+    public void canInsertStringRow() throws Exception {
+        String alias = Helpers.createUniqueAlias();
+        Column[] definition = {
+            new Column.Blob (alias)
+        };
+        QdbTimeSeries series = Helpers.createTimeSeries(definition);
+        Writer writer = series.tableWriter();
+
+        Value[] values = {
+            Value.createString(Helpers.randomString())
+        };
+
+        Timespec timestamp = new Timespec(LocalDateTime.now());
+        WritableRow row = new WritableRow(timestamp,
+                                          values);
+        writer.append(row);
+        writer.flush();
+
+        TimeRange[] ranges = {
+            new TimeRange(timestamp,
+                          timestamp.plusNanos(1))
+        };
+
+        QdbStringColumnCollection results = series.getStrings(alias, ranges);
+
+        assertThat(results.size(), (is(1)));
+        assertThat(results.get(0).getValue(), equalTo(values[0].getString()));
+    }
+
     @Test
     public void canInsertMultipleColumns() throws Exception {
         String alias1 = Helpers.createUniqueAlias();
