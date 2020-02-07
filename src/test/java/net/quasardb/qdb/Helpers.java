@@ -5,13 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.function.Supplier;
+
+import org.json.JSONObject;
 
 import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.*;
@@ -22,10 +27,25 @@ public class Helpers {
     public static final String RESERVED_ALIAS = "\u0000 is serialized as C0 80";
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    public static final Session.SecurityOptions SECURITRY_OPTIONS =
-        new Session.SecurityOptions("qdb-api-java",
-                                    "SoHHpH26NtZvfq5pqm/8BXKbVIkf+yYiVZ5fQbq1nbcI=",
-                                    "Pb+d1o3HuFtxEb5uTl9peU89ze9BZTK9f8KdKr4k7zGA=");
+    public static Session.SecurityOptions get_secure_options() {
+        String username = "";
+        String user_secret_key = "";
+        String cluster_public_key = "";
+        try {
+            String user_file_content = new String(Files.readAllBytes(Paths.get("user_private.key")));
+            JSONObject user = new JSONObject(user_file_content);
+            username = user.get("username").toString();
+            user_secret_key = user.get("secret_key").toString();
+            cluster_public_key = new String(Files.readAllBytes(Paths.get("cluster_public.key")));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Session.SecurityOptions(username, user_secret_key, cluster_public_key);
+    }
+
+    public static final Session.SecurityOptions SECURITRY_OPTIONS = get_secure_options();
 
     public static QdbCluster createCluster() {
         return new QdbCluster(Daemon.uri());

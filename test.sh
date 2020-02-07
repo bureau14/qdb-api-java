@@ -28,8 +28,8 @@ mvn install:install-file -f pom-jni-arch.xml -Darch=linux-x86_64
 
 echo "Running tests"
 mvn \
-    -Dqdbd.port=28360 \
-    -Dqdbd.secure.port=28362 \
+    -Dqdbd.port=2836 \
+    -Dqdbd.secure.port=2838 \
     test
 
 #    '-Dtest=WriterTest*' \
