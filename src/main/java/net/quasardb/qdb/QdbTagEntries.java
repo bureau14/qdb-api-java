@@ -21,8 +21,6 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
             handle = iterator.value;
 
             hasNext = err == qdb_error.ok;
-            // CAUTION: set hasNext before throwing
-            ExceptionFactory.throwIfError(err);
         }
 
         public boolean hasNext() {
@@ -36,14 +34,12 @@ final class QdbTagEntries implements Iterable<QdbEntry> {
             int err = qdb.tag_iterator_next(handle);
 
             hasNext = err == qdb_error.ok;
-            // CAUTION: set hasNext before throwing
-            ExceptionFactory.throwIfError(err);
 
             return entry;
         }
 
         public void remove() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("TagEntries remove operation is unsupported");
         }
 
         @Override

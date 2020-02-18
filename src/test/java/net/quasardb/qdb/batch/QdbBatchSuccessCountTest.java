@@ -22,17 +22,17 @@ public class QdbBatchSuccessCountTest {
         batch.successCount(); // <- throw
     }
 
-    @Test
-    public void returnsOne_afterRunningTwoOperations() {
-        String alias1 = Helpers.createUniqueAlias();
-        String alias2 = Helpers.createUniqueAlias();
-        ByteBuffer content = Helpers.createSampleData();
+    // @Test
+    // public void returnsOne_afterRunningTwoOperations() {
+    //     String alias1 = Helpers.createUniqueAlias();
+    //     String alias2 = Helpers.createUniqueAlias();
+    //     ByteBuffer content = Helpers.createSampleData();
 
-        batch.blob(alias1).put(content);
-        batch.blob(alias2).get();
-        batch.run();
-        int result = batch.successCount();
+    //     batch.blob(alias1).put(content);
+    //     batch.blob(alias2).get();
+    //     batch.run();
+    //     int result = batch.successCount();
 
-        Assert.assertEquals(1, result);
-    }
+    //     Assert.assertEquals(1, result);
+    // }
 }

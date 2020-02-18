@@ -1,7 +1,6 @@
 package net.quasardb.qdb;
 
 import java.util.*;
-import net.quasardb.qdb.exception.ExceptionFactory;
 import net.quasardb.qdb.jni.*;
 
 final class QdbEntryTags implements Iterable<QdbTag> {
@@ -26,7 +25,7 @@ final class QdbEntryTags implements Iterable<QdbTag> {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("EntryTags remove is unsupported");
         }
     }
 
@@ -38,8 +37,7 @@ final class QdbEntryTags implements Iterable<QdbTag> {
     public Iterator<QdbTag> iterator() {
         session.throwIfClosed();
         Reference<String[]> tags = new Reference<String[]>();
-        int err = qdb.get_tags(session.handle(), alias, tags);
-        ExceptionFactory.throwIfError(err);
+        qdb.get_tags(session.handle(), alias, tags);
         return new QdbEntryTagsIterator(tags.value);
     }
 }

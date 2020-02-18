@@ -46,17 +46,17 @@ public class QdbBatchSuccessTest {
         Assert.assertTrue(result);
     }
 
-    @Test
-    public void returnTrue_whenOneOperationFails() {
-        String alias1 = Helpers.createUniqueAlias();
-        String alias2 = Helpers.createUniqueAlias();
-        ByteBuffer content = Helpers.createSampleData();
+    // @Test
+    // public void returnTrue_whenOneOperationFails() {
+    //     String alias1 = Helpers.createUniqueAlias();
+    //     String alias2 = Helpers.createUniqueAlias();
+    //     ByteBuffer content = Helpers.createSampleData();
 
-        batch.blob(alias1).put(content);
-        batch.blob(alias2).get();
-        batch.run();
-        boolean result = batch.success();
+    //     batch.blob(alias1).put(content);
+    //     batch.blob(alias2).get();
+    //     batch.run();
+    //     boolean result = batch.success();
 
-        Assert.assertFalse(result);
-    }
+    //     Assert.assertFalse(result);
+    // }
 }

@@ -1,10 +1,8 @@
 package net.quasardb.qdb;
 
-import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 
 import net.quasardb.qdb.*;
-import net.quasardb.qdb.exception.*;
 import net.quasardb.qdb.ts.*;
 import net.quasardb.qdb.jni.*;
 
@@ -80,27 +78,24 @@ public final class QdbTimeSeries {
     }
 
     public void insertColumns(Column[] columns) {
-        int err = qdb.ts_insert_columns(this.session.handle(),
-                                        this.name,
-                                        columns);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_insert_columns(this.session.handle(),
+                              this.name,
+                              columns);
     }
 
     public Column[] listColumns() {
         Reference<Column[]> nativeColumns = new Reference<Column[]>();
 
-        int err = qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
 
         return nativeColumns.value;
     }
 
     public void insertDoubles(QdbDoubleColumnCollection points) {
-        int err = qdb.ts_double_insert(this.session.handle(),
-                                       this.name,
-                                       points.getColumn().getName(),
-                                       points.toNative());
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_double_insert(this.session.handle(),
+                             this.name,
+                             points.getColumn().getName(),
+                             points.toNative());
     }
 
     /**
@@ -109,12 +104,11 @@ public final class QdbTimeSeries {
     public QdbDoubleColumnCollection getDoubles(String column, TimeRange[] ranges) {
         Reference<qdb_ts_double_point[]> points = new Reference<qdb_ts_double_point[]>();
 
-        int err = qdb.ts_double_get_ranges(this.session.handle(),
-                                           this.name,
-                                           column,
-                                           ranges,
-                                           points);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_double_get_ranges(this.session.handle(),
+                                 this.name,
+                                 column,
+                                 ranges,
+                                 points);
 
         return QdbDoubleColumnCollection.fromNative(column, points.value);
     }
@@ -122,22 +116,20 @@ public final class QdbTimeSeries {
     public QdbDoubleAggregationCollection doubleAggregate(String column, QdbDoubleAggregationCollection input) {
         Reference<qdb_ts_double_aggregation[]> aggregations = new Reference<qdb_ts_double_aggregation[]>();
 
-        int err = qdb.ts_double_aggregate(this.session.handle(),
-                                          this.name,
-                                          column,
-                                          QdbDoubleAggregationCollection.toNative(input),
-                                          aggregations);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_double_aggregate(this.session.handle(),
+                                this.name,
+                                column,
+                                QdbDoubleAggregationCollection.toNative(input),
+                                aggregations);
 
         return QdbDoubleAggregationCollection.fromNative(aggregations.value);
     }
 
     public void insertBlobs(QdbBlobColumnCollection points) {
-        int err = qdb.ts_blob_insert(this.session.handle(),
-                                     this.name,
-                                     points.getColumn().getName(),
-                                     points.toNative());
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_blob_insert(this.session.handle(),
+                           this.name,
+                           points.getColumn().getName(),
+                           points.toNative());
     }
 
     /**
@@ -146,12 +138,11 @@ public final class QdbTimeSeries {
     public QdbBlobColumnCollection getBlobs(String column, TimeRange[] ranges) {
         Reference<qdb_ts_blob_point[]> points = new Reference<qdb_ts_blob_point[]>();
 
-        int err = qdb.ts_blob_get_ranges(this.session.handle(),
-                                         this.name,
-                                         column,
-                                         ranges,
-                                         points);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_blob_get_ranges(this.session.handle(),
+                               this.name,
+                               column,
+                               ranges,
+                               points);
 
         return QdbBlobColumnCollection.fromNative(column, points.value);
     }
@@ -162,12 +153,11 @@ public final class QdbTimeSeries {
     public QdbStringColumnCollection getStrings(String column, TimeRange[] ranges) {
         Reference<qdb_ts_string_point[]> points = new Reference<qdb_ts_string_point[]>();
 
-        int err = qdb.ts_string_get_ranges(this.session.handle(),
-                                           this.name,
-                                           column,
-                                           ranges,
-                                           points);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_string_get_ranges(this.session.handle(),
+                                 this.name,
+                                 column,
+                                 ranges,
+                                 points);
 
         return QdbStringColumnCollection.fromNative(column, points.value);
     }
@@ -175,12 +165,11 @@ public final class QdbTimeSeries {
     public QdbBlobAggregationCollection blobAggregate(String column, QdbBlobAggregationCollection input) {
         Reference<qdb_ts_blob_aggregation[]> aggregations = new Reference<qdb_ts_blob_aggregation[]>();
 
-        int err = qdb.ts_blob_aggregate(this.session.handle(),
-                                        this.name,
-                                        column,
-                                        QdbBlobAggregationCollection.toNative(input),
-                                        aggregations);
-        ExceptionFactory.throwIfError(err);
+        qdb.ts_blob_aggregate(this.session.handle(),
+                              this.name,
+                              column,
+                              QdbBlobAggregationCollection.toNative(input),
+                              aggregations);
 
         return QdbBlobAggregationCollection.fromNative(aggregations.value);
     }

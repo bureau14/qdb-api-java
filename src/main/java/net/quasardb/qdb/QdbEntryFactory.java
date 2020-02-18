@@ -1,7 +1,6 @@
 package net.quasardb.qdb;
 
 import net.quasardb.qdb.jni.*;
-import net.quasardb.qdb.exception.*;
 
 final class QdbEntryFactory {
     final Session session;
@@ -12,8 +11,7 @@ final class QdbEntryFactory {
 
     public QdbEntry createEntry(String alias) {
         Reference<Integer> type = new Reference<Integer>();
-        int err = qdb.get_type(session.handle(), alias, type);
-        ExceptionFactory.throwIfError(err);
+        qdb.get_type(session.handle(), alias, type);
         return createEntry(type.value, alias);
     }
 

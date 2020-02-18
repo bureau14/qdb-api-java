@@ -46,8 +46,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
-        int err = qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toMillisSinceEpoch(), originalContent);
-        ExceptionFactory.throwIfError(err);
+        qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toMillisSinceEpoch(), originalContent);
         return Buffer.wrap(session, originalContent);
     }
 
@@ -62,8 +61,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public Buffer get() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-        int err = qdb.blob_get(session.handle(), alias, content);
-        ExceptionFactory.throwIfError(err);
+        qdb.blob_get(session.handle(), alias, content);
         return Buffer.wrap(session, content);
     }
 
@@ -79,8 +77,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public Buffer getAndRemove() {
         session.throwIfClosed();
         Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-        int err = qdb.blob_get_and_remove(session.handle(), alias, content);
-        ExceptionFactory.throwIfError(err);
+        qdb.blob_get_and_remove(session.handle(), alias, content);
         return Buffer.wrap(session, content);
     }
 
@@ -113,8 +110,7 @@ public final class QdbBlob extends QdbExpirableEntry {
     public Buffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
-        int err = qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch(), originalContent);
-        ExceptionFactory.throwIfError(err);
+        qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch(), originalContent);
         return Buffer.wrap(session, originalContent);
     }
 
@@ -142,8 +138,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.blob_put(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
-        ExceptionFactory.throwIfError(err);
+        qdb.blob_put(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
     }
 
     /**
@@ -159,7 +154,6 @@ public final class QdbBlob extends QdbExpirableEntry {
     public boolean removeIf(ByteBuffer comparand) {
         session.throwIfClosed();
         int err = qdb.blob_remove_if(session.handle(), alias, comparand);
-        ExceptionFactory.throwIfError(err);
         return err != qdb_error.unmatched_content;
     }
 
@@ -190,7 +184,6 @@ public final class QdbBlob extends QdbExpirableEntry {
     public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.blob_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
-        ExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }
 }

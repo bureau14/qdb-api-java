@@ -47,8 +47,7 @@ public final class QdbNode {
     public String config() {
         session.throwIfClosed();
         Reference<String> config = new Reference<String>();
-        int err = qdb.node_config(session.handle(), uri, config);
-        ExceptionFactory.throwIfError(err);
+        qdb.node_config(session.handle(), uri, config);
         return config.value;
     }
 
@@ -61,8 +60,7 @@ public final class QdbNode {
     public String status() {
         session.throwIfClosed();
         Reference<String> status = new Reference<String>();
-        int err = qdb.node_status(session.handle(), uri, status);
-        ExceptionFactory.throwIfError(err);
+        qdb.node_status(session.handle(), uri, status);
         return status.value;
     }
 
@@ -73,8 +71,7 @@ public final class QdbNode {
      */
     public void stop(String reason) {
         session.throwIfClosed();
-        int err = qdb.node_stop(session.handle(), uri, reason);
-        ExceptionFactory.throwIfError(err);
+        qdb.node_stop(session.handle(), uri, reason);
     }
 
     /**
@@ -86,8 +83,7 @@ public final class QdbNode {
     public String topology() {
         session.throwIfClosed();
         Reference<String> topology = new Reference<String>();
-        int err = qdb.node_topology(session.handle(), uri, topology);
-        ExceptionFactory.throwIfError(err);
+        qdb.node_topology(session.handle(), uri, topology);
         return topology.value;
     }
 }

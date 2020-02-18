@@ -25,8 +25,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public long add(long delta) {
         session.throwIfClosed();
         Reference<Long> result = new Reference<Long>();
-        int err = qdb.int_add(session.handle(), alias, delta, result);
-        ExceptionFactory.throwIfError(err);
+        qdb.int_add(session.handle(), alias, delta, result);
         return result.value;
     }
 
@@ -42,8 +41,7 @@ public final class QdbInteger extends QdbExpirableEntry {
     public long get() {
         session.throwIfClosed();
         Reference<Long> value = new Reference<Long>();
-        int err = qdb.int_get(session.handle(), alias, value);
-        ExceptionFactory.throwIfError(err);
+        qdb.int_get(session.handle(), alias, value);
         return value.value;
     }
 
@@ -70,8 +68,7 @@ public final class QdbInteger extends QdbExpirableEntry {
      */
     public void put(long initialValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
-        int err = qdb.int_put(session.handle(), alias, initialValue, expiryTime.toMillisSinceEpoch());
-        ExceptionFactory.throwIfError(err);
+        qdb.int_put(session.handle(), alias, initialValue, expiryTime.toMillisSinceEpoch());
     }
 
     /**
@@ -100,7 +97,6 @@ public final class QdbInteger extends QdbExpirableEntry {
     public boolean update(long newValue, QdbExpiryTime expiryTime) {
         session.throwIfClosed();
         int err = qdb.int_update(session.handle(), alias, newValue, expiryTime.toMillisSinceEpoch());
-        ExceptionFactory.throwIfError(err);
         return err == qdb_error.ok_created;
     }
 }

@@ -38,14 +38,14 @@ public final class QdbBatchBlob extends QdbBatchEntry {
 
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            public void write(long batch, int index) {
+            public void write(long handle, long batch, int index) {
                 qdb.batch_write_blob_compare_and_swap(batch, index, alias, newContent, comparand, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
-            public void read(long batch, int index) {
+            public void read(long handle, long batch, int index) {
                 Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
-                error = qdb.batch_read_blob_compare_and_swap(batch, index, alias, originalContent);
+                error = qdb.batch_read_blob_compare_and_swap(handle, batch, index, alias, originalContent);
                 result = originalContent.value;
             }
         };
@@ -65,14 +65,14 @@ public final class QdbBatchBlob extends QdbBatchEntry {
 
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            public void write(long batch, int index) {
+            public void write(long handle, long batch, int index) {
                 qdb.batch_write_blob_get(batch, index, alias);
             }
 
             @Override
-            public void read(long batch, int index) {
+            public void read(long handle, long batch, int index) {
                 Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-                error = qdb.batch_read_blob_get(batch, index, alias, content);
+                error = qdb.batch_read_blob_get(handle, batch, index, alias, content);
                 result = content.value;
             }
         };
@@ -105,14 +105,14 @@ public final class QdbBatchBlob extends QdbBatchEntry {
 
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            public void write(long batch, int index) {
+            public void write(long handle, long batch, int index) {
                 qdb.batch_write_blob_get_and_update(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
-            public void read(long batch, int index) {
+            public void read(long handle, long batch, int index) {
                 Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-                error = qdb.batch_read_blob_get_and_update(batch, index, alias, content);
+                error = qdb.batch_read_blob_get_and_update(handle, batch, index, alias, content);
                 result = content.value;
             }
         };
@@ -145,14 +145,14 @@ public final class QdbBatchBlob extends QdbBatchEntry {
 
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            public void write(long batch, int index) {
+            public void write(long handle, long batch, int index) {
                 qdb.batch_write_blob_put(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
-            public void read(long batch, int index) {
+            public void read(long handle, long batch, int index) {
                 Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-                error = qdb.batch_read_blob_put(batch, index, alias);
+                error = qdb.batch_read_blob_put(handle, batch, index, alias);
                 result = null;
             }
         };
@@ -185,14 +185,14 @@ public final class QdbBatchBlob extends QdbBatchEntry {
 
         QdbBatchOperation op = new QdbBatchOperation() {
             @Override
-            public void write(long batch, int index) {
+            public void write(long handle, long batch, int index) {
                 qdb.batch_write_blob_update(batch, index, alias, content, expiryTime.toMillisSinceEpoch());
             }
 
             @Override
-            public void read(long batch, int index) {
+            public void read(long handle, long batch, int index) {
                 Reference<ByteBuffer> content = new Reference<ByteBuffer>();
-                error = qdb.batch_read_blob_update(batch, index, alias);
+                error = qdb.batch_read_blob_update(handle, batch, index, alias);
                 result = null;
             }
         };

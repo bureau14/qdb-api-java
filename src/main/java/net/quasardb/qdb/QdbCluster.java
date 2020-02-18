@@ -185,8 +185,7 @@ public class QdbCluster implements AutoCloseable {
      */
     public void purgeAll(int timeoutMillis) {
         session.throwIfClosed();
-        int err = qdb.purge_all(session.handle(), timeoutMillis);
-        ExceptionFactory.throwIfError(err);
+        qdb.purge_all(session.handle(), timeoutMillis);
     }
 
     /**
@@ -198,8 +197,7 @@ public class QdbCluster implements AutoCloseable {
      */
     public void trimAll(int timeoutMillis) {
         session.throwIfClosed();
-        int err = qdb.trim_all(session.handle(), timeoutMillis);
-        ExceptionFactory.throwIfError(err);
+        qdb.trim_all(session.handle(), timeoutMillis);
     }
 
     /**
@@ -221,8 +219,7 @@ public class QdbCluster implements AutoCloseable {
      */
     public void setTimeout(int timeoutMillis) {
         session.throwIfClosed();
-        int err = qdb.option_set_timeout(session.handle(), timeoutMillis);
-        ExceptionFactory.throwIfError(err);
+        qdb.option_set_timeout(session.handle(), timeoutMillis);
     }
 
     /**

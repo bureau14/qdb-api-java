@@ -17,6 +17,6 @@ public class QdbBatchEntry {
 
     protected void assertNotAlreadyRun() {
         if (batch.hasRun())
-            throw new BatchAlreadyRunException();
+            throw new BatchAlreadyRunException("Batch already ran before");
     }
 }

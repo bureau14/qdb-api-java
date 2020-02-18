@@ -23,6 +23,10 @@ public final class QdbBatch implements AutoCloseable {
         operations = new LinkedList<QdbBatchOperation>();
     }
 
+    public Session session() {
+        return this.session;
+    }
+
     /**
      * Add blob operations to the batch.
      *
@@ -58,9 +62,9 @@ public final class QdbBatch implements AutoCloseable {
 
         if (operations.size() > 0) {
             batch = create_batch(session, operations.size());
-            write_operations_to_batch(batch, operations);
+            write_operations_to_batch(session.handle(), batch, operations);
             successCount = qdb.run_batch(session.handle(), batch, operations.size());
-            read_operations_from_batch(batch, operations);
+            read_operations_from_batch(session.handle(), batch, operations);
 
             // batch is deleted in close(), so as to keep buffers alive
         }
@@ -149,40 +153,44 @@ public final class QdbBatch implements AutoCloseable {
 
     private void throwIfClosed() {
         if (isClosed())
-            throw new BatchClosedException();
+            throw new BatchClosedException("Batch is already closed");
     }
 
     private void throwIfHasRun() {
         if (hasRun)
-            throw new BatchAlreadyRunException();
+            throw new BatchAlreadyRunException("Batch is already running");
     }
 
     private void throwIfNotRun() {
         if (!hasRun)
-            throw new BatchNotRunException();
+            throw new BatchNotRunException("Batch did not run");
     }
 
     private static long create_batch(Session session, int count) {
         Reference<Long> batch = new Reference<Long>();
-        int err = qdb.init_operations(session.handle(), count, batch);
-        ExceptionFactory.throwIfError(err);
+        qdb.init_operations(session.handle(), count, batch);
         return batch.value;
     }
 
     private static void delete_batch(Session session, long batch) {
-        int err = qdb.delete_batch(session.handle(), batch);
-        ExceptionFactory.throwIfError(err);
+        qdb.delete_batch(session.handle(), batch);
     }
 
-    private static void write_operations_to_batch(long batch, Iterable<QdbBatchOperation> operations) {
+    private static void write_operations_to_batch(long handle,
+                                                  long batch,
+                                                  Iterable<QdbBatchOperation> operations) {
         int index = 0;
-        for (QdbBatchOperation op : operations)
-            op.write(batch, index++);
+        for (QdbBatchOperation op : operations) {
+            op.write(handle, batch, index++);
+        }
     }
 
-    private static void read_operations_from_batch(long batch, Iterable<QdbBatchOperation> operations) {
+    private static void read_operations_from_batch(long handle,
+                                                   long batch,
+                                                   Iterable<QdbBatchOperation> operations) {
         int index = 0;
-        for (QdbBatchOperation op : operations)
-            op.read(batch, index++);
+        for (QdbBatchOperation op : operations) {
+            op.read(handle, batch, index++);
+        }
     }
 }

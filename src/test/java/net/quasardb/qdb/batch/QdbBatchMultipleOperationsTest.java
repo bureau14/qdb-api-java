@@ -19,25 +19,25 @@ public class QdbBatchMultipleOperationsTest {
         batch.close();
     }
 
-    @Test
-    public void testPartialFailure() {
-        String alias = Helpers.createUniqueAlias();
-        String wrongAlias = Helpers.createUniqueAlias();
+    // @Test
+    // public void testPartialFailure() {
+    //     String alias = Helpers.createUniqueAlias();
+    //     String wrongAlias = Helpers.createUniqueAlias();
 
-        QdbFuture<Void> result1 = batch.blob(alias).put(content);
-        QdbFuture<ByteBuffer> result2 = batch.blob(wrongAlias).get();
-        QdbFuture<ByteBuffer> result3 = batch.blob(alias).get();
+    //     QdbFuture<Void> result1 = batch.blob(alias).put(content);
+    //     QdbFuture<ByteBuffer> result2 = batch.blob(wrongAlias).get();
+    //     QdbFuture<ByteBuffer> result3 = batch.blob(alias).get();
 
-        batch.run();
+    //     batch.run();
 
-        Assert.assertFalse(batch.success());
-        Assert.assertEquals(batch.operationCount(), 3);
-        Assert.assertEquals(batch.successCount(), 2);
+    //     Assert.assertFalse(batch.success());
+    //     Assert.assertEquals(batch.operationCount(), 3);
+    //     Assert.assertEquals(batch.successCount(), 2);
 
-        Assert.assertTrue(result1.success());
-        Assert.assertFalse(result2.success());
-        Assert.assertEquals(content, result3.get());
-    }
+    //     Assert.assertTrue(result1.success());
+    //     Assert.assertFalse(result2.success());
+    //     Assert.assertEquals(content, result3.get());
+    // }
 
     @Test
     public void testUnmatchedContentBatch() {
