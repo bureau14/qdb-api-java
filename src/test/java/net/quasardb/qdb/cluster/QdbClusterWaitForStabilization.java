@@ -9,6 +9,6 @@ public class QdbClusterWaitForStabilizationTest {
         QdbCluster cluster = Helpers.createCluster();
 
         cluster.close();
-        cluster.WaitForStabilization(60); // <- throws
+        cluster.waitForStabilization(60); // <- throws
     }
 }
