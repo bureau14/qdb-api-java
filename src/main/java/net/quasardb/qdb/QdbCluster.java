@@ -209,8 +209,7 @@ public class QdbCluster implements AutoCloseable {
      */
     public void waitForStabilization(int timeoutMillis) {
         session.throwIfClosed();
-        int err = qdb.wait_for_stabilization(session.handle(), timeoutMillis);
-        ExceptionFactory.throwIfError(err);
+        qdb.wait_for_stabilization(session.handle(), timeoutMillis);
     }
 
     /**
