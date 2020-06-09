@@ -201,6 +201,18 @@ public class QdbCluster implements AutoCloseable {
     }
 
     /**
+     * Wait for all nodes of the cluster to be stabilized.
+     *
+     * @param timeoutMillis The timeout of the operation, in milliseconds
+     *
+     * @throws ClusterClosedException If QdbCluster.close() has been called.
+     */
+    public void waitForStabilization(int timeoutMillis) {
+        session.throwIfClosed();
+        qdb.wait_for_stabilization(session.handle(), timeoutMillis);
+    }
+
+    /**
      * Create an empty batch.
      *
      * @return An empty batch.
