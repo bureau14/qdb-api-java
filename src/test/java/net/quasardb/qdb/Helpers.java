@@ -48,7 +48,9 @@ public class Helpers {
     public static final Session.SecurityOptions SECURITRY_OPTIONS = get_secure_options();
 
     public static QdbCluster createCluster() {
-        return new QdbCluster(Daemon.uri());
+        QdbCluster cluster = new QdbCluster(Daemon.uri());
+        cluster.waitForStabilization(60000);
+        return cluster;
     }
 
     public static QdbCluster createSecureCluster() {
