@@ -521,7 +521,7 @@ public class WriterTest {
     }
 
     @Test
-    public void writerIsFlushed_whenClosed() throws Exception {
+    public void writerIsNotFlushed_whenClosed() throws Exception {
         String alias = Helpers.createUniqueAlias();
         Column[] definition = {
             new Column.Double (alias)
@@ -545,7 +545,7 @@ public class WriterTest {
 
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
-        assertThat(results.size(), (is(1)));
+        assertThat(results.size(), (is(0)));
         assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
     }
 
