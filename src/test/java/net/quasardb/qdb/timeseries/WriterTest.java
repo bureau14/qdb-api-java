@@ -546,7 +546,6 @@ public class WriterTest {
         QdbDoubleColumnCollection results = series.getDoubles(alias, ranges);
 
         assertThat(results.size(), (is(0)));
-        assertThat(results.get(0).getValue(), equalTo(values[0].getDouble()));
     }
 
     @Test
