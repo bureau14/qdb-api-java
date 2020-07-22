@@ -27,6 +27,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand) {
+        assert(newContent.isDirect());
+        assert(comparand.isDirect());
+        session.throwIfClosed();
+
         return this.compareAndSwap(newContent, comparand, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -44,7 +48,10 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer compareAndSwap(ByteBuffer newContent, ByteBuffer comparand, QdbExpiryTime expiryTime) {
+        assert(newContent.isDirect());
+        assert(comparand.isDirect());
         session.throwIfClosed();
+
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
         qdb.blob_compare_and_swap(session.handle(), alias, newContent, comparand, expiryTime.toMillisSinceEpoch(), originalContent);
         return Buffer.wrap(session, originalContent);
@@ -92,6 +99,8 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer getAndUpdate(ByteBuffer content) {
+        assert(content.isDirect());
+
         return this.getAndUpdate(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -108,6 +117,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public Buffer getAndUpdate(ByteBuffer content, QdbExpiryTime expiryTime) {
+        assert(content.isDirect());
         session.throwIfClosed();
         Reference<ByteBuffer> originalContent = new Reference<ByteBuffer>();
         qdb.blob_get_and_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch(), originalContent);
@@ -137,6 +147,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public void put(ByteBuffer content, QdbExpiryTime expiryTime) {
+        assert(content.isDirect());
         session.throwIfClosed();
         qdb.blob_put(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
     }
@@ -152,6 +163,7 @@ public final class QdbBlob extends QdbExpirableEntry {
      * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
      */
     public boolean removeIf(ByteBuffer comparand) {
+        assert(comparand.isDirect());
         session.throwIfClosed();
         int err = qdb.blob_remove_if(session.handle(), alias, comparand);
         return err != qdb_error.unmatched_content;
@@ -167,6 +179,7 @@ public final class QdbBlob extends QdbExpirableEntry {
       * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
     public boolean update(ByteBuffer content) {
+        assert(content.isDirect());
         return this.update(content, QdbExpiryTime.PRESERVE_EXPIRATION);
     }
 
@@ -182,6 +195,7 @@ public final class QdbBlob extends QdbExpirableEntry {
       * @throws ReservedAliasException If the alias name or prefix is reserved for quasardb internal use.
       */
     public boolean update(ByteBuffer content, QdbExpiryTime expiryTime) {
+        assert(content.isDirect());
         session.throwIfClosed();
         int err = qdb.blob_update(session.handle(), alias, content, expiryTime.toMillisSinceEpoch());
         return err == qdb_error.ok_created;
