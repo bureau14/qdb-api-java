@@ -5,7 +5,7 @@ set -x
 ##
 # This is a helper script for development, do not use for CI or anything
 ##
-QDB_API_VERSION="3.8.6"
+QDB_API_VERSION="3.8.7"
 
 echo "Rebuilding JNI..."
 rm -rf jni \
