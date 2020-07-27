@@ -166,16 +166,17 @@ public class QdbEntry {
     }
 
     public QdbEntryMetadata metadata() {
-        ByteBuffer meta = ByteBuffer.allocateDirect(80);
+        ByteBuffer meta = ByteBuffer.allocateDirect(96);
 
         qdb.get_metadata(session.handle(), alias, meta);
 
         meta.order(ByteOrder.LITTLE_ENDIAN);
 
-        QdbId reference = new QdbId(meta.getLong(0), meta.getLong(8), meta.getLong(16), meta.getLong(24));
-        long size = meta.getLong(40);
-        Instant lastModification = Instant.ofEpochSecond(meta.getLong(48), meta.getLong(56));
-        Instant expiry = Instant.ofEpochSecond(meta.getLong(64), meta.getLong(72));
+        // TODO: Get alias at ptr=meta.getLong(0), length=meta.getLong(8).
+        QdbId reference = new QdbId(meta.getLong(16), meta.getLong(24), meta.getLong(32), meta.getLong(40));
+        long size = meta.getLong(56);
+        Instant lastModification = Instant.ofEpochSecond(meta.getLong(64), meta.getLong(72));
+        Instant expiry = Instant.ofEpochSecond(meta.getLong(80), meta.getLong(88));
 
         return new QdbEntryMetadata(reference, size, lastModification, expiry);
     }
