@@ -59,4 +59,4 @@ Please adjust your artifact version accordingly by appending the appropriate `-S
 
 ### Documentation
 
-For more information on how to use this API, please refer to the [official documentation](http://doc.quasardb.net/master/api/java.html) at doc.quasardb.net.
+For more information on how to use this API, please read our [tutorial](https://doc.quasardb.net/master/user-guide/api/tutorial.html), you can also find the [java reference](https://doc.quasardb.net/master/javadoc/) at doc.quasardb.net.
