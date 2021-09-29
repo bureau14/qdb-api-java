@@ -22,7 +22,7 @@ To add a dependency on the QuasarDB Java API using Maven, use the following:
 <dependency>
   <groupId>net.quasardb</groupId>
   <artifactId>qdb</artifactId>
-  <version>3.10.0-SNAPSHOT</version>
+  <version>3.10.1-SNAPSHOT</version>
 </dependency>
 ```
 
