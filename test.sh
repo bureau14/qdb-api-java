@@ -18,7 +18,7 @@ rm -rf jni \
     && cmake -G Ninja .. \
     && cmake --build . \
     && cd .. \
-    && mvn install \
+    && mvn -DskipTests -Dmaven.javadoc.skip=true package  \
     && cp target/jni* ../qdb-api-java/jni/ \
     && cd ../qdb-api-java
 
