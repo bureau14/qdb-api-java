@@ -84,11 +84,8 @@ public final class QdbTimeSeries {
     }
 
     public Column[] listColumns() {
-        Reference<Column[]> nativeColumns = new Reference<Column[]>();
-
-        qdb.ts_list_columns(this.session.handle(), this.name, nativeColumns);
-
-        return nativeColumns.value;
+        return Table.getColumns(this.session,
+                                this.name);
     }
 
     public void insertDoubles(QdbDoubleColumnCollection points) {
