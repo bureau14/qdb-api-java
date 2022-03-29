@@ -82,14 +82,14 @@ public class Helpers {
 
 
     public static Column[] generateTableColumns(int count) {
-        return generateTableColumns(Value.Type.DOUBLE, count);
+        return generateTableColumns(Column.Type.DOUBLE, count);
     }
 
-    public static Column[] generateTableColumns(Value.Type valueType, int count) {
+    public static Column[] generateTableColumns(Column.Type columnType, int count) {
         return Stream.generate(Helpers::createUniqueAlias)
             .limit(count)
             .map((alias) -> {
-                    return new Column(alias, valueType);
+                    return new Column(alias, columnType);
                 })
             .toArray(Column[]::new);
     }
@@ -132,6 +132,9 @@ public class Helpers {
             (() ->
              Arrays.stream(cols)
              .map(Column::getType)
+             .map((Column.Type columnType) -> {
+                     return columnType.asValueType();
+                 })
              .map((Value.Type valueType) -> {
                      return Helpers.generateRandomValueByType(complexity, valueType);
                  })
@@ -144,24 +147,6 @@ public class Helpers {
                  new WritableRow(Timespec.now(),
                                  v))
             .toArray(WritableRow[]::new);
-    }
-
-    public static QdbTimeSeries seedTable(Column[] cols, WritableRow[] rows) throws Exception {
-        return seedTable(createUniqueAlias(), cols, rows);
-    }
-
-    public static QdbTimeSeries seedTable(String tableName, Column[] cols, WritableRow[] rows) throws Exception {
-        QdbTimeSeries series = createTimeSeries(tableName, cols);
-        Writer writer = series.tableWriter();
-
-
-        for (WritableRow row : rows) {
-            writer.append(row);
-        }
-
-        writer.flush();
-
-        return series;
     }
 
     /**
@@ -283,44 +268,6 @@ public class Helpers {
         return tag;
     }
 
-    public static Table createTable(Column[] columns) throws IOException {
-        return Table.create(getSession(), createUniqueAlias(), columns);
-    }
-
-    public static Table createTable(Column[] columns, long shardSize) throws IOException {
-        return Table.create(getSession(), createUniqueAlias(), columns, shardSize);
-    }
-
-    public static QdbTimeSeries createTimeSeries(Column[] columns) throws IOException {
-        return createTimeSeries(createUniqueAlias(), columns);
-    }
-
-    public static QdbTimeSeries createTimeSeries(String alias, Column[] columns) throws IOException {
-        return cluster.createTimeSeries(alias, 86400000, columns);
-    }
-
-    public static QdbTimeSeries getTimeSeries(String alias) throws IOException {
-        return cluster.timeSeries(alias);
-    }
-
-    public static QdbBlobColumnCollection createBlobColumnCollection(String alias) {
-        return createBlobColumnCollection(alias, 100);
-    }
-
-    public static QdbBlobColumnCollection createBlobColumnCollection(String alias, int max) {
-        QdbBlobColumnCollection v = new QdbBlobColumnCollection(alias);
-
-        for (int i = 0; i < max; ++i) {
-            v.add(new QdbBlobColumnValue(createSampleData()));
-        }
-
-        return v;
-    }
-
-    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias) {
-        return createDoubleColumnCollection(alias, 10000);
-    }
-
     public static double randomDouble() {
         return new Random(n++).nextDouble();
     }
@@ -338,15 +285,6 @@ public class Helpers {
         return new Timespec(new Random(n++).nextInt(),
                             new Random(n++).nextInt());
 
-    }
-
-    public static QdbDoubleColumnCollection createDoubleColumnCollection(String alias, int max) {
-        QdbDoubleColumnCollection v = new QdbDoubleColumnCollection(alias);
-        for (int i = 0; i < max; ++i) {
-            v.add(new QdbDoubleColumnValue(randomDouble()));
-        }
-
-        return v;
     }
 
     public static QdbBlob getBlob(String alias) {
